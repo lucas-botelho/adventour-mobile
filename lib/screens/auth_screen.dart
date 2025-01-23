@@ -1,9 +1,10 @@
+import 'package:adventour/components/cta_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 // import 'package:google_fonts/google_fonts.dart'
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class AuthScreen extends StatelessWidget {
+  const AuthScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +13,7 @@ class LoginScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(top: 42),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 width: 310,
@@ -28,11 +29,14 @@ class LoginScreen extends StatelessWidget {
                 "If not now when?",
                 style: GoogleFonts.nanumBrushScript(fontSize: 48),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  //do something
-                },
-                child: const Text("Login"),
+              CTAButton(
+                text: "Login",
+                onPressed: () {},
+              ),
+              CTAButton(
+                color: const Color(0xFF37787E),
+                text: "Sign Up",
+                onPressed: () {},
               ),
             ],
           ),

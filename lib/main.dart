@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart'; //package with default components
-import 'package:adventour/screens/login_screen.dart';
+import 'package:adventour/screens/auth_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 //Starting function
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
             textStyle:
                 GoogleFonts.maidenOrange(color: Colors.white, fontSize: 16),
             foregroundColor: Colors.white, // Text color
-            backgroundColor: const Color(0xFF41959D), // Button background color
+            backgroundColor: const Color(0xFF41969D), // Button background color
             minimumSize: const Size(88, 36), // Minimum button size
             padding:
                 const EdgeInsets.symmetric(horizontal: 16), // Button padding
@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: const Scaffold(
-        body: LoginScreen(),
+        body: AuthScreen(),
       ),
       // routes: ,
     );
