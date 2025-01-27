@@ -1,6 +1,7 @@
 import 'package:adventour/components/cta_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:adventour/screens/registration_step_one.dart';
 // import 'package:google_fonts/google_fonts.dart'
 
 class AuthScreen extends StatelessWidget {
@@ -31,7 +32,13 @@ class AuthScreen extends StatelessWidget {
               ),
               CTAButton(
                 text: "Login",
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RegistrationStepOne()),
+                  );
+                },
               ),
               CTAButton(
                 color: const Color(0xFF37787E),

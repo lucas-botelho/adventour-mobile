@@ -39,8 +39,8 @@ class MyApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            textStyle:
-                GoogleFonts.maidenOrange(color: Colors.white, fontSize: 16),
+            textStyle: GoogleFonts.maidenOrange(
+                color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400),
             foregroundColor: Colors.white, // Text color
             backgroundColor: const Color(0xFF41969D), // Button background color
             minimumSize: const Size(88, 36), // Minimum button size
@@ -51,6 +51,14 @@ class MyApp extends StatelessWidget {
                   BorderRadius.all(Radius.circular(20)), // Button shape
             ),
           ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+              textStyle: GoogleFonts.maidenOrange(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w400),
+              foregroundColor: Colors.white),
         ),
       ),
       home: const Scaffold(
