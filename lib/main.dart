@@ -31,9 +31,9 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF134546),
         textTheme: TextTheme(
           bodyLarge:
-              GoogleFonts.maidenOrange(color: Colors.white, fontSize: 16),
+              GoogleFonts.maidenOrange(color: Colors.white, fontSize: 20),
           bodyMedium:
-              GoogleFonts.maidenOrange(color: Colors.white, fontSize: 14),
+              GoogleFonts.maidenOrange(color: Colors.white, fontSize: 16),
           bodySmall:
               GoogleFonts.maidenOrange(color: Colors.white, fontSize: 14),
         ),

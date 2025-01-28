@@ -1,4 +1,4 @@
-import 'package:adventour/components/cta_button.dart';
+import 'package:adventour/components/cta/cta_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:adventour/screens/registration_step_one.dart';

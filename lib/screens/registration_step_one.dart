@@ -1,4 +1,4 @@
-import 'package:adventour/components/cta_button.dart';
+import 'package:adventour/components/form/sign_up_form.dart';
 import 'package:flutter/material.dart';
 
 class RegistrationStepOne extends StatelessWidget {
@@ -27,11 +27,8 @@ class RegistrationStepOne extends StatelessWidget {
             style: TextStyle(fontSize: 26),
           ),
         ),
-        Center(
-          child: CTAButton(
-            text: "Sign Up",
-            onPressed: () {},
-          ),
+        const Center(
+          child: SignUpForm(),
         ),
       ],
     ));
