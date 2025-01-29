@@ -1,5 +1,6 @@
 //Copied from flutter docs
 import 'package:adventour/components/cta/cta_button.dart';
+import 'package:adventour/components/form/form_passwordfield.dart';
 import 'package:adventour/components/form/form_textfield.dart';
 import 'package:flutter/material.dart';
 
@@ -23,6 +24,19 @@ class SignUpFormState extends State<SignUpForm> {
   // not a GlobalKey<MyCustomFormState>.
   final _signUpFormKey = GlobalKey<FormState>();
 
+  //Controllers for password fields
+  //Controllers are used to give control of the parent over the child
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
@@ -38,17 +52,28 @@ class SignUpFormState extends State<SignUpForm> {
             fieldName: "Phone Number",
             regExp: RegExp(r'^[0-9]{10}$'),
           ),
-          FormTextField(
+          FormPasswordField(
             fieldName: "Password",
-            regExp: RegExp(r'^[A-Za-z0-9!@#\$%^&*()_+]{8,}$'),
+            controller: _passwordController,
           ),
-          FormTextField(
+          FormPasswordField(
             fieldName: "Confirm Password",
-            regExp: RegExp(r'^[A-Za-z0-9!@#\$%^&*()_+]{8,}$'),
+            controller: _confirmPasswordController,
+            passwordController: _passwordController,
+            confirmPassword: true,
           ),
-          CTAButton(
-            text: "Sign Up",
-            onPressed: () {},
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: CTAButton(
+              text: "Sign Up",
+              onPressed: () {
+                if (_signUpFormKey.currentState!.validate()) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Processing Data')),
+                  );
+                }
+              },
+            ),
           )
           // Add TextFormFields and ElevatedButton here.
         ],

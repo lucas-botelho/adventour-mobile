@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 
-class FormTextField extends StatelessWidget {
+class FormPasswordField extends StatelessWidget {
   final String fieldName;
-  final RegExp regExp;
+  final TextEditingController controller;
+  //todo: find a better naming since this is the controller for the original password field
+  final TextEditingController? passwordController;
+  final bool confirmPassword;
 
-  const FormTextField({
+  const FormPasswordField({
     super.key,
     required this.fieldName,
-    required this.regExp,
+    required this.controller,
+    this.passwordController,
+    this.confirmPassword = false,
   });
 
   @override
@@ -25,36 +30,40 @@ class FormTextField extends StatelessWidget {
             ),
           ),
           TextFormField(
+            controller: controller,
             validator: (value) {
-              if (value != null && !regExp.hasMatch(value)) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter ${fieldName.toLowerCase()}';
+              }
+
+              final regex = RegExp(r'^[A-Za-z0-9!@#\$%^&*()_+]{8,}$');
+              if (!regex.hasMatch(value)) {
                 return 'Please enter a valid ${fieldName.toLowerCase()}';
+              }
+
+              if (confirmPassword && value != passwordController?.text) {
+                return 'Passwords do not match';
               }
               return null;
             },
             textAlignVertical: TextAlignVertical.center,
-            decoration: InputDecoration(
-              errorStyle: TextStyle(
-                fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                color: Theme.of(context)
-                    .colorScheme
-                    .error, // Automatically gets error color
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-              border: const OutlineInputBorder(
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20),
+              border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(30)),
               ),
-              enabledBorder: const OutlineInputBorder(
+              enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(30)),
                 borderSide: BorderSide(color: Color(0xFF67A1A6)),
               ),
-              focusedBorder: const OutlineInputBorder(
+              focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.all(
                   Radius.circular(30),
                 ),
                 borderSide: BorderSide(color: Color(0xFF67A1A6)),
               ),
               // labelText: 'Name',
-              fillColor: const Color(0xFF67A1A6),
+              fillColor: Color(0xFF67A1A6),
               filled: true,
             ),
           ),

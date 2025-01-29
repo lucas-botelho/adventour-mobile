@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF134546),
+          error: const Color(0xFFD32F2F), // Global error color
         ).copyWith(
           surface: const Color(0xFF134546),
         ),

@@ -8,13 +8,13 @@ class CTAButton extends StatelessWidget {
   final double height;
 
   const CTAButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     this.color,
     this.width = 308, // Default width
     this.height = 50, // Default height
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
