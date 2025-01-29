@@ -1,7 +1,7 @@
 //Copied from flutter docs
 import 'package:adventour/components/cta/cta_button.dart';
-import 'package:adventour/components/form/form_passwordfield.dart';
-import 'package:adventour/components/form/form_textfield.dart';
+import 'package:adventour/components/form/elements/form_passwordfield.dart';
+import 'package:adventour/components/form/elements/form_textfield.dart';
 import 'package:flutter/material.dart';
 
 // Define a custom Form widget.

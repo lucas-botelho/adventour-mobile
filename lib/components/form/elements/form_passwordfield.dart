@@ -30,6 +30,7 @@ class FormPasswordField extends StatelessWidget {
             ),
           ),
           TextFormField(
+            obscureText: true,
             controller: controller,
             validator: (value) {
               if (value == null || value.isEmpty) {

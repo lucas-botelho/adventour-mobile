@@ -1,3 +1,4 @@
+import 'package:adventour/components/row/custom_row_divider.dart';
 import 'package:adventour/components/form/sign_up_form.dart';
 import 'package:flutter/material.dart';
 
@@ -30,6 +31,44 @@ class RegistrationStepOne extends StatelessWidget {
         const Center(
           child: SignUpForm(),
         ),
+        const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            RowDivider(),
+            Text("OR"),
+            RowDivider(),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/registration_step_two');
+              },
+              child: const Text("Sign Up with Google"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/registration_step_two');
+              },
+              child: const Text("Sign Up with Google"),
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("Already have an account?"),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/login');
+              },
+              child:
+                  const Text("Log In", style: TextStyle(color: Colors.black)),
+            ),
+          ],
+        )
       ],
     ));
   }
