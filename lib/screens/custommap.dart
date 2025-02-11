@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:countries_world_map/data/maps/world_map.dart';
 import 'package:flutter/material.dart';
 import 'package:countries_world_map/countries_world_map.dart';
+import 'package:http/http.dart' as http;
 
 class CustomMap extends StatefulWidget {
   const CustomMap({super.key});
@@ -12,6 +15,33 @@ class CustomMap extends StatefulWidget {
 
 class _CustomMapState extends State<CustomMap> {
   String selectedCountry = ""; // Default text
+  String fetchedData = ""; // Data to hold the fetched result
+
+  late Future<String> text;
+
+  @override
+  void initState() {
+    super.initState();
+    text = fetchText();
+  }
+
+  Future<String> fetchText() async {
+    final response = await http
+        .get(Uri.parse('http://10.0.2.2:8080/api/Authentication/test'));
+
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, parse the JSON
+      final data = jsonDecode(response.body);
+      setState(() {
+        fetchedData =
+            data['data'] ?? 'No data'; // Assign the value of "data" field
+      });
+      return data['message'] ?? 'No message';
+    } else {
+      // If the server did not return a 200 OK response, throw an exception.
+      throw Exception('Failed to load data');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,15 +54,24 @@ class _CustomMapState extends State<CustomMap> {
             children: [
               _titleText(),
               _map(),
-              Text("NAME OF THE CONTINENT"),
-              _textDivider(),
-              Text(
-                selectedCountry,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
+              if (selectedCountry.isNotEmpty) ...[
+                Text(
+                  'Fetched Data: $fetchedData',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
                 ),
-              ),
+                Text(selectedCountry),
+                _textDivider(),
+                Text(
+                  selectedCountry,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
               _exploreCTAButton(),
             ],
           ),
@@ -91,8 +130,11 @@ class _CustomMapState extends State<CustomMap> {
 
   Padding _exploreCTAButton() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: CTAButton(text: "Explore", onPressed: () => print("Explore")),
+      padding: const EdgeInsets.all(15),
+      child: CTAButton(
+        text: "Explore",
+        onPressed: () => {print("Explore")},
+      ),
     );
   }
 
