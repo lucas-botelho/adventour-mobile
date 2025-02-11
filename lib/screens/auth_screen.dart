@@ -1,4 +1,5 @@
 import 'package:adventour/components/cta/cta_button.dart';
+import 'package:adventour/screens/custommap.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:adventour/screens/registration_step_one.dart';
@@ -37,6 +38,15 @@ class AuthScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const RegistrationStepOne()),
+                  );
+                },
+              ),
+              CTAButton(
+                text: "mapsd",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CustomMap()),
                   );
                 },
               ),
