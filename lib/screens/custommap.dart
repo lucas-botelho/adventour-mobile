@@ -1,5 +1,6 @@
 import 'dart:convert';
-
+import 'package:adventour/responses/base_api_response.dart';
+import 'package:adventour/settings/constants.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:countries_world_map/data/maps/world_map.dart';
 import 'package:flutter/material.dart';
@@ -13,32 +14,49 @@ class CustomMap extends StatefulWidget {
   State<CustomMap> createState() => _CustomMapState();
 }
 
-class _CustomMapState extends State<CustomMap> {
-  String selectedCountry = ""; // Default text
-  String fetchedData = ""; // Data to hold the fetched result
+class CountryModel {
+  final String name;
+  final String continent;
+  final int id;
 
-  late Future<String> text;
+  CountryModel({required this.name, required this.continent, required this.id});
+
+  factory CountryModel.fromJson(Map<String, dynamic> json) {
+    return CountryModel(
+      name: json['name'],
+      continent: json['continentName'],
+      id: json['id'],
+    );
+  }
+}
+
+class _CustomMapState extends State<CustomMap> {
+  String selectedCountryName = "";
+  String selectedCountryContinent = "";
+  String fetchedData = "";
+
+  late Future<CountryModel> text;
 
   @override
   void initState() {
     super.initState();
-    text = fetchText();
   }
 
-  Future<String> fetchText() async {
-    final response = await http
-        .get(Uri.parse('http://10.0.2.2:8080/api/Authentication/test'));
+  Future<CountryModel> fetchCountry(String countryCode) async {
+    final response = await http.get(Uri.parse(
+        '${AppSettings.apiBaseUrl}/${Country.GetCountry}/$countryCode'));
 
     if (response.statusCode == 200) {
-      // If the server returns a 200 OK response, parse the JSON
       final data = jsonDecode(response.body);
-      setState(() {
-        fetchedData =
-            data['data'] ?? 'No data'; // Assign the value of "data" field
-      });
-      return data['message'] ?? 'No message';
+
+      // Pass `CountryModel.fromJson` as the converter function
+      final BaseApiResponse<CountryModel> result =
+          BaseApiResponse<CountryModel>.fromJson(
+              data, (json) => CountryModel.fromJson(json));
+
+      return result.data;
     } else {
-      // If the server did not return a 200 OK response, throw an exception.
+      //TODO: Handle error when user clicks on the water
       throw Exception('Failed to load data');
     }
   }
@@ -53,25 +71,8 @@ class _CustomMapState extends State<CustomMap> {
           child: Column(
             children: [
               _titleText(),
-              _map(),
-              if (selectedCountry.isNotEmpty) ...[
-                Text(
-                  'Fetched Data: $fetchedData',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                ),
-                Text(selectedCountry),
-                _textDivider(),
-                Text(
-                  selectedCountry,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                ),
-              ],
+              _customMap(),
+              if (selectedCountryName.isNotEmpty) ...displayFetchedData(),
               _exploreCTAButton(),
             ],
           ),
@@ -94,7 +95,7 @@ class _CustomMapState extends State<CustomMap> {
     );
   }
 
-  SizedBox _map() {
+  SizedBox _customMap() {
     return SizedBox(
       height: 500,
       child: InteractiveViewer(
@@ -114,12 +115,13 @@ class _CustomMapState extends State<CustomMap> {
               ),
               instructions: SMapWorld.instructions,
               defaultColor: Colors.grey.shade400,
-              callback: (id, name, tapDetails) {
+              callback: (id, name, tapDetails) async {
+                CountryModel country = await fetchCountry(id);
+
                 setState(() {
-                  selectedCountry = id;
+                  selectedCountryName = country.name;
+                  selectedCountryContinent = country.continent;
                 });
-                // print('Selected country: $name ($id)');
-                // Handle country selection here
               },
             ),
           ),
@@ -148,5 +150,13 @@ class _CustomMapState extends State<CustomMap> {
         color: Colors.white,
       ),
     );
+  }
+
+  List<Widget> displayFetchedData() {
+    return [
+      Text(selectedCountryContinent),
+      _textDivider(),
+      Text(selectedCountryName),
+    ];
   }
 }
