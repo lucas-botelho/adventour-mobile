@@ -65,7 +65,7 @@ class SignUpFormState extends State<SignUpForm> {
             child: CTAButton(
               text: "Sign Up",
               onPressed: () {
-                Register(context);
+                register(context);
               },
             ),
           )
@@ -74,7 +74,7 @@ class SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  Future<void> Register(BuildContext context) async {
+  Future<void> register(BuildContext context) async {
     if (!isValidForm()) return;
 
     try {
