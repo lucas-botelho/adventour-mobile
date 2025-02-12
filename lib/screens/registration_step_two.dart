@@ -2,8 +2,9 @@ import 'package:adventour/components/row/custom_row_divider.dart';
 import 'package:adventour/components/form/sign_up_form.dart';
 import 'package:flutter/material.dart';
 
-class RegistrationStepOne extends StatelessWidget {
-  const RegistrationStepOne({super.key});
+class RegistrationStepTwo extends StatelessWidget {
+  final String userId;
+  const RegistrationStepTwo({required this.userId, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,8 @@ class RegistrationStepOne extends StatelessWidget {
       body: SingleChildScrollView(
         // Prevents overflow
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding:
+              const EdgeInsets.symmetric(horizontal: 20), // Uniform spacing
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

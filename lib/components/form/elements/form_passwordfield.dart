@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class FormPasswordField extends StatelessWidget {
+class StyledPasswordFormField extends StatelessWidget {
   final String fieldName;
   final TextEditingController controller;
   //todo: find a better naming since this is the controller for the original password field
   final TextEditingController? passwordController;
   final bool confirmPassword;
 
-  const FormPasswordField({
+  const StyledPasswordFormField({
     super.key,
     required this.fieldName,
     required this.controller,

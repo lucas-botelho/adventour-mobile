@@ -1,10 +1,14 @@
 //Copied from flutter docs
+import 'dart:convert';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/form_passwordfield.dart';
 import 'package:adventour/components/form/elements/form_textfield.dart';
+import 'package:adventour/responses/base_api_response.dart';
+import 'package:adventour/screens/registration_step_two.dart';
+import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-// Define a custom Form widget.
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
 
@@ -14,19 +18,12 @@ class SignUpForm extends StatefulWidget {
   }
 }
 
-// Define a corresponding State class.
-// This class holds data related to the form.
 class SignUpFormState extends State<SignUpForm> {
-  // Create a global key that uniquely identifies the Form widget
-  // and allows validation of the form.
-  //
-  // Note: This is a `GlobalKey<FormState>`,
-  // not a GlobalKey<MyCustomFormState>.
   final _signUpFormKey = GlobalKey<FormState>();
 
-  //Controllers for password fields
-  //Controllers are used to give control of the parent over the child
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
@@ -39,24 +36,25 @@ class SignUpFormState extends State<SignUpForm> {
 
   @override
   Widget build(BuildContext context) {
-    // Build a Form widget using the _formKey created above.
     return Form(
       key: _signUpFormKey,
       child: Column(
         children: <Widget>[
-          FormTextField(
+          StyledTextFormField(
             fieldName: "Name",
             regExp: RegExp(r'^[A-Za-z ]+$'),
+            controller: _nameController,
           ),
-          FormTextField(
-            fieldName: "Phone Number",
-            regExp: RegExp(r'^[0-9]{10}$'),
+          StyledTextFormField(
+            fieldName: "Email",
+            regExp: RegExp(r'^[^@]+@[^@]+\.[^@]+$'),
+            controller: _emailController,
           ),
-          FormPasswordField(
+          StyledPasswordFormField(
             fieldName: "Password",
             controller: _passwordController,
           ),
-          FormPasswordField(
+          StyledPasswordFormField(
             fieldName: "Confirm Password",
             controller: _confirmPasswordController,
             passwordController: _passwordController,
@@ -67,17 +65,112 @@ class SignUpFormState extends State<SignUpForm> {
             child: CTAButton(
               text: "Sign Up",
               onPressed: () {
-                if (_signUpFormKey.currentState!.validate()) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Processing Data')),
-                  );
-                }
+                Register(context);
               },
             ),
           )
-          // Add TextFormFields and ElevatedButton here.
         ],
       ),
+    );
+  }
+
+  Future<void> Register(BuildContext context) async {
+    if (!isValidForm()) return;
+
+    try {
+      final response = await registerUser(
+        _nameController.text,
+        _emailController.text,
+        _passwordController.text,
+        _confirmPasswordController.text,
+      );
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RegistrationStepTwo(userId: response.UserId),
+        ),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Registration failed. Please check your details and try again.'),
+        ),
+      );
+    }
+  }
+
+  bool isValidForm() {
+    return _signUpFormKey.currentState!.validate();
+  }
+
+  Future<UserRegistrationResponse> registerUser(String name, String email,
+      String password, String confirmPassword) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${AppSettings.apiBaseUrl}/${Authentication.register}'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(
+          UserRegistrationRequest(
+            name: name,
+            email: email,
+            password: password,
+            confirmPassword: confirmPassword,
+          ).toJson(),
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final BaseApiResponse<UserRegistrationResponse> result =
+            BaseApiResponse<UserRegistrationResponse>.fromJson(
+                data, (json) => UserRegistrationResponse.fromJson(json));
+
+        return result.data;
+      } else {
+        throw Exception('Failed to register user: ${response.statusCode}');
+      }
+    } catch (e) {
+      print(e);
+      throw Exception('error: $e');
+    }
+  }
+}
+
+class UserRegistrationRequest {
+  final String name;
+  final String email;
+  final String confirmPassword;
+  final String password;
+
+  UserRegistrationRequest({
+    required this.name,
+    required this.email,
+    required this.password,
+    required this.confirmPassword,
+  });
+
+  Map<String, String> toJson() {
+    return {
+      'name': name,
+      'email': email,
+      'password': password,
+      'confirmPassword': confirmPassword,
+    };
+  }
+}
+
+class UserRegistrationResponse {
+  final String UserId;
+
+  UserRegistrationResponse({required this.UserId});
+
+  factory UserRegistrationResponse.fromJson(Map<String, dynamic> json) {
+    return UserRegistrationResponse(
+      UserId: json['userId'],
     );
   }
 }
