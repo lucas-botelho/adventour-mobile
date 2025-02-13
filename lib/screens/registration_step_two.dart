@@ -1,96 +1,138 @@
-import 'package:adventour/components/row/custom_row_divider.dart';
-import 'package:adventour/components/form/sign_up_form.dart';
 import 'package:flutter/material.dart';
+import 'package:adventour/components/cta/arrow_back_button.dart';
+import 'package:adventour/components/cta/cta_button.dart';
+import 'package:adventour/components/form/text_with_action.dart';
 
-class RegistrationStepTwo extends StatelessWidget {
+class RegistrationStepTwo extends StatefulWidget {
   final String userId;
   const RegistrationStepTwo({required this.userId, super.key});
 
   @override
+  State<RegistrationStepTwo> createState() => _RegistrationStepTwoState();
+}
+
+class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
+  final _emailConfirmationFormKey = GlobalKey<FormState>();
+  final TextEditingController _codeController1 = TextEditingController();
+  final TextEditingController _codeController2 = TextEditingController();
+  final TextEditingController _codeController3 = TextEditingController();
+  final TextEditingController _codeController4 = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      body: SingleChildScrollView(
-        // Prevents overflow
-        child: Padding(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 20), // Uniform spacing
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildBackButton(context),
-              _buildTitle(),
-              const Center(child: SignUpForm()),
-              _buildDivider(),
-              _buildSocialSignUpButtons(context),
-              _buildLoginPrompt(context),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBackButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 42),
-      child: TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: const Text("< Back"),
-      ),
-    );
-  }
-
-  Widget _buildTitle() {
-    return const Padding(
-      padding: EdgeInsets.only(top: 22),
-      child: Text("Sign Up", style: TextStyle(fontSize: 26)),
-    );
-  }
-
-  Widget _buildDivider() {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        RowDivider(),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Text("OR"),
-        ),
-        RowDivider(),
-      ],
-    );
-  }
-
-  Widget _buildSocialSignUpButtons(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      body: Column(
         children: [
-          _buildSocialButton(context, "Sign Up with Google"),
-          _buildSocialButton(context, "Sign Up with Apple"),
+          imageWithText(screenHeight),
+          confirmationCode(),
         ],
       ),
     );
   }
 
-  Widget _buildSocialButton(BuildContext context, String text) {
-    return ElevatedButton(
-      onPressed: () => Navigator.pushNamed(context, '/registration_step_two'),
-      child: Text(text),
+  Expanded confirmationCode() {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Column(
+                children: [
+                  Form(
+                    key: _emailConfirmationFormKey,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        codeInputField(_codeController1),
+                        codeInputField(_codeController2),
+                        codeInputField(_codeController3),
+                        codeInputField(_codeController4),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 20, 10, 90),
+                    child: TextWithAction(
+                      label: "Didn't receive the code?",
+                      actionLabel: "Resend Code",
+                      onPressed: () {},
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  CTAButton(text: "Verification", onPressed: () {}),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildLoginPrompt(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+  Stack imageWithText(double screenHeight) {
+    return Stack(
       children: [
-        const Text("Already have an account?"),
-        TextButton(
-          onPressed: () => Navigator.pushNamed(context, '/login'),
-          child: const Text("Log In", style: TextStyle(color: Colors.black)),
+        SizedBox(
+          height: screenHeight / 2,
+          width: double.infinity,
+          child: ShaderMask(
+            shaderCallback: (Rect bounds) {
+              return const LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [Colors.white, Colors.transparent],
+                stops: [0.1, 1.0], // Adjust fade intensity
+              ).createShader(bounds);
+            },
+            blendMode: BlendMode.dstOut,
+            child: Image.asset(
+              'assets/images/step_two_image.jpg',
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
+        const ArrowBackButton(),
+        Positioned.fill(
+          top: screenHeight / 3,
+          child: const Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Verify Your Identity", style: TextStyle(fontSize: 36)),
+                Text(
+                  "We have just sent a verification code to 938794423",
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
+          ),
+        )
       ],
+    );
+  }
+
+  Widget codeInputField(TextEditingController controller) {
+    return SizedBox(
+      width: 50, // Set a fixed width for each input field
+      child: TextFormField(
+        style: const TextStyle(fontSize: 40),
+        controller: controller,
+        textAlign: TextAlign.center,
+        keyboardType: TextInputType.number,
+        maxLength: 1, // Only allow one digit per box
+        decoration: const InputDecoration(
+          counterText: "", // Hide character counter
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(width: 2, color: Colors.white),
+          ),
+        ),
+      ),
     );
   }
 }

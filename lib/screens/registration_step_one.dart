@@ -1,5 +1,8 @@
+import 'package:adventour/components/cta/arrow_back_button.dart';
+import 'package:adventour/components/form/text_with_action.dart';
 import 'package:adventour/components/row/custom_row_divider.dart';
 import 'package:adventour/components/form/sign_up_form.dart';
+import 'package:adventour/screens/login.dart';
 import 'package:flutter/material.dart';
 
 class RegistrationStepOne extends StatelessWidget {
@@ -15,12 +18,16 @@ class RegistrationStepOne extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildBackButton(context),
-              _buildTitle(),
+              const ArrowBackButton(),
+              buildTitle(),
               const Center(child: SignUpForm()),
-              _buildDivider(),
-              _buildSocialSignUpButtons(context),
-              _buildLoginPrompt(context),
+              buildDivider(),
+              buildSocialSignUpButtons(context),
+              TextWithAction(
+                label: "Already have an account?",
+                actionLabel: "Log In",
+                onPressed: () => pushToLogin(context),
+              ),
             ],
           ),
         ),
@@ -28,24 +35,23 @@ class RegistrationStepOne extends StatelessWidget {
     );
   }
 
-  Widget _buildBackButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 42),
-      child: TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: const Text("< Back"),
+  void pushToLogin(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const Login(),
       ),
     );
   }
 
-  Widget _buildTitle() {
+  Widget buildTitle() {
     return const Padding(
       padding: EdgeInsets.only(top: 22),
       child: Text("Sign Up", style: TextStyle(fontSize: 26)),
     );
   }
 
-  Widget _buildDivider() {
+  Widget buildDivider() {
     return const Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -59,7 +65,7 @@ class RegistrationStepOne extends StatelessWidget {
     );
   }
 
-  Widget _buildSocialSignUpButtons(BuildContext context) {
+  Widget buildSocialSignUpButtons(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Row(
@@ -76,19 +82,6 @@ class RegistrationStepOne extends StatelessWidget {
     return ElevatedButton(
       onPressed: () => Navigator.pushNamed(context, '/registration_step_two'),
       child: Text(text),
-    );
-  }
-
-  Widget _buildLoginPrompt(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text("Already have an account?"),
-        TextButton(
-          onPressed: () => Navigator.pushNamed(context, '/login'),
-          child: const Text("Log In", style: TextStyle(color: Colors.black)),
-        ),
-      ],
     );
   }
 }
