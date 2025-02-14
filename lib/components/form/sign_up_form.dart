@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/form_passwordfield.dart';
 import 'package:adventour/components/form/elements/form_textfield.dart';
+import 'package:adventour/models/Requests/user_registration_request.dart';
+import 'package:adventour/models/Responses/token_response.dart';
 import 'package:adventour/responses/base_api_response.dart';
 import 'package:adventour/screens/registration_step_two.dart';
 import 'package:adventour/settings/constants.dart';
@@ -19,7 +21,7 @@ class SignUpForm extends StatefulWidget {
 }
 
 class SignUpFormState extends State<SignUpForm> {
-  final _signUpFormKey = GlobalKey<FormState>();
+  final signUpFormKey = GlobalKey<FormState>();
 
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -29,6 +31,8 @@ class SignUpFormState extends State<SignUpForm> {
 
   @override
   void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -37,7 +41,7 @@ class SignUpFormState extends State<SignUpForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _signUpFormKey,
+      key: signUpFormKey,
       child: Column(
         children: <Widget>[
           StyledTextFormField(
@@ -85,12 +89,22 @@ class SignUpFormState extends State<SignUpForm> {
         _confirmPasswordController.text,
       );
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RegistrationStepTwo(userId: response.UserId),
-        ),
-      );
+      if (response.success) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RegistrationStepTwo(
+                email: _emailController.text, token: response.data.token),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Registration failed. Please check your details and try again.'),
+          ),
+        );
+      }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -102,10 +116,10 @@ class SignUpFormState extends State<SignUpForm> {
   }
 
   bool isValidForm() {
-    return _signUpFormKey.currentState!.validate();
+    return signUpFormKey.currentState!.validate();
   }
 
-  Future<UserRegistrationResponse> registerUser(String name, String email,
+  Future<BaseApiResponse> registerUser(String name, String email,
       String password, String confirmPassword) async {
     try {
       final response = await http.post(
@@ -125,52 +139,29 @@ class SignUpFormState extends State<SignUpForm> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final BaseApiResponse<UserRegistrationResponse> result =
-            BaseApiResponse<UserRegistrationResponse>.fromJson(
-                data, (json) => UserRegistrationResponse.fromJson(json));
+        final BaseApiResponse<TokenResponse> result =
+            BaseApiResponse<TokenResponse>.fromJson(
+                data, (json) => TokenResponse.fromJson(json));
 
-        return result.data;
-      } else {
-        throw Exception('Failed to register user: ${response.statusCode}');
+        return result;
+      }
+
+      if (response.statusCode == 500) {
+        return BaseApiResponse<String>(
+          success: false,
+          message:
+              'Registration failed. Please check your details and try again.',
+          data: "",
+        );
       }
     } catch (e) {
-      print(e);
       throw Exception('error: $e');
     }
-  }
-}
 
-class UserRegistrationRequest {
-  final String name;
-  final String email;
-  final String confirmPassword;
-  final String password;
-
-  UserRegistrationRequest({
-    required this.name,
-    required this.email,
-    required this.password,
-    required this.confirmPassword,
-  });
-
-  Map<String, String> toJson() {
-    return {
-      'name': name,
-      'email': email,
-      'password': password,
-      'confirmPassword': confirmPassword,
-    };
-  }
-}
-
-class UserRegistrationResponse {
-  final String UserId;
-
-  UserRegistrationResponse({required this.UserId});
-
-  factory UserRegistrationResponse.fromJson(Map<String, dynamic> json) {
-    return UserRegistrationResponse(
-      UserId: json['userId'],
+    return BaseApiResponse<String>(
+      success: false,
+      message: 'Registration failed. Please check your details and try again.',
+      data: "",
     );
   }
 }

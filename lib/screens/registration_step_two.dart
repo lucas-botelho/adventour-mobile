@@ -5,8 +5,10 @@ import 'package:adventour/components/form/text_with_action.dart';
 import 'package:adventour/screens/account_setup.dart';
 
 class RegistrationStepTwo extends StatefulWidget {
-  final String userId;
-  const RegistrationStepTwo({required this.userId, super.key});
+  final String email;
+  final String token;
+  const RegistrationStepTwo(
+      {required this.email, required this.token, super.key});
 
   @override
   State<RegistrationStepTwo> createState() => _RegistrationStepTwoState();
@@ -65,16 +67,15 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
                   ),
                   const SizedBox(height: 20),
                   CTAButton(
-                    text: "Verification",
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AccountSetup(),
-                        ),
-                      );
-                    }
-                  ),
+                      text: "Verification",
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AccountSetup(),
+                          ),
+                        );
+                      }),
                 ],
               ),
             ),
