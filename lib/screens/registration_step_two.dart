@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:adventour/components/cta/arrow_back_button.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/text_with_action.dart';
+import 'package:adventour/screens/account_setup.dart';
 
 class RegistrationStepTwo extends StatefulWidget {
   final String userId;
@@ -63,7 +64,17 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  CTAButton(text: "Verification", onPressed: () {}),
+                  CTAButton(
+                    text: "Verification",
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AccountSetup(),
+                        ),
+                      );
+                    }
+                  ),
                 ],
               ),
             ),
