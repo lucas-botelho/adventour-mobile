@@ -119,15 +119,15 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
 
   Widget codeInputField(TextEditingController controller) {
     return SizedBox(
-      width: 50, // Set a fixed width for each input field
+      width: 50,
       child: TextFormField(
         style: const TextStyle(fontSize: 40),
         controller: controller,
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
-        maxLength: 1, // Only allow one digit per box
+        maxLength: 1,
         decoration: const InputDecoration(
-          counterText: "", // Hide character counter
+          counterText: "",
           enabledBorder: UnderlineInputBorder(
             borderSide: BorderSide(width: 2, color: Colors.white),
           ),
