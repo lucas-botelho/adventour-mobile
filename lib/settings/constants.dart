@@ -12,3 +12,8 @@ class Country {
   static const String controller = 'country';
   static const String GetCountry = "$controller/country";
 }
+
+class Files {
+  static const String controller = 'files';
+  static const String upload = "$controller/upload";
+}

@@ -8,18 +8,21 @@ class UnderlinedTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.white),
-        prefixIcon:
-            const Icon(Icons.person_outline, size: 40, color: Colors.black),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.teal.shade200),
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.teal.shade100),
+    return Padding(
+      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.1),
+      child: TextField(
+        style: Theme.of(context).textTheme.bodyLarge,
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: Theme.of(context).textTheme.bodyLarge,
+          prefixIcon:
+              const Icon(Icons.person_outline, size: 40, color: Colors.black),
+          enabledBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.white),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.white),
+          ),
         ),
       ),
     );

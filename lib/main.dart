@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart'; //package with default components
-import 'package:adventour/screens/auth.dart';
+import 'package:adventour/screens/auth/auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 //Starting function

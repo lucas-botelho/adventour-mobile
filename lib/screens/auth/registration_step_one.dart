@@ -2,7 +2,7 @@ import 'package:adventour/components/cta/arrow_back_button.dart';
 import 'package:adventour/components/form/text_with_action.dart';
 import 'package:adventour/components/row/custom_row_divider.dart';
 import 'package:adventour/components/form/sign_up_form.dart';
-import 'package:adventour/screens/login.dart';
+import 'package:adventour/screens/auth/login.dart';
 import 'package:flutter/material.dart';
 
 class RegistrationStepOne extends StatelessWidget {

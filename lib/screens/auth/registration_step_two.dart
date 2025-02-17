@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:adventour/components/cta/arrow_back_button.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/text_with_action.dart';
-import 'package:adventour/screens/account_setup.dart';
+import 'package:adventour/screens/auth/registration_step_three.dart';
 
 class RegistrationStepTwo extends StatefulWidget {
   final String email;
@@ -72,7 +72,8 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const AccountSetup(),
+                            builder: (context) =>
+                                RegistrationStepThree(email: widget.email),
                           ),
                         );
                       }),
