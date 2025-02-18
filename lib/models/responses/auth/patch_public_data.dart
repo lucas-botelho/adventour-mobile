@@ -5,7 +5,7 @@ class PatchUserPublicDataResponse {
 
   factory PatchUserPublicDataResponse.fromJson(Map<String, dynamic> json) {
     return PatchUserPublicDataResponse(
-      updated: json['token'],
+      updated: json['updated'],
     );
   }
 }
