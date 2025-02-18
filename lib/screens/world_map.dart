@@ -8,7 +8,7 @@ import 'package:countries_world_map/countries_world_map.dart';
 import 'package:http/http.dart' as http;
 
 class CustomMap extends StatefulWidget {
-  const CustomMap({super.key});
+  const CustomMap({super.key, required String userId, required token});
 
   @override
   State<CustomMap> createState() => _CustomMapState();

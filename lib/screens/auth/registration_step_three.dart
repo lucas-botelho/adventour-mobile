@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/profile_picture_upload.dart';
 import 'package:adventour/components/form/elements/underlined_textfield.dart';
+import 'package:adventour/components/text/title_with_text.dart';
 import 'package:adventour/models/base_api_response.dart';
 import 'package:adventour/models/requests/auth/patch_public_data.dart';
 import 'package:adventour/models/responses/auth/patch_public_data.dart';
@@ -42,7 +43,11 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           buildBackButton(),
-          buildHeaderText(),
+          const TitleWithText(
+            title: "Account Setup",
+            text:
+                "Finish your account setup by uploading profile picture and set your username.",
+          ),
           ProfilePictureUpload(
             onImageSelected: onImageSelected,
           ),
@@ -65,25 +70,6 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
               onPressed: submitForm,
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Padding buildHeaderText() {
-    return const Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 0, 40),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Account Setup",
-            style: TextStyle(fontSize: 46),
-          ),
-          Text(
-            "Finish your account setup by uploading profile picture and set your username.",
-            style: TextStyle(fontSize: 24),
-          )
         ],
       ),
     );
@@ -144,6 +130,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
               context,
               MaterialPageRoute(
                 builder: (context) => RegistrationComplete(
+                    token: widget.token,
                     userId: widget.userId,
                     imageUrl: profilePictureUrl,
                     name: nameController.text),

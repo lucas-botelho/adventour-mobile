@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:adventour/components/form/elements/images/circular_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -36,18 +37,8 @@ class _ProfilePictureUploadState extends State<ProfilePictureUpload> {
       onTap: _pickImage, // Open gallery when tapped
       child: Stack(
         children: [
-          Container(
-            width: 180,
-            height: 180,
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 65, 150, 157),
-              shape: BoxShape.circle,
-            ),
-            child: ClipOval(
-              child: selectedImage != null
-                  ? Image.file(selectedImage!, fit: BoxFit.cover)
-                  : const Icon(Icons.person, size: 100, color: Colors.black),
-            ),
+          CircularPicture(
+            file: selectedImage,
           ),
           Positioned(
             bottom: 0,
