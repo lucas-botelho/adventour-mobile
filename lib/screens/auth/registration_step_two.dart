@@ -1,14 +1,20 @@
+import 'dart:convert';
+import 'package:adventour/models/base_api_response.dart';
+import 'package:adventour/models/requests/auth/confirm_email.dart';
+import 'package:adventour/models/responses/auth/token.dart';
+import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:adventour/components/cta/arrow_back_button.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/text_with_action.dart';
 import 'package:adventour/screens/auth/registration_step_three.dart';
+import 'package:http/http.dart' as http;
 
 class RegistrationStepTwo extends StatefulWidget {
-  final String email;
+  final String userId;
   final String token;
   const RegistrationStepTwo(
-      {required this.email, required this.token, super.key});
+      {required this.userId, required this.token, super.key});
 
   @override
   State<RegistrationStepTwo> createState() => _RegistrationStepTwoState();
@@ -66,17 +72,7 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  CTAButton(
-                      text: "Verification",
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                RegistrationStepThree(email: widget.email),
-                          ),
-                        );
-                      }),
+                  CTAButton(text: "Verification", onPressed: confirmEmail),
                 ],
               ),
             ),
@@ -84,6 +80,51 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
         ),
       ),
     );
+  }
+
+  void confirmEmail() async {
+    try {
+      if (_emailConfirmationFormKey.currentState!.validate()) {
+        final response = await http.post(
+          Uri.parse('${AppSettings.apiBaseUrl}/${Authentication.confirmEmail}'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer ${widget.token}',
+          },
+          body: jsonEncode(
+            EmailConfirmationRequest(
+              userId: widget.userId,
+              pin: _codeController1.text +
+                  _codeController2.text +
+                  _codeController3.text +
+                  _codeController4.text,
+            ).toJson(),
+          ),
+        );
+
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          final BaseApiResponse<TokenResponse> result =
+              BaseApiResponse<TokenResponse>.fromJson(
+                  data, (json) => TokenResponse.fromJson(json));
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RegistrationStepThree(
+                  userId: widget.userId, token: result.data.token),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Verification failed. Please check your details and try again.'),
+        ),
+      );
+    }
   }
 
   Stack imageWithText(double screenHeight) {

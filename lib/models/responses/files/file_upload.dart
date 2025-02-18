@@ -5,13 +5,7 @@ class FileUploadResponse {
 
   factory FileUploadResponse.fromJson(Map<String, dynamic> json) {
     return FileUploadResponse(
-      publicUrl: json['filePublicReference'],
+      publicUrl: json['publicUrl'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'publicUrl': publicUrl,
-    };
   }
 }

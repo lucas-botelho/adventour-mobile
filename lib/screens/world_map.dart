@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:adventour/responses/base_api_response.dart';
+import 'package:adventour/models/base_api_response.dart';
 import 'package:adventour/settings/constants.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:countries_world_map/data/maps/world_map.dart';

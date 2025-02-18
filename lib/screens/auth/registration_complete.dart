@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 
 class RegistrationComplete extends StatelessWidget {
-  final String email;
+  final String userId;
+  final String name;
+  final String imageUrl;
 
-  const RegistrationComplete({super.key, required this.email});
+  const RegistrationComplete(
+      {super.key,
+      required this.userId,
+      required this.name,
+      required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -23,16 +29,10 @@ class RegistrationComplete extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'Welcome, $email',
+                'Welcome, $name!',
                 style: const TextStyle(fontSize: 18),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Go to Login'),
-              ),
             ],
           ),
         ),

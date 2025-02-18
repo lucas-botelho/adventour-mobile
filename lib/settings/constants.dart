@@ -4,8 +4,9 @@ class AppSettings {
 
 class Authentication {
   static const String controller = 'authentication';
-  static const String test = "$controller/test";
-  static const String register = "$controller/user";
+  // static const String test = "$controller/test";
+  static const String user = "$controller/user";
+  static const String confirmEmail = "$controller/email/confirm";
 }
 
 class Country {

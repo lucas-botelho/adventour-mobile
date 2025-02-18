@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/form_passwordfield.dart';
 import 'package:adventour/components/form/elements/form_textfield.dart';
-import 'package:adventour/models/requests/user_registration_request.dart';
-import 'package:adventour/models/responses/auth/token_response.dart';
-import 'package:adventour/responses/base_api_response.dart';
+import 'package:adventour/models/requests/auth/user_registration.dart';
+import 'package:adventour/models/responses/auth/token.dart';
+import 'package:adventour/models/base_api_response.dart';
 import 'package:adventour/screens/auth/registration_step_two.dart';
 import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
@@ -94,7 +94,7 @@ class SignUpFormState extends State<SignUpForm> {
           context,
           MaterialPageRoute(
             builder: (context) => RegistrationStepTwo(
-                email: _emailController.text, token: response.data.token),
+                userId: response.data.userId, token: response.data.token),
           ),
         );
       } else {
@@ -119,11 +119,11 @@ class SignUpFormState extends State<SignUpForm> {
     return signUpFormKey.currentState!.validate();
   }
 
-  Future<BaseApiResponse> registerUser(String name, String email,
+  Future<BaseApiResponse<TokenResponse>> registerUser(String name, String email,
       String password, String confirmPassword) async {
     try {
       final response = await http.post(
-        Uri.parse('${AppSettings.apiBaseUrl}/${Authentication.register}'),
+        Uri.parse('${AppSettings.apiBaseUrl}/${Authentication.user}'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -145,23 +145,14 @@ class SignUpFormState extends State<SignUpForm> {
 
         return result;
       }
-
-      if (response.statusCode == 500) {
-        return BaseApiResponse<String>(
-          success: false,
-          message:
-              'Registration failed. Please check your details and try again.',
-          data: "",
-        );
-      }
     } catch (e) {
-      throw Exception('error: $e');
+      print(e);
     }
 
-    return BaseApiResponse<String>(
+    return BaseApiResponse<TokenResponse>(
       success: false,
       message: 'Registration failed. Please check your details and try again.',
-      data: "",
+      data: TokenResponse(token: '', expiresIn: 0, userId: ''),
     );
   }
 }

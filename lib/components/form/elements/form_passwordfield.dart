@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class StyledPasswordFormField extends StatelessWidget {
   final String fieldName;
   final TextEditingController controller;
-  //todo: find a better naming since this is the controller for the original password field
   final TextEditingController? passwordController;
   final bool confirmPassword;
 

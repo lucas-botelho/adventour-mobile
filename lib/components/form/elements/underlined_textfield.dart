@@ -10,18 +10,28 @@ class UnderlinedTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.1),
-      child: TextField(
+      child: TextFormField(
+        validator: (value) {
+          print(value);
+          if (value == null || value.isEmpty) {
+            return 'Username cannotbe empty.';
+          }
+          return null;
+        },
+        controller: controller,
         style: Theme.of(context).textTheme.bodyLarge,
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: Theme.of(context).textTheme.bodyLarge,
           prefixIcon:
               const Icon(Icons.person_outline, size: 40, color: Colors.black),
-          enabledBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
+          enabledBorder: UnderlineInputBorder(
+            borderSide:
+                BorderSide(color: Theme.of(context).colorScheme.onSurface),
           ),
-          focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
+          focusedBorder: UnderlineInputBorder(
+            borderSide:
+                BorderSide(color: Theme.of(context).colorScheme.onSurface),
           ),
         ),
       ),

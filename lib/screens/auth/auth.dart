@@ -61,6 +61,19 @@ class AuthScreen extends StatelessWidget {
                   );
                 },
               ),
+              CTAButton(
+                text: "Teste",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RegistrationStepThree(
+                              userId: '36EED381-B28C-4080-8788-1312474A0455',
+                              token: '',
+                            )),
+                  );
+                },
+              ),
             ],
           ),
         ),
