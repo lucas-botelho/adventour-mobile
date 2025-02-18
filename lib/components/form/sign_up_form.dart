@@ -2,7 +2,6 @@
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/form_passwordfield.dart';
 import 'package:adventour/components/form/elements/form_textfield.dart';
-import 'package:adventour/models/base_api_response.dart';
 import 'package:adventour/models/requests/auth/user_registration.dart';
 import 'package:adventour/models/responses/auth/token.dart';
 import 'package:adventour/screens/auth/registration_step_two.dart';
@@ -20,7 +19,7 @@ class SignUpForm extends StatefulWidget {
 }
 
 class SignUpFormState extends State<SignUpForm> {
-  final signUpFormKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
   Map<String, String> fieldErrors = {};
 
   final TextEditingController _passwordController = TextEditingController();
@@ -41,7 +40,7 @@ class SignUpFormState extends State<SignUpForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: signUpFormKey,
+      key: formKey,
       child: Column(
         children: <Widget>[
           StyledTextFormField(
@@ -82,8 +81,8 @@ class SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  Future<void> register(BuildContext context) async {
-    if (!signUpFormKey.currentState!.validate()) return;
+  void register(BuildContext context) async {
+    if (!formKey.currentState!.validate()) return;
     try {
       final requestModel = UserRegistrationRequest(
         name: _nameController.text,
