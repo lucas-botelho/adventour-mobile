@@ -13,11 +13,4 @@ class TokenResponse {
       userId: json['userId'] ?? '',
     );
   }
-
-  // Map<String, dynamic> toJson() {
-  //   return {
-  //     'token': token,
-  //     'expiresIn': expiresIn,
-  //   };
-  // }
 }

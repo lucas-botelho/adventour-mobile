@@ -5,6 +5,7 @@ class StyledPasswordFormField extends StatelessWidget {
   final TextEditingController controller;
   final TextEditingController? passwordController;
   final bool confirmPassword;
+  final String? errorText;
 
   const StyledPasswordFormField({
     super.key,
@@ -12,6 +13,7 @@ class StyledPasswordFormField extends StatelessWidget {
     required this.controller,
     this.passwordController,
     this.confirmPassword = false,
+    this.errorText,
   });
 
   @override
@@ -47,24 +49,24 @@ class StyledPasswordFormField extends StatelessWidget {
               return null;
             },
             textAlignVertical: TextAlignVertical.center,
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 20),
-              border: OutlineInputBorder(
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+              border: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(30)),
               ),
-              enabledBorder: OutlineInputBorder(
+              enabledBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(30)),
                 borderSide: BorderSide(color: Color(0xFF67A1A6)),
               ),
-              focusedBorder: OutlineInputBorder(
+              focusedBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(
                   Radius.circular(30),
                 ),
                 borderSide: BorderSide(color: Color(0xFF67A1A6)),
               ),
-              // labelText: 'Name',
-              fillColor: Color(0xFF67A1A6),
+              fillColor: const Color(0xFF67A1A6),
               filled: true,
+              errorText: errorText, // Display error message here
             ),
           ),
         ],

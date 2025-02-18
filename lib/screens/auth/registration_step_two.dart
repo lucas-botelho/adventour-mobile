@@ -112,7 +112,7 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
             context,
             MaterialPageRoute(
               builder: (context) => RegistrationStepThree(
-                  userId: widget.userId, token: result.data.token),
+                  userId: widget.userId, token: result.data!.token),
             ),
           );
         }

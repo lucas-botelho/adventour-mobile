@@ -42,7 +42,7 @@ class _CustomMapState extends State<CustomMap> {
     super.initState();
   }
 
-  Future<CountryModel> fetchCountry(String countryCode) async {
+  Future<CountryModel?> fetchCountry(String countryCode) async {
     final response = await http.get(Uri.parse(
         '${AppSettings.apiBaseUrl}/${Country.GetCountry}/$countryCode'));
 
@@ -116,12 +116,14 @@ class _CustomMapState extends State<CustomMap> {
               instructions: SMapWorld.instructions,
               defaultColor: Colors.grey.shade400,
               callback: (id, name, tapDetails) async {
-                CountryModel country = await fetchCountry(id);
+                CountryModel? country = await fetchCountry(id);
 
-                setState(() {
-                  selectedCountryName = country.name;
-                  selectedCountryContinent = country.continent;
-                });
+                if (country != null) {
+                  setState(() {
+                    selectedCountryName = country.name;
+                    selectedCountryContinent = country.continent;
+                  });
+                }
               },
             ),
           ),

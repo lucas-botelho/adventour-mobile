@@ -4,12 +4,14 @@ class StyledTextFormField extends StatelessWidget {
   final String fieldName;
   final RegExp regExp;
   final TextEditingController? controller;
+  final String? errorText;
 
   const StyledTextFormField(
       {super.key,
       required this.fieldName,
       required this.regExp,
-      this.controller});
+      this.controller,
+      this.errorText});
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +67,7 @@ class StyledTextFormField extends StatelessWidget {
         // labelText: 'Name',
         fillColor: const Color(0xFF67A1A6),
         filled: true,
+        errorText: errorText,
       ),
     );
   }

@@ -125,7 +125,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
               BaseApiResponse<PatchUserPublicDataResponse>.fromJson(
                   data, (json) => PatchUserPublicDataResponse.fromJson(json));
 
-          if (result.success && result.data.updated) {
+          if (result.success && result.data!.updated) {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -166,7 +166,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
                 data, (json) => FileUploadResponse.fromJson(json));
 
         if (result.success) {
-          return result.data.publicUrl;
+          return result.data!.publicUrl;
         }
       }
       //todo: feedback in case of failure

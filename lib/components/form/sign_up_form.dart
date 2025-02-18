@@ -1,15 +1,14 @@
 //Copied from flutter docs
-import 'dart:convert';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/form_passwordfield.dart';
 import 'package:adventour/components/form/elements/form_textfield.dart';
+import 'package:adventour/models/base_api_response.dart';
 import 'package:adventour/models/requests/auth/user_registration.dart';
 import 'package:adventour/models/responses/auth/token.dart';
-import 'package:adventour/models/base_api_response.dart';
 import 'package:adventour/screens/auth/registration_step_two.dart';
+import 'package:adventour/services/api_service.dart';
 import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -22,6 +21,7 @@ class SignUpForm extends StatefulWidget {
 
 class SignUpFormState extends State<SignUpForm> {
   final signUpFormKey = GlobalKey<FormState>();
+  Map<String, String> fieldErrors = {};
 
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -48,20 +48,24 @@ class SignUpFormState extends State<SignUpForm> {
             fieldName: "Name",
             regExp: RegExp(r'^[A-Za-z ]+$'),
             controller: _nameController,
+            errorText: fieldErrors["Name"],
           ),
           StyledTextFormField(
             fieldName: "Email",
             regExp: RegExp(r'^[^@]+@[^@]+\.[^@]+$'),
             controller: _emailController,
+            errorText: fieldErrors["Email"],
           ),
           StyledPasswordFormField(
             fieldName: "Password",
             controller: _passwordController,
+            errorText: fieldErrors["Password"],
           ),
           StyledPasswordFormField(
             fieldName: "Confirm Password",
             controller: _confirmPasswordController,
             passwordController: _passwordController,
+            errorText: fieldErrors["ConfirmPassword"],
             confirmPassword: true,
           ),
           Padding(
@@ -79,80 +83,54 @@ class SignUpFormState extends State<SignUpForm> {
   }
 
   Future<void> register(BuildContext context) async {
-    if (!isValidForm()) return;
-
+    if (!signUpFormKey.currentState!.validate()) return;
     try {
-      final response = await registerUser(
-        _nameController.text,
-        _emailController.text,
-        _passwordController.text,
-        _confirmPasswordController.text,
+      final requestModel = UserRegistrationRequest(
+        name: _nameController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
+        confirmPassword: _confirmPasswordController.text,
       );
 
-      if (response.success) {
+      final result = await ApiService().post(
+        endpoint: Authentication.user,
+        headers: <String, String>{},
+        body: requestModel.toJson(),
+        fromJsonT: (json) => TokenResponse.fromJson(json),
+      );
+
+      if (result.success) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => RegistrationStepTwo(
-                userId: response.data.userId, token: response.data.token),
+                userId: result.data!.userId, token: result.data!.token),
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Registration failed. Please check your details and try again.'),
-          ),
-        );
+        displayDefaultErrorMessage(context, errors: result.errors);
       }
     } catch (error) {
+      displayDefaultErrorMessage(context);
+    }
+  }
+
+  void displayDefaultErrorMessage(
+    BuildContext context, {
+    Map<String, List<String>>? errors,
+  }) {
+    if (errors == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-              'Registration failed. Please check your details and try again.'),
+          content: Text('Registration failed. Please try again.'),
         ),
       );
+      return;
+    } else {
+      setState(() {
+        fieldErrors =
+            errors.map((key, value) => MapEntry(key, value.join(', ')));
+      });
     }
-  }
-
-  bool isValidForm() {
-    return signUpFormKey.currentState!.validate();
-  }
-
-  Future<BaseApiResponse<TokenResponse>> registerUser(String name, String email,
-      String password, String confirmPassword) async {
-    try {
-      final response = await http.post(
-        Uri.parse('${AppSettings.apiBaseUrl}/${Authentication.user}'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(
-          UserRegistrationRequest(
-            name: name,
-            email: email,
-            password: password,
-            confirmPassword: confirmPassword,
-          ).toJson(),
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final BaseApiResponse<TokenResponse> result =
-            BaseApiResponse<TokenResponse>.fromJson(
-                data, (json) => TokenResponse.fromJson(json));
-
-        return result;
-      }
-    } catch (e) {
-      print(e);
-    }
-
-    return BaseApiResponse<TokenResponse>(
-      success: false,
-      message: 'Registration failed. Please check your details and try again.',
-      data: TokenResponse(token: '', expiresIn: 0, userId: ''),
-    );
   }
 }
