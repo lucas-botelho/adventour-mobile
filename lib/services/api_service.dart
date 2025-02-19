@@ -92,14 +92,20 @@ class ApiService {
   }
 
   Future<BaseApiResponse<T>> get<T>(
-    String endpoint, {
+    String endpoint,
+    String? token, {
     required Map<String, String> headers,
     required T Function(Map<String, dynamic>) fromJsonT,
   }) async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/$endpoint'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization':
+              token != null && token.isNotEmpty ? 'Bearer $token' : '',
+          ...headers,
+        },
       );
 
       return processResponse<T>(response, fromJsonT);

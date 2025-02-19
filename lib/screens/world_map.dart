@@ -1,66 +1,30 @@
-import 'dart:convert';
-import 'package:adventour/models/base_api_response.dart';
+import 'package:adventour/models/responses/country/country.dart';
+import 'package:adventour/services/api_service.dart';
+import 'package:adventour/services/error_service.dart';
 import 'package:adventour/settings/constants.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:countries_world_map/data/maps/world_map.dart';
 import 'package:flutter/material.dart';
 import 'package:countries_world_map/countries_world_map.dart';
-import 'package:http/http.dart' as http;
 
-class CustomMap extends StatefulWidget {
-  const CustomMap({super.key, required String userId, required token});
+class AdventourMap extends StatefulWidget {
+  final String userId;
+  final String token;
+  const AdventourMap({super.key, required this.userId, required this.token});
 
   @override
-  State<CustomMap> createState() => _CustomMapState();
+  State<AdventourMap> createState() => _AdventourMapState();
 }
 
-class CountryModel {
-  final String name;
-  final String continent;
-  final int id;
-
-  CountryModel({required this.name, required this.continent, required this.id});
-
-  factory CountryModel.fromJson(Map<String, dynamic> json) {
-    return CountryModel(
-      name: json['name'],
-      continent: json['continentName'],
-      id: json['id'],
-    );
-  }
-}
-
-class _CustomMapState extends State<CustomMap> {
+class _AdventourMapState extends State<AdventourMap> {
   String selectedCountryName = "";
   String selectedCountryContinent = "";
   String fetchedData = "";
-
-  late Future<CountryModel> text;
+  ErrorService errorService = ErrorService();
 
   @override
   void initState() {
     super.initState();
-  }
-
-  Future<CountryModel?> fetchCountry(String countryCode) async {
-    final response = await http.get(Uri.parse(
-        '${AppSettings.apiBaseUrl}/${Country.GetCountry}/$countryCode'));
-
-    if (response.statusCode == 200) {
-      // final data = jsonDecode(response.body);
-
-      // // Pass `CountryModel.fromJson` as the converter function
-      // final BaseApiResponse<CountryModel> result =
-      //     BaseApiResponse<CountryModel>.fromJson(
-      //         data, (json) => CountryModel.fromJson(json));
-
-      // return result.data;
-    } else {
-      //TODO: Handle error when user clicks on the water
-      throw Exception('Failed to load data');
-    }
-
-    return null;
   }
 
   @override
@@ -72,10 +36,10 @@ class _CustomMapState extends State<CustomMap> {
           padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
           child: Column(
             children: [
-              _titleText(),
-              _customMap(),
+              styledHeader(),
+              styledMap(),
               if (selectedCountryName.isNotEmpty) ...displayFetchedData(),
-              _exploreCTAButton(),
+              styledCTAButton(),
             ],
           ),
         ),
@@ -83,7 +47,7 @@ class _CustomMapState extends State<CustomMap> {
     );
   }
 
-  Padding _titleText() {
+  Padding styledHeader() {
     return const Padding(
       padding: EdgeInsets.symmetric(vertical: 20),
       child: Text(
@@ -97,7 +61,7 @@ class _CustomMapState extends State<CustomMap> {
     );
   }
 
-  SizedBox _customMap() {
+  SizedBox styledMap() {
     return SizedBox(
       height: 500,
       child: InteractiveViewer(
@@ -118,14 +82,7 @@ class _CustomMapState extends State<CustomMap> {
               instructions: SMapWorld.instructions,
               defaultColor: Colors.grey.shade400,
               callback: (id, name, tapDetails) async {
-                CountryModel? country = await fetchCountry(id);
-
-                if (country != null) {
-                  setState(() {
-                    selectedCountryName = country.name;
-                    selectedCountryContinent = country.continent;
-                  });
-                }
+                await fetchCountry(id);
               },
             ),
           ),
@@ -134,7 +91,7 @@ class _CustomMapState extends State<CustomMap> {
     );
   }
 
-  Padding _exploreCTAButton() {
+  Padding styledCTAButton() {
     return Padding(
       padding: const EdgeInsets.all(15),
       child: CTAButton(
@@ -162,5 +119,32 @@ class _CustomMapState extends State<CustomMap> {
       _textDivider(),
       Text(selectedCountryName),
     ];
+  }
+
+  Future<void> fetchCountry(String countryCode) async {
+    if (countryCode.isEmpty) return;
+
+    try {
+      final result = await ApiService().get(
+        '${Country.GetCountry}/$countryCode',
+        widget.token,
+        headers: <String, String>{},
+        fromJsonT: (json) => CountryResponse.fromJson(json),
+      );
+
+      if (result.success) {
+        setState(() {
+          selectedCountryName =
+              (result.data?.name ?? '').isEmpty ? '' : result.data!.name;
+          selectedCountryContinent = (result.data?.continent ?? '').isEmpty
+              ? ''
+              : result.data!.continent;
+        });
+      } else {
+        errorService.displaySnackbarError(context, result.message);
+      }
+    } catch (e) {
+      errorService.displaySnackbarError(context, null);
+    }
   }
 }

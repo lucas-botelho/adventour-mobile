@@ -52,14 +52,15 @@ class RegistrationComplete extends StatelessWidget {
             child: CTAButton(
               text: 'Enjoy',
               onPressed: () => {
-                Navigator.push(
+                Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CustomMap(
+                    builder: (context) => AdventourMap(
                       userId: userId,
                       token: token,
                     ),
                   ),
+                  (route) => false,
                 ),
               },
             ),
