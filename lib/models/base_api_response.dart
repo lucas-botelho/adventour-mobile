@@ -3,16 +3,17 @@ class BaseApiResponse<T> {
   final String message;
   final Map<String, List<String>>? errors;
   final T? data;
-
+  final int? statusCode;
   BaseApiResponse({
     required this.success,
     required this.message,
     this.errors,
     this.data,
+    this.statusCode,
   });
 
-  factory BaseApiResponse.fromJson(
-      Map<String, dynamic> json, T Function(Map<String, dynamic>)? fromJsonT) {
+  factory BaseApiResponse.fromJson(int? statusCode, Map<String, dynamic> json,
+      T Function(Map<String, dynamic>)? fromJsonT) {
     return BaseApiResponse<T>(
       success: json.containsKey('success') ? json['success'] : false,
       message: json.containsKey('message')
@@ -22,6 +23,7 @@ class BaseApiResponse<T> {
       data: json.containsKey('data') && fromJsonT != null
           ? fromJsonT(json['data'])
           : null,
+      statusCode: statusCode,
     );
   }
 

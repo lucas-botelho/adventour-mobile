@@ -107,11 +107,13 @@ class ApiService {
     final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return BaseApiResponse<T>.fromJson(jsonResponse, fromJsonT);
+      return BaseApiResponse<T>.fromJson(
+          response.statusCode, jsonResponse, fromJsonT);
     }
 
     if (response.statusCode >= 400 && response.statusCode < 500) {
-      return BaseApiResponse<T>.fromJson(jsonResponse, null);
+      return BaseApiResponse<T>.fromJson(
+          response.statusCode, jsonResponse, null);
     }
 
     return BaseApiResponse<T>(
@@ -119,6 +121,7 @@ class ApiService {
       message: 'An error occurred',
       errors: {},
       data: null,
+      statusCode: response.statusCode,
     );
   }
 }

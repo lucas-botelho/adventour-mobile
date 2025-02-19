@@ -47,18 +47,20 @@ class _CustomMapState extends State<CustomMap> {
         '${AppSettings.apiBaseUrl}/${Country.GetCountry}/$countryCode'));
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      // final data = jsonDecode(response.body);
 
-      // Pass `CountryModel.fromJson` as the converter function
-      final BaseApiResponse<CountryModel> result =
-          BaseApiResponse<CountryModel>.fromJson(
-              data, (json) => CountryModel.fromJson(json));
+      // // Pass `CountryModel.fromJson` as the converter function
+      // final BaseApiResponse<CountryModel> result =
+      //     BaseApiResponse<CountryModel>.fromJson(
+      //         data, (json) => CountryModel.fromJson(json));
 
-      return result.data;
+      // return result.data;
     } else {
       //TODO: Handle error when user clicks on the water
       throw Exception('Failed to load data');
     }
+
+    return null;
   }
 
   @override

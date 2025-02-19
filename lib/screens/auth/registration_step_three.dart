@@ -107,23 +107,23 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
         );
 
         if (response.statusCode == 200) {
-          final data = jsonDecode(response.body);
-          final BaseApiResponse<PatchUserPublicDataResponse> result =
-              BaseApiResponse<PatchUserPublicDataResponse>.fromJson(
-                  data, (json) => PatchUserPublicDataResponse.fromJson(json));
+          // final data = jsonDecode(response.body);
+          // final BaseApiResponse<PatchUserPublicDataResponse> result =
+          //     BaseApiResponse<PatchUserPublicDataResponse>.fromJson(
+          //         data, (json) => PatchUserPublicDataResponse.fromJson(json));
 
-          if (result.success && result.data!.updated) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => RegistrationComplete(
-                    token: widget.token,
-                    userId: widget.userId,
-                    imageUrl: profilePictureUrl,
-                    name: nameController.text),
-              ),
-            );
-          }
+          // if (result.success && result.data!.updated) {
+          //   Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //       builder: (context) => RegistrationComplete(
+          //           token: widget.token,
+          //           userId: widget.userId,
+          //           imageUrl: profilePictureUrl,
+          //           name: nameController.text),
+          //     ),
+          //   );
+          // }
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -147,14 +147,14 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
       final response = await request.send();
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(await response.stream.bytesToString());
-        final BaseApiResponse<FileUploadResponse> result =
-            BaseApiResponse<FileUploadResponse>.fromJson(
-                data, (json) => FileUploadResponse.fromJson(json));
+        // final data = jsonDecode(await response.stream.bytesToString());
+        // final BaseApiResponse<FileUploadResponse> result =
+        //     BaseApiResponse<FileUploadResponse>.fromJson(
+        //         data, (json) => FileUploadResponse.fromJson(json));
 
-        if (result.success) {
-          return result.data!.publicUrl;
-        }
+        // if (result.success) {
+        //   return result.data!.publicUrl;
+        // }
       }
       //todo: feedback in case of failure
     } catch (e) {

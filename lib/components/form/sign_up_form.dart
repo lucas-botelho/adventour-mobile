@@ -8,6 +8,7 @@ import 'package:adventour/screens/auth/registration_step_two.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:adventour/services/error_service.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -21,6 +22,7 @@ class SignUpForm extends StatefulWidget {
 class SignUpFormState extends State<SignUpForm> {
   final formKey = GlobalKey<FormState>();
   Map<String, String> fieldErrors = {};
+  final ErrorService errorService = ErrorService();
 
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -107,29 +109,24 @@ class SignUpFormState extends State<SignUpForm> {
           ),
         );
       } else {
-        displayDefaultErrorMessage(context, errors: result.errors);
+        switch (result.statusCode) {
+          case 400:
+            errorService.displayFieldErrors(context, result.errors, (errors) {
+              setState(() {
+                fieldErrors = errors;
+              });
+            });
+            break;
+          case 409:
+          case 500:
+            errorService.displaySnackbarError(context, result.message);
+            break;
+          default:
+            errorService.displaySnackbarError(context, null);
+        }
       }
     } catch (error) {
-      displayDefaultErrorMessage(context);
-    }
-  }
-
-  void displayDefaultErrorMessage(
-    BuildContext context, {
-    Map<String, List<String>>? errors,
-  }) {
-    if (errors == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Registration failed. Please try again.'),
-        ),
-      );
-      return;
-    } else {
-      setState(() {
-        fieldErrors =
-            errors.map((key, value) => MapEntry(key, value.join(', ')));
-      });
+      errorService.displaySnackbarError(context, null);
     }
   }
 }

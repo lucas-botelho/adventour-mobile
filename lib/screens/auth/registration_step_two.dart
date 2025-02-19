@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/text_with_action.dart';
 import 'package:adventour/screens/auth/registration_step_three.dart';
+import 'package:adventour/services/error_service.dart';
 
 class RegistrationStepTwo extends StatefulWidget {
   final String userId;
@@ -25,6 +26,7 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
   final TextEditingController _codeController2 = TextEditingController();
   final TextEditingController _codeController3 = TextEditingController();
   final TextEditingController _codeController4 = TextEditingController();
+  final ErrorService errorService = ErrorService();
 
   @override
   Widget build(BuildContext context) {
@@ -108,19 +110,11 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
           ),
         );
       } else {
-        displayErrors();
+        errorService.displaySnackbarError(context,
+            'Verification failed. Please check your details and try again.');
       }
     } catch (e) {
-      displayErrors();
+      errorService.displaySnackbarError(context, null);
     }
-  }
-
-  void displayErrors() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-            'Verification failed. Please check your details and try again.'),
-      ),
-    );
   }
 }
