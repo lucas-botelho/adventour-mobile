@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:adventour/models/base_api_response.dart';
 import 'package:adventour/settings/constants.dart';
 import 'package:http/http.dart' as http;
@@ -33,30 +34,37 @@ class ApiService {
     }
   }
 
-  // Future<BaseApiResponse<T>> post<T>({
-  //   String? token,
-  //   required String endpoint,
-  //   required Map<String, String> headers,
-  //   required Object body,
-  //   required T Function(Map<String, dynamic>) fromJsonT,
-  // }) async {
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse('$baseUrl/$endpoint'),
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Authorization':
-  //             token != null && token.isNotEmpty ? 'Bearer $token' : '',
-  //         ...headers,
-  //       },
-  //       body: jsonEncode(body),
-  //     );
+  Future<BaseApiResponse<T>> uploadFile<T>({
+    String? token,
+    required String endpoint,
+    required File file,
+    required T Function(Map<String, dynamic>) fromJsonT,
+  }) async {
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl/$endpoint'),
+      );
 
-  //     return processResponse<T>(response, fromJsonT);
-  //   } catch (e) {
-  //     throw Exception('Failed to process response');
-  //   }
-  // }
+      if (token != null && token.isNotEmpty) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'File',
+          file.path,
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      return processResponse<T>(response, fromJsonT);
+    } catch (e) {
+      throw Exception('Failed to upload file');
+    }
+  }
 
   Future<BaseApiResponse<T>> patch<T>({
     String? token,

@@ -110,8 +110,7 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
           ),
         );
       } else {
-        errorService.displaySnackbarError(context,
-            'Verification failed. Please check your details and try again.');
+        errorService.displaySnackbarError(context, result.message);
       }
     } catch (e) {
       errorService.displaySnackbarError(context, null);
