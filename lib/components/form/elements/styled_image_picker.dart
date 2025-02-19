@@ -3,17 +3,17 @@ import 'package:adventour/components/form/elements/images/circular_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ProfilePictureUpload extends StatefulWidget {
+class StyledImagePicker extends StatefulWidget {
   final Function(File?)
       onImageSelected; // Callback to pass image to parent widget
 
-  const ProfilePictureUpload({super.key, required this.onImageSelected});
+  const StyledImagePicker({super.key, required this.onImageSelected});
 
   @override
-  State<ProfilePictureUpload> createState() => _ProfilePictureUploadState();
+  State<StyledImagePicker> createState() => _StyledImagePickerState();
 }
 
-class _ProfilePictureUploadState extends State<ProfilePictureUpload> {
+class _StyledImagePickerState extends State<StyledImagePicker> {
   File? selectedImage; // Holds the selected image
 
   // Function to pick image

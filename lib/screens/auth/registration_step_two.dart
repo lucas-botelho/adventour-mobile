@@ -1,9 +1,10 @@
+import 'package:adventour/components/form/elements/single_digit.dart';
+import 'package:adventour/components/media/header_image_with_text.dart';
 import 'package:adventour/models/requests/auth/confirm_email.dart';
 import 'package:adventour/models/responses/auth/token.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:adventour/components/cta/arrow_back_button.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/text_with_action.dart';
 import 'package:adventour/screens/auth/registration_step_three.dart';
@@ -27,118 +28,54 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       body: Column(
         children: [
-          imageWithText(screenHeight),
-          confirmationCode(),
-        ],
-      ),
-    );
-  }
-
-  Expanded confirmationCode() {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
+          const HeaderImageWithText(
+            title: "Verify Your Identity",
+            text: "We have just sent a verification code to 938794423",
+            imagePath: 'assets/images/step_two_image.jpg',
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Form(
-                    key: formKey,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  Center(
+                    child: Column(
                       children: [
-                        codeInputField(_codeController1),
-                        codeInputField(_codeController2),
-                        codeInputField(_codeController3),
-                        codeInputField(_codeController4),
+                        Form(
+                          key: formKey,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              SingleDigitInput(controller: _codeController1),
+                              SingleDigitInput(controller: _codeController2),
+                              SingleDigitInput(controller: _codeController3),
+                              SingleDigitInput(controller: _codeController4),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 20, 10, 90),
+                          child: TextWithAction(
+                            label: "Didn't receive the code?",
+                            actionLabel: "Resend Code",
+                            onPressed: () {},
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        CTAButton(
+                            text: "Verification", onPressed: confirmEmail),
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 20, 10, 90),
-                    child: TextWithAction(
-                      label: "Didn't receive the code?",
-                      actionLabel: "Resend Code",
-                      onPressed: () {},
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  CTAButton(text: "Verification", onPressed: confirmEmail),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Stack imageWithText(double screenHeight) {
-    return Stack(
-      children: [
-        SizedBox(
-          height: screenHeight / 2,
-          width: double.infinity,
-          child: ShaderMask(
-            shaderCallback: (Rect bounds) {
-              return const LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [Colors.white, Colors.transparent],
-                stops: [0.1, 1.0], // Adjust fade intensity
-              ).createShader(bounds);
-            },
-            blendMode: BlendMode.dstOut,
-            child: Image.asset(
-              'assets/images/step_two_image.jpg',
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        const ArrowBackButton(),
-        Positioned.fill(
-          top: screenHeight / 3,
-          child: const Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Verify Your Identity", style: TextStyle(fontSize: 36)),
-                Text(
-                  "We have just sent a verification code to 938794423",
-                  style: TextStyle(fontSize: 20),
-                ),
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget codeInputField(TextEditingController controller) {
-    return SizedBox(
-      width: 50,
-      child: TextFormField(
-        style: const TextStyle(fontSize: 40),
-        controller: controller,
-        textAlign: TextAlign.center,
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        decoration: const InputDecoration(
-          counterText: "",
-          enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(width: 2, color: Colors.white),
-          ),
-        ),
+          )
+        ],
       ),
     );
   }

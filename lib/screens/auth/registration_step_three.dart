@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:adventour/components/cta/cta_button.dart';
-import 'package:adventour/components/form/elements/profile_picture_upload.dart';
+import 'package:adventour/components/form/elements/styled_image_picker.dart';
 import 'package:adventour/components/form/elements/underlined_textfield.dart';
 import 'package:adventour/components/text/title_with_text.dart';
 import 'package:adventour/models/base_api_response.dart';
@@ -42,13 +42,13 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          buildBackButton(),
+          ArrowBackButton(),
           const TitleWithText(
             title: "Account Setup",
             text:
                 "Finish your account setup by uploading profile picture and set your username.",
           ),
-          ProfilePictureUpload(
+          StyledImagePicker(
             onImageSelected: onImageSelected,
           ),
           Form(
@@ -75,22 +75,9 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
     );
   }
 
-  Row buildBackButton() {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(left: 20),
-          child: ArrowBackButton(),
-        ),
-      ],
-    );
-  }
-
   void onImageSelected(io.File? image) {
     setState(() {
       profileImage = image;
-      // nameController = TextEditingController();
     });
   }
 
