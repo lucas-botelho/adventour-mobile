@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/styled_image_picker.dart';
 import 'package:adventour/components/form/elements/underlined_textfield.dart';
 import 'package:adventour/components/text/title_with_text.dart';
-import 'package:adventour/models/base_api_response.dart';
 import 'package:adventour/models/requests/auth/patch_public_data.dart';
 import 'package:adventour/models/responses/auth/patch_public_data.dart';
 import 'package:adventour/models/responses/files/file_upload.dart';
@@ -14,7 +12,6 @@ import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:adventour/components/cta/arrow_back_button.dart';
 import 'dart:io' as io;
-import 'package:http/http.dart' as http;
 
 class RegistrationStepThree extends StatefulWidget {
   final String userId;

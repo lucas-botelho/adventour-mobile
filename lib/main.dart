@@ -1,11 +1,14 @@
+import 'package:adventour/firebase_options.dart';
 import 'package:flutter/material.dart'; //package with default components
 import 'package:adventour/screens/auth/auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 //Starting function
-void main() {
-  //runApp is a global function that accepts a widget as its argument and inflates that widget to the screen of the device
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(MyApp());
 }
 
 //custom widget

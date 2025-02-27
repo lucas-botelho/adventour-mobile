@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "427269429963",
+    "project_id": "adventour-38443",
+    "storage_bucket": "adventour-38443.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:427269429963:android:dd8f8a0d3ae1ab759e994e",
+        "android_client_info": {
+          "package_name": "com.example.adventour"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "427269429963-3ufev7r6fgnhabb8t195p8a112jdcok7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.adventour",
+            "certificate_hash": "672dd54e42b32d774e365c50c0c868d88f7beacd"
+          }
+        },
+        {
+          "client_id": "427269429963-538d4d95sl7aqclog8pfqo1t6c30u72c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUUlUZ1o7iT3KI4Cf6tnYPpH4Rxw47gHY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "427269429963-538d4d95sl7aqclog8pfqo1t6c30u72c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "427269429963-uvoqsse0h0fmt7ue5s89ge57lbg2dgsg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.adventour"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
