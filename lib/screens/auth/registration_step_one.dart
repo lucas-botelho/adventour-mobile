@@ -103,10 +103,10 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
     );
   }
 
-  void signInWithGoogle() {
-    var user = FirebaseAuthService().signInWithGoogle();
+  void signInWithGoogle() async {
+    var user = await FirebaseAuthService().signInWithGoogle();
 
-    register(context);
+    register(context, user);
   }
 
   Form SignUpForm(BuildContext context) {
@@ -143,7 +143,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
             child: CTAButton(
               text: "Sign Up",
               onPressed: () {
-                register(context);
+                // register(context);
               },
             ),
           )
