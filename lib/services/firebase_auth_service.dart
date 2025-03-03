@@ -15,40 +15,40 @@ class FirebaseAuthService {
     });
   }
 
-  Future<Result<User>> signUpWithEmail(String email, String password) async {
+  Future<User?> signUpWithEmail(String email, String password) async {
     try {
       UserCredential userCredential =
           await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      return Result.success(userCredential.user);
+      return userCredential.user;
     } catch (e) {
-      return Result.error("Sign up error: $e");
+      return null;
     }
   }
 
-  Future<Result<User>> signInWithEmail(String email, String password) async {
+  Future<User?> signInWithEmail(String email, String password) async {
     try {
       UserCredential userCredential =
           await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      return Result.success(userCredential.user);
+      return userCredential.user;
     } catch (e) {
-      return Result.error("Sign in error: $e");
+      return null;
     }
   }
 
-  Future<Result<User>> signInWithGoogle() async {
+  Future<User?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
 
       if (googleAuth == null) {
-        return Result.error("Google authentication failed");
+        return null;
       }
 
       final OAuthCredential credential = GoogleAuthProvider.credential(
@@ -58,20 +58,17 @@ class FirebaseAuthService {
 
       UserCredential userCredential =
           await _firebaseAuth.signInWithCredential(credential);
-      return Result.success(userCredential.user);
+      return userCredential.user;
     } catch (e) {
-      return Result.error("Google Sign-In error: $e");
+      return null;
     }
   }
-}
 
-class Result<T> {
-  final T? data;
-  final String? error;
-
-  Result.success(this.data) : error = null;
-  Result.error(this.error) : data = null;
-
-  bool get isSuccess => data != null;
-  bool get isError => error != null;
+  Future<String?> getIdToken() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      return await user.getIdToken();
+    }
+    return null;
+  }
 }

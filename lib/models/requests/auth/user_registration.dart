@@ -3,22 +3,22 @@
 class UserRegistrationRequest {
   final String name;
   final String email;
-  final String confirmPassword;
-  final String password;
+  final String photoUrl;
+  final String oAuthId;
 
   UserRegistrationRequest({
     required this.name,
     required this.email,
-    required this.password,
-    required this.confirmPassword,
+    required this.photoUrl,
+    required this.oAuthId,
   });
 
   Map<String, String> toJson() {
     return {
       'name': name,
       'email': email,
-      'password': password,
-      'confirmPassword': confirmPassword,
+      'photoUrl': photoUrl,
+      'oAuthId': oAuthId,
     };
   }
 }

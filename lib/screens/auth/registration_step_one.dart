@@ -93,24 +93,20 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          SocialButton(context, "Sign Up with Google"),
-          SocialButton(context, "Sign Up with Apple"),
+          ElevatedButton(
+            onPressed: () => signInWithGoogle(),
+            child: const Text("Sign Up with Google"),
+          ),
+          // SignUpWithGoogle(context, "Sign Up with Apple"),
         ],
       ),
     );
   }
 
-  Widget SocialButton(BuildContext context, String text) {
-    return ElevatedButton(
-      onPressed: () => newMethod(),
-      child: Text(text),
-    );
-  }
+  void signInWithGoogle() {
+    var user = FirebaseAuthService().signInWithGoogle();
 
-  void newMethod() {
-    var auth = FirebaseAuthService().signInWithGoogle();
-
-    print(auth);
+    register(context);
   }
 
   Form SignUpForm(BuildContext context) {
@@ -156,20 +152,23 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
     );
   }
 
-  void register(BuildContext context) async {
-    if (!formKey.currentState!.validate()) return;
+  void register(BuildContext context, User? user) async {
+    // if (!formKey.currentState!.validate()) return;
 
-    final FirebaseAuthService authService = FirebaseAuthService();
+    // var response = FirebaseAuthService()
+    //     .signUpWithEmail(_emailController.text, _passwordController.text);
 
-    var response = authService.signUpWithEmail(
-        _emailController.text, _passwordController.text);
+    if (user == null) {
+      errorService.displaySnackbarError(context, "Error signing up");
+      return;
+    }
 
     try {
       final requestModel = UserRegistrationRequest(
-        name: _nameController.text,
-        email: _emailController.text,
-        password: _passwordController.text,
-        confirmPassword: _confirmPasswordController.text,
+        name: user.displayName ?? '',
+        email: user.email ?? '',
+        photoUrl: user.photoURL ?? '',
+        oAuthId: user.uid,
       );
 
       final result = await ApiService().post(
