@@ -103,6 +103,7 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
 
       if (result.success) {
         Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             builder: (context) => RegistrationStepThree(
@@ -110,9 +111,11 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
           ),
         );
       } else {
+        // ignore: use_build_context_synchronously
         errorService.displaySnackbarError(context, result.message);
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       errorService.displaySnackbarError(context, null);
     }
   }

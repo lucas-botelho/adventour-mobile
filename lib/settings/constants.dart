@@ -7,11 +7,12 @@ class Authentication {
   // static const String test = "$controller/test";
   static const String user = "$controller/user";
   static const String confirmEmail = "$controller/email/confirm";
+  static const String emailRegistred = "$controller/exist";
 }
 
 class Country {
   static const String controller = 'country';
-  static const String GetCountry = "$controller/country";
+  static const String getCountry = "$controller/country";
 }
 
 class Files {

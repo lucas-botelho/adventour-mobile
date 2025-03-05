@@ -82,13 +82,17 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
   }
 
   void submitForm() async {
-    final profilePictureUrl = await uploadProfilePicture();
-    if (profilePictureUrl != null) patchUserPublicData(profilePictureUrl);
-  }
+    if (!accountUpdateFormKey.currentState!.validate()) return;
 
-  void patchUserPublicData(String profilePictureUrl) async {
-    if (!accountUpdateFormKey.currentState!.validate() ||
-        profilePictureUrl.isEmpty) return;
+    final profilePictureUrl = await uploadProfilePicture();
+
+    if (profilePictureUrl == null) {
+      // ignore: use_build_context_synchronously
+      errorService.displaySnackbarError(
+          context, "Please upload a valid profile picture.");
+
+      return;
+    }
 
     try {
       final requestModel = PatchUserPublicDataRequest(
@@ -106,6 +110,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
 
       if (result.success) {
         Navigator.pushAndRemoveUntil(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             builder: (context) => RegistrationComplete(
@@ -117,9 +122,11 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
           (route) => false,
         );
       } else {
+        // ignore: use_build_context_synchronously
         errorService.displaySnackbarError(context, result.message);
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       errorService.displaySnackbarError(context, null);
     }
   }
@@ -136,9 +143,11 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
       if (response.success) {
         return response.data!.publicUrl;
       } else {
+        // ignore: use_build_context_synchronously
         errorService.displaySnackbarError(context, response.message);
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       errorService.displaySnackbarError(context, null);
     }
 

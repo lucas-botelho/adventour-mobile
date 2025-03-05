@@ -126,7 +126,7 @@ class _AdventourMapState extends State<AdventourMap> {
 
     try {
       final result = await ApiService().get(
-        '${Country.GetCountry}/$countryCode',
+        '${Country.getCountry}/$countryCode',
         widget.token,
         headers: <String, String>{},
         fromJsonT: (json) => CountryResponse.fromJson(json),
@@ -141,9 +141,11 @@ class _AdventourMapState extends State<AdventourMap> {
               : result.data!.continent;
         });
       } else {
+        // ignore: use_build_context_synchronously
         errorService.displaySnackbarError(context, result.message);
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       errorService.displaySnackbarError(context, null);
     }
   }

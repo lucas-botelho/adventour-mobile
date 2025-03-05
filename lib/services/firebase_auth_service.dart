@@ -1,3 +1,6 @@
+import 'package:adventour/models/responses/auth/email_registred.dart';
+import 'package:adventour/services/api_service.dart';
+import 'package:adventour/settings/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -30,6 +33,17 @@ class FirebaseAuthService {
 
   Future<User?> signInWithEmail(String email, String password) async {
     try {
+      final result = await ApiService().get(
+        'Authentication.emailRegistred/$email',
+        null,
+        headers: <String, String>{},
+        fromJsonT: (json) => EmailRegistredResponse.fromJson(json),
+      );
+
+      if (result.data!.isResgistered) {
+        return null;
+      }
+
       UserCredential userCredential =
           await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
@@ -44,10 +58,22 @@ class FirebaseAuthService {
   Future<User?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
 
       if (googleAuth == null) {
+        return null;
+      }
+
+      final result = await ApiService().get(
+        '${Authentication.emailRegistred}/${googleUser?.email}',
+        null,
+        headers: <String, String>{},
+        fromJsonT: (json) => EmailRegistredResponse.fromJson(json),
+      );
+
+      if (result.data!.isResgistered) {
         return null;
       }
 
@@ -69,6 +95,17 @@ class FirebaseAuthService {
     if (user != null) {
       return await user.getIdToken();
     }
+    return null;
+  }
+
+  Future<String?> getFirebaseIdToken() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+
+    if (user != null) {
+      return await user.getIdToken(); // Retrieve the JWT (ID token)
+    }
+
     return null;
   }
 }

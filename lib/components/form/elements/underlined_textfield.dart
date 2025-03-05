@@ -12,9 +12,8 @@ class UnderlinedTextField extends StatelessWidget {
       padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.1),
       child: TextFormField(
         validator: (value) {
-          print(value);
           if (value == null || value.isEmpty) {
-            return 'Username cannotbe empty.';
+            return 'Username cannot be empty.';
           }
           return null;
         },

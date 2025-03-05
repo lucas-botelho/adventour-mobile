@@ -127,7 +127,7 @@ class ApiService {
 
     if (response.statusCode >= 400 && response.statusCode < 500) {
       return BaseApiResponse<T>.fromJson(
-          response.statusCode, jsonResponse, null);
+          response.statusCode, jsonResponse, fromJsonT);
     }
 
     return BaseApiResponse<T>(

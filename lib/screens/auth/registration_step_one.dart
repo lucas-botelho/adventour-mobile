@@ -26,6 +26,8 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
   final formKey = GlobalKey<FormState>();
   Map<String, String> fieldErrors = {};
   final ErrorService errorService = ErrorService();
+  final ApiService apiService = ApiService();
+  final FirebaseAuthService firebaseAuthService = FirebaseAuthService();
 
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -53,12 +55,12 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const ArrowBackButton(),
-              Title(),
+              title(),
               Center(
-                child: SignUpForm(context),
+                child: signUpForm(context),
               ),
               const RowDividerWithText(),
-              SocialSignUpButtons(context),
+              socialSignUpButtons(context),
               TextWithAction(
                 label: "Already have an account?",
                 actionLabel: "Log In",
@@ -71,23 +73,14 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
     );
   }
 
-  void pushToLogin(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const Login(),
-      ),
-    );
-  }
-
-  Widget Title() {
+  Widget title() {
     return const Padding(
       padding: EdgeInsets.only(top: 22),
       child: Text("Sign Up", style: TextStyle(fontSize: 26)),
     );
   }
 
-  Widget SocialSignUpButtons(BuildContext context) {
+  Widget socialSignUpButtons(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Row(
@@ -103,13 +96,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
     );
   }
 
-  void signInWithGoogle() async {
-    var user = await FirebaseAuthService().signInWithGoogle();
-
-    register(context, user);
-  }
-
-  Form SignUpForm(BuildContext context) {
+  Form signUpForm(BuildContext context) {
     return Form(
       key: formKey,
       child: Column(
@@ -143,7 +130,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
             child: CTAButton(
               text: "Sign Up",
               onPressed: () {
-                // register(context);
+                signInWithEmailAndPassword();
               },
             ),
           )
@@ -152,14 +139,27 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
     );
   }
 
-  void register(BuildContext context, User? user) async {
-    // if (!formKey.currentState!.validate()) return;
+  void signInWithGoogle() async {
+    register(
+      await firebaseAuthService.signInWithGoogle(),
+    );
+  }
 
-    // var response = FirebaseAuthService()
-    //     .signUpWithEmail(_emailController.text, _passwordController.text);
+  void signInWithEmailAndPassword() async {
+    if (!formKey.currentState!.validate()) return;
 
-    if (user == null) {
-      errorService.displaySnackbarError(context, "Error signing up");
+    register(
+      await firebaseAuthService.signUpWithEmail(
+          _emailController.text, _passwordController.text),
+    );
+  }
+
+  void register(User? user) async {
+    var token = await firebaseAuthService.getFirebaseIdToken();
+    if (user == null || token == null) {
+      ErrorService()
+          // ignore: use_build_context_synchronously
+          .displaySnackbarError(context, "Internal error signing up.");
       return;
     }
 
@@ -171,7 +171,8 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
         oAuthId: user.uid,
       );
 
-      final result = await ApiService().post(
+      final result = await apiService.post(
+        token: token,
         endpoint: Authentication.user,
         headers: <String, String>{},
         body: requestModel.toJson(),
@@ -180,6 +181,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
 
       if (result.success) {
         Navigator.push(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             builder: (context) => RegistrationStepTwo(
@@ -189,6 +191,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
       } else {
         switch (result.statusCode) {
           case 400:
+            // ignore: use_build_context_synchronously
             errorService.displayFieldErrors(context, result.errors, (errors) {
               setState(() {
                 fieldErrors = errors;
@@ -197,6 +200,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
             break;
           case 409:
           case 500:
+            // ignore: use_build_context_synchronously
             errorService.displaySnackbarError(context, result.message);
             break;
           default:
@@ -204,7 +208,17 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
         }
       }
     } catch (error) {
+      // ignore: use_build_context_synchronously
       errorService.displaySnackbarError(context, null);
     }
+  }
+
+  void pushToLogin(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const Login(),
+      ),
+    );
   }
 }

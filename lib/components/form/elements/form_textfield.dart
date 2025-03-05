@@ -27,13 +27,13 @@ class StyledTextFormField extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
-          TextFormFieldStyling(context),
+          textFormFieldStyling(context),
         ],
       ),
     );
   }
 
-  TextFormField TextFormFieldStyling(BuildContext context) {
+  TextFormField textFormFieldStyling(BuildContext context) {
     return TextFormField(
       validator: (value) {
         if (value != null && !regExp.hasMatch(value)) {
