@@ -6,17 +6,13 @@ import 'package:adventour/screens/world_map.dart';
 import 'package:flutter/material.dart';
 
 class RegistrationComplete extends StatelessWidget {
-  final String userId;
   final String name;
   final String imageUrl;
-  final String token;
 
   const RegistrationComplete({
     super.key,
-    required this.userId,
     required this.name,
     required this.imageUrl,
-    required this.token,
   });
 
   @override
@@ -55,10 +51,7 @@ class RegistrationComplete extends StatelessWidget {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AdventourMap(
-                      userId: userId,
-                      token: token,
-                    ),
+                    builder: (context) => const AdventourMap(),
                   ),
                   (route) => false,
                 ),

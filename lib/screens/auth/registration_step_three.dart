@@ -8,6 +8,7 @@ import 'package:adventour/models/responses/files/file_upload.dart';
 import 'package:adventour/screens/auth/registration_complete.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/error_service.dart';
+import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:adventour/components/cta/arrow_back_button.dart';
@@ -15,10 +16,8 @@ import 'dart:io' as io;
 
 class RegistrationStepThree extends StatefulWidget {
   final String userId;
-  final String token;
 
-  const RegistrationStepThree(
-      {super.key, required this.userId, required this.token});
+  const RegistrationStepThree({super.key, required this.userId});
 
   @override
   State<RegistrationStepThree> createState() => _RegistrationStepThreeState();
@@ -26,9 +25,10 @@ class RegistrationStepThree extends StatefulWidget {
 
 class _RegistrationStepThreeState extends State<RegistrationStepThree> {
   final accountUpdateFormKey = GlobalKey<FormState>();
+  final FirebaseAuthService firebaseService = FirebaseAuthService();
+  final ErrorService errorService = ErrorService();
   TextEditingController nameController = TextEditingController();
   io.File? profileImage;
-  final ErrorService errorService = ErrorService();
 
   @override
   void dispose() {
@@ -87,9 +87,10 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
     final profilePictureUrl = await uploadProfilePicture();
 
     if (profilePictureUrl == null) {
-      // ignore: use_build_context_synchronously
       errorService.displaySnackbarError(
-          context, "Please upload a valid profile picture.");
+          // ignore: use_build_context_synchronously
+          context,
+          "Please upload a valid profile picture.");
 
       return;
     }
@@ -106,7 +107,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
           headers: <String, String>{},
           body: requestModel.toJson(),
           fromJsonT: (json) => PatchUserPublicDataResponse.fromJson(json),
-          token: widget.token);
+          token: await firebaseService.getFirebaseIdToken());
 
       if (result.success) {
         Navigator.pushAndRemoveUntil(
@@ -114,10 +115,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
           context,
           MaterialPageRoute(
             builder: (context) => RegistrationComplete(
-                token: widget.token,
-                userId: widget.userId,
-                imageUrl: profilePictureUrl,
-                name: nameController.text),
+                imageUrl: profilePictureUrl, name: nameController.text),
           ),
           (route) => false,
         );
@@ -136,7 +134,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
       final response = await ApiService().uploadFile(
         endpoint: Files.upload,
         file: profileImage!,
-        token: widget.token,
+        token: await firebaseService.getFirebaseIdToken(),
         fromJsonT: (json) => FileUploadResponse.fromJson(json),
       );
 

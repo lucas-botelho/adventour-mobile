@@ -141,7 +141,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
 
   void signInWithGoogle() async {
     register(
-      await firebaseAuthService.signInWithGoogle(),
+      await firebaseAuthService.signUpWithGoogle(),
     );
   }
 
@@ -185,7 +185,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
           context,
           MaterialPageRoute(
             builder: (context) => RegistrationStepTwo(
-                userId: result.data!.userId, token: result.data!.token),
+                userId: result.data!.userId, pinToken: result.data!.token),
           ),
         );
       } else {

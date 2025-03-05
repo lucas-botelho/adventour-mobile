@@ -18,7 +18,7 @@ class FirebaseAuthService {
     });
   }
 
-  Future<User?> signUpWithEmail(String email, String password) async {
+  Future<User?> signInWithEmail(String email, String password) async {
     try {
       UserCredential userCredential =
           await _firebaseAuth.createUserWithEmailAndPassword(
@@ -31,10 +31,34 @@ class FirebaseAuthService {
     }
   }
 
-  Future<User?> signInWithEmail(String email, String password) async {
+  Future<User?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        return null;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
+      return userCredential.user;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<User?> signUpWithEmail(String email, String password) async {
     try {
       final result = await ApiService().get(
-        'Authentication.emailRegistred/$email',
+        '${Authentication.emailRegistred}/$email',
         null,
         headers: <String, String>{},
         fromJsonT: (json) => EmailRegistredResponse.fromJson(json),
@@ -55,7 +79,7 @@ class FirebaseAuthService {
     }
   }
 
-  Future<User?> signInWithGoogle() async {
+  Future<User?> signUpWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
@@ -90,20 +114,12 @@ class FirebaseAuthService {
     }
   }
 
-  Future<String?> getIdToken() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      return await user.getIdToken();
-    }
-    return null;
-  }
-
   Future<String?> getFirebaseIdToken() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = auth.currentUser;
 
     if (user != null) {
-      return await user.getIdToken(); // Retrieve the JWT (ID token)
+      return await user.getIdToken();
     }
 
     return null;

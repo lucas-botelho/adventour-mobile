@@ -1,5 +1,5 @@
 import 'package:adventour/components/cta/cta_button.dart';
-import 'package:adventour/screens/auth/registration_complete.dart';
+import 'package:adventour/screens/auth/login.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:adventour/screens/auth/registration_step_one.dart';
@@ -35,8 +35,7 @@ class AuthScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => const RegistrationStepOne()),
+                    MaterialPageRoute(builder: (context) => const Login()),
                   );
                 },
               ),
@@ -51,22 +50,22 @@ class AuthScreen extends StatelessWidget {
                   );
                 },
               ),
-              CTAButton(
-                text: "Teste",
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const RegistrationComplete(
-                              name: 'Teste',
-                              userId: '36EED381-B28C-4080-8788-1312474A0455',
-                              token: 'asdasd',
-                              imageUrl:
-                                  'https://res.cloudinary.com/dgskluspn/image/upload/v1739805925/1000000033.jpg',
-                            )),
-                  );
-                },
-              ),
+              // CTAButton(
+              //   text: "Teste",
+              //   onPressed: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //           builder: (context) => const RegistrationComplete(
+              //                 name: 'Teste',
+              //                 userId: '36EED381-B28C-4080-8788-1312474A0455',
+              //                 token: 'asdasd',
+              //                 imageUrl:
+              //                     'https://res.cloudinary.com/dgskluspn/image/upload/v1739805925/1000000033.jpg',
+              //               )),
+              //     );
+              //   },
+              // ),
             ],
           ),
         ),

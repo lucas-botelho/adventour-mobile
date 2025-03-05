@@ -12,9 +12,9 @@ import 'package:adventour/services/error_service.dart';
 
 class RegistrationStepTwo extends StatefulWidget {
   final String userId;
-  final String token;
+  final String pinToken;
   const RegistrationStepTwo(
-      {required this.userId, required this.token, super.key});
+      {required this.userId, required this.pinToken, super.key});
 
   @override
   State<RegistrationStepTwo> createState() => _RegistrationStepTwoState();
@@ -94,7 +94,7 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
       );
 
       final result = await ApiService().post(
-        token: widget.token,
+        token: widget.pinToken,
         endpoint: Authentication.confirmEmail,
         headers: <String, String>{},
         body: requestModel.toJson(),
@@ -106,8 +106,7 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
           // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
-            builder: (context) => RegistrationStepThree(
-                userId: widget.userId, token: result.data!.token),
+            builder: (context) => RegistrationStepThree(userId: widget.userId),
           ),
         );
       } else {

@@ -11,7 +11,7 @@ class ArrowBackButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 42, 0, 20),
+          padding: const EdgeInsets.fromLTRB(0, 42, 0, 20),
           child: TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text("< Back"),
