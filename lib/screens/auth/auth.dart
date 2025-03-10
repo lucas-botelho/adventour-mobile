@@ -3,6 +3,7 @@ import 'package:adventour/screens/auth/login.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:adventour/screens/auth/registration_step_one.dart';
+import 'package:adventour/screens/country_activities.dart';
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
@@ -47,6 +48,17 @@ class AuthScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const RegistrationStepOne()),
+                  );
+                },
+              ),
+              CTAButton(
+                color: const Color(0xFF37787E),
+                text: "Teste",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CountryActivities()),
                   );
                 },
               ),
