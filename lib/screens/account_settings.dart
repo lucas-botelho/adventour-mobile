@@ -1,4 +1,5 @@
 import 'package:adventour/models/responses/auth/user.dart';
+import 'package:adventour/screens/auth/auth.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:adventour/settings/constants.dart';
@@ -107,11 +108,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                       const Icon(Icons.lock, color: Colors.white, size: 30),
                       ''),
                   lineDivider(),
-                  ...iconOption(
-                      () {},
-                      "Log out",
-                      const Icon(Icons.logout, color: Colors.red, size: 30),
-                      ''),
+                  logoutOption(),
                 ],
               ),
             ),
@@ -171,7 +168,7 @@ class _AccountSettingsState extends State<AccountSettings> {
             radius: 25,
             backgroundColor: const Color(0xFF41969D),
             child: Text(
-              user?.name.substring(0, 1).toUpperCase() ?? "A",
+              user?.name.substring(0, 1).toUpperCase() ?? "?",
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
@@ -228,6 +225,43 @@ class _AccountSettingsState extends State<AccountSettings> {
         ),
       )
     ];
+  }
+
+  Widget logoutOption() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: SizedBox(
+        width: double.infinity,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            onPressed: () async {
+              await firebaseAuthService.logout(context);
+            },
+            icon: const Icon(Icons.logout, color: Colors.red, size: 30),
+            label: const Text(
+              "Log out",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Montserrat',
+              ),
+            ),
+            style: TextButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16), // Adjust padding
+              minimumSize: const Size(
+                  double.infinity, 50), // Ensures button takes full width
+              alignment: Alignment.centerLeft, // Aligns text & icon to the left
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Container lineDivider() {

@@ -1,7 +1,9 @@
 import 'package:adventour/models/responses/auth/email_registred.dart';
+import 'package:adventour/screens/auth/auth.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/settings/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthService {
@@ -134,5 +136,17 @@ class FirebaseAuthService {
     }
 
     return null;
+  }
+
+  Future<void> logout(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AuthScreen(),
+      ),
+      (route) => false,
+    );
   }
 }
