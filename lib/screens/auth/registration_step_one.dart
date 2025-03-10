@@ -165,7 +165,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
 
     try {
       final requestModel = UserRegistrationRequest(
-        name: user.displayName ?? '',
+        name: user.displayName ?? _nameController.text,
         email: user.email ?? '',
         photoUrl: user.photoURL ?? '',
         oAuthId: user.uid,
