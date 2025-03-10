@@ -126,7 +126,7 @@ class _AdventourMapState extends State<AdventourMap> {
     try {
       final result = await ApiService().get(
         '${Country.getCountry}/$countryCode',
-        await FirebaseAuthService().getFirebaseIdToken(),
+        await FirebaseAuthService().getIdToken(),
         headers: <String, String>{},
         fromJsonT: (json) => CountryResponse.fromJson(json),
       );

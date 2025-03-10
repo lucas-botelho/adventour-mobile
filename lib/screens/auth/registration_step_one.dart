@@ -155,7 +155,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
   }
 
   void register(User? user) async {
-    var token = await firebaseAuthService.getFirebaseIdToken();
+    var token = await firebaseAuthService.getIdToken();
     if (user == null || token == null) {
       ErrorService()
           // ignore: use_build_context_synchronously

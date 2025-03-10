@@ -107,7 +107,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
           headers: <String, String>{},
           body: requestModel.toJson(),
           fromJsonT: (json) => PatchUserPublicDataResponse.fromJson(json),
-          token: await firebaseService.getFirebaseIdToken());
+          token: await firebaseService.getIdToken());
 
       if (result.success) {
         Navigator.pushAndRemoveUntil(
@@ -134,7 +134,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
       final response = await ApiService().uploadFile(
         endpoint: Files.upload,
         file: profileImage!,
-        token: await firebaseService.getFirebaseIdToken(),
+        token: await firebaseService.getIdToken(),
         fromJsonT: (json) => FileUploadResponse.fromJson(json),
       );
 
