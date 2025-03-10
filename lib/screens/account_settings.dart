@@ -252,11 +252,8 @@ class _AccountSettingsState extends State<AccountSettings> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(0),
               ),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16), // Adjust padding
-              minimumSize: const Size(
-                  double.infinity, 50), // Ensures button takes full width
-              alignment: Alignment.centerLeft, // Aligns text & icon to the left
+              minimumSize: const Size(double.infinity, 50),
+              alignment: Alignment.centerLeft,
             ),
           ),
         ),
