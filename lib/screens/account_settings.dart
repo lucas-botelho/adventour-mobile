@@ -64,7 +64,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                     ),
                   ),
                   lineDivider(),
-                  photoOption(),
+                  userNameOption(user),
                   lineDivider(),
                   iconOption(
                       () {},
@@ -87,21 +87,21 @@ class _AccountSettingsState extends State<AccountSettings> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  fullWidthButtonWithIconAndArrow(
+                  buildArrowButtons(
                       icon: const Icon(Icons.notifications,
                           color: Color.fromARGB(255, 255, 186, 59), size: 30),
                       label: "Notifications",
                       description: "Turn notifications on or off",
                       onPressed: () {}),
                   lineDivider(),
-                  fullWidthButtonWithIconAndArrow(
+                  buildArrowButtons(
                       icon: const Icon(Icons.flag,
                           color: Color.fromARGB(255, 33, 219, 243), size: 30),
                       label: "Language",
                       description: "Change your language",
                       onPressed: () {}),
                   lineDivider(),
-                  fullWidthButtonWithIconAndArrow(
+                  buildArrowButtons(
                       icon:
                           const Icon(Icons.lock, color: Colors.white, size: 30),
                       label: "Privacy Policy",
@@ -117,200 +117,165 @@ class _AccountSettingsState extends State<AccountSettings> {
     );
   }
 
-  Widget fullWidthButtonWithIconAndArrow({
-    required Icon icon,
+  Widget buildButtonsStyle({
+    required Widget icon, // Change from Icon to Widget
     required String label,
-    String? description,
-    required VoidCallback onPressed,
+    String? subText,
+    VoidCallback? onPressed,
+    Widget? trailingWidget,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: SizedBox(
-        width: double.infinity,
-        child: TextButton(
-          onPressed: onPressed,
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: Colors.transparent,
-            minimumSize: const Size(double.infinity, 50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(0),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              icon,
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'Montserrat',
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    if (description != null)
-                      Text(
-                        description,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                          fontFamily: 'Montserrat',
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.grey,
-                size: 20,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+    const String fontFamily = 'Montserrat';
 
-  Widget photoOption() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          userImage(user),
-          const SizedBox(width: 8),
-          Text(
-            user?.name ?? '',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const Spacer(),
-          TextButton(
-            onPressed: () {},
-            child: const Text(
-              "Edit",
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: "Tienne",
-                  color: Color(0XFFBEF6FB)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget userImage(UserResponse? user) {
-    return user?.photoUrl != null && user!.photoUrl.isNotEmpty
-        ? ClipRRect(
-            borderRadius: BorderRadius.circular(50),
-            child: Image.network(
-              user.photoUrl,
-              width: 50,
-              height: 50,
-              fit: BoxFit.cover,
-            ),
-          )
-        : CircleAvatar(
-            radius: 25,
-            backgroundColor: const Color(0xFF41969D),
-            child: Text(
-              user?.name.substring(0, 1).toUpperCase() ?? "?",
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-          );
-  }
-
-  Widget iconOption(Function onclick, String text, Icon icon, String subText) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          icon,
+          icon, // Now accepts any widget, including userImage
           const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  text,
+                  label,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
+                    fontFamily: fontFamily,
                   ),
                 ),
-                if (subText.isNotEmpty) // Only add this if value is not empty
+                if (subText != null && subText.isNotEmpty)
                   Text(
                     subText,
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
+                      fontFamily: fontFamily,
                     ),
                   ),
               ],
             ),
           ),
-          TextButton(
-            onPressed: () {},
-            child: const Text(
-              "Edit",
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: "Tienne",
-                  color: Color(0XFFBEF6FB)),
-            ),
-          ),
+          if (trailingWidget != null) trailingWidget,
         ],
       ),
     );
   }
 
   Widget logoutOption() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: SizedBox(
-        width: double.infinity,
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: TextButton.icon(
-            onPressed: () async {
-              await firebaseAuthService.logout(context);
-            },
-            icon: const Icon(Icons.logout, color: Colors.red, size: 30),
-            label: const Text(
-              "Log out",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                fontFamily: 'Montserrat',
-              ),
-            ),
-            style: TextButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(0),
-              ),
-              minimumSize: const Size(double.infinity, 50),
-              alignment: Alignment.centerLeft,
-            ),
+    return SizedBox(
+      width: double.infinity,
+      child: TextButton(
+        onPressed: () async {
+          await firebaseAuthService.logout(context);
+        },
+        style: TextButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          minimumSize: const Size(double.infinity, 50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
           ),
+        ),
+        child: buildButtonsStyle(
+          icon: const Icon(Icons.logout, color: Colors.red, size: 30),
+          label: "Log out",
+        ),
+      ),
+    );
+  }
+
+  Widget buildArrowButtons({
+    required Icon icon,
+    required String label,
+    String? description,
+    required VoidCallback onPressed,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          minimumSize: const Size(double.infinity, 50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
+          ),
+        ),
+        child: buildButtonsStyle(
+          icon: icon,
+          label: label,
+          subText: description,
+          trailingWidget: const Icon(
+            Icons.arrow_forward_ios,
+            color: Colors.grey,
+            size: 20,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget iconOption(Function onClick, String text, Icon icon, String subText) {
+    return buildButtonsStyle(
+      icon: icon,
+      label: text,
+      subText: subText,
+      trailingWidget: TextButton(
+        onPressed: () {},
+        child: editTextButton(),
+      ),
+    );
+  }
+
+  Widget userNameOption(UserResponse? user) {
+    return buildButtonsStyle(
+      icon: userImage(user),
+      label: user?.name ?? '',
+      trailingWidget: TextButton(
+        onPressed: () {},
+        child: editTextButton(),
+      ),
+    );
+  }
+
+  Text editTextButton() {
+    return const Text(
+      "Edit",
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+        fontFamily: "Tienne",
+        color: Color(0XFFBEF6FB),
+      ),
+    );
+  }
+
+  Widget userImage(UserResponse? user) {
+    if (user?.photoUrl != null && user!.photoUrl.isNotEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(50),
+        child: Image.network(
+          user.photoUrl,
+          width: 50,
+          height: 50,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    String initials =
+        user?.name?.isNotEmpty == true ? user!.name[0].toUpperCase() : "?";
+
+    return CircleAvatar(
+      radius: 25,
+      backgroundColor: const Color(0xFF41969D),
+      child: Text(
+        initials,
+        style: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
         ),
       ),
     );
