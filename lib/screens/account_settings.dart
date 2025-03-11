@@ -1,5 +1,4 @@
 import 'package:adventour/models/responses/auth/user.dart';
-import 'package:adventour/screens/auth/auth.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:adventour/settings/constants.dart';
@@ -65,19 +64,19 @@ class _AccountSettingsState extends State<AccountSettings> {
                     ),
                   ),
                   lineDivider(),
-                  ...photoOption(),
+                  photoOption(),
                   lineDivider(),
-                  ...iconOption(
+                  iconOption(
                       () {},
                       "Email",
                       const Icon(Icons.email, color: Colors.white, size: 50),
                       user?.email ?? ''),
-                  // lineDivider(),
-                  // ...iconOption(
-                  //     () {},
-                  //     "Phone Number",
-                  //     const Icon(Icons.email, color: Colors.white, size: 50),
-                  //     ''),
+                  lineDivider(),
+                  iconOption(
+                      () {},
+                      "Phone Number",
+                      const Icon(Icons.phone, color: Colors.white, size: 50),
+                      ''),
                 ],
               ),
             ),
@@ -88,25 +87,25 @@ class _AccountSettingsState extends State<AccountSettings> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ...iconOption(
-                      () {},
-                      "Notifications",
-                      const Icon(Icons.notifications,
+                  fullWidthButtonWithIconAndArrow(
+                      icon: const Icon(Icons.notifications,
                           color: Color.fromARGB(255, 255, 186, 59), size: 30),
-                      ''),
+                      label: "Notifications",
+                      description: "Turn notifications on or off",
+                      onPressed: () {}),
                   lineDivider(),
-                  ...iconOption(
-                      () {},
-                      "Language",
-                      const Icon(Icons.flag,
+                  fullWidthButtonWithIconAndArrow(
+                      icon: const Icon(Icons.flag,
                           color: Color.fromARGB(255, 33, 219, 243), size: 30),
-                      ''),
+                      label: "Language",
+                      description: "Change your language",
+                      onPressed: () {}),
                   lineDivider(),
-                  ...iconOption(
-                      () {},
-                      "Privacy Policy",
-                      const Icon(Icons.lock, color: Colors.white, size: 30),
-                      ''),
+                  fullWidthButtonWithIconAndArrow(
+                      icon:
+                          const Icon(Icons.lock, color: Colors.white, size: 30),
+                      label: "Privacy Policy",
+                      onPressed: () {}),
                   lineDivider(),
                   logoutOption(),
                 ],
@@ -118,39 +117,98 @@ class _AccountSettingsState extends State<AccountSettings> {
     );
   }
 
-  List<Widget> photoOption() {
-    return [
-      lineDivider(),
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            userImage(user),
-            const SizedBox(width: 8),
-            Text(
-              user?.name ?? '',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
+  Widget fullWidthButtonWithIconAndArrow({
+    required Icon icon,
+    required String label,
+    String? description,
+    required VoidCallback onPressed,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: SizedBox(
+        width: double.infinity,
+        child: TextButton(
+          onPressed: onPressed,
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            backgroundColor: Colors.transparent,
+            minimumSize: const Size(double.infinity, 50),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
             ),
-            const Spacer(),
-            TextButton(
-              onPressed: () {},
-              child: const Text(
-                "Edit",
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: "Tienne",
-                    color: Color(0XFFBEF6FB)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              icon,
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Montserrat',
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    if (description != null)
+                      Text(
+                        description,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                          fontFamily: 'Montserrat',
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.grey,
+                size: 20,
+              ),
+            ],
+          ),
         ),
-      )
-    ];
+      ),
+    );
+  }
+
+  Widget photoOption() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          userImage(user),
+          const SizedBox(width: 8),
+          Text(
+            user?.name ?? '',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const Spacer(),
+          TextButton(
+            onPressed: () {},
+            child: const Text(
+              "Edit",
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: "Tienne",
+                  color: Color(0XFFBEF6FB)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget userImage(UserResponse? user) {
@@ -178,53 +236,50 @@ class _AccountSettingsState extends State<AccountSettings> {
           );
   }
 
-  List<Widget> iconOption(
-      Function onclick, String text, Icon icon, String subText) {
-    return [
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            icon,
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+  Widget iconOption(Function onclick, String text, Icon icon, String subText) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          icon,
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  text,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                if (subText.isNotEmpty) // Only add this if value is not empty
                   Text(
-                    text,
+                    subText,
                     style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                      color: Colors.grey,
                     ),
                   ),
-                  if (subText.isNotEmpty) // Only add this if value is not empty
-                    Text(
-                      subText,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                    ),
-                ],
-              ),
+              ],
             ),
-            TextButton(
-              onPressed: () {},
-              child: const Text(
-                "Edit",
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: "Tienne",
-                    color: Color(0XFFBEF6FB)),
-              ),
+          ),
+          TextButton(
+            onPressed: () {},
+            child: const Text(
+              "Edit",
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: "Tienne",
+                  color: Color(0XFFBEF6FB)),
             ),
-          ],
-        ),
-      )
-    ];
+          ),
+        ],
+      ),
+    );
   }
 
   Widget logoutOption() {
