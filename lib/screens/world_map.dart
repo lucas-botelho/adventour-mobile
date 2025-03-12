@@ -78,7 +78,7 @@ class _AdventourMapState extends State<AdventourMap> {
                 color: Colors.black,
                 width: 0.5,
               ),
-              instructions: SMapWorld.instructions,
+              instructions: SMapWorld.instructionsMercator,
               defaultColor: Colors.grey.shade400,
               callback: (id, name, tapDetails) async {
                 await fetchCountry(id);

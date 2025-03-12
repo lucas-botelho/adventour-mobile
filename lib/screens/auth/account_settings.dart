@@ -1,7 +1,6 @@
 import 'package:adventour/models/responses/auth/user.dart';
-import 'package:adventour/services/api_service.dart';
+import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
-import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
 
 class AccountSettings extends StatefulWidget {
@@ -12,8 +11,8 @@ class AccountSettings extends StatefulWidget {
 }
 
 class _AccountSettingsState extends State<AccountSettings> {
-  final ApiService apiService = ApiService();
   final FirebaseAuthService firebaseAuthService = FirebaseAuthService();
+  final UserRepository userRepository = UserRepository();
   UserResponse? user;
 
   @override
@@ -23,18 +22,12 @@ class _AccountSettingsState extends State<AccountSettings> {
     _loadUserData();
   }
 
-  Future<void> _loadUserData() async {
-    var firebaseUser = firebaseAuthService.getUser();
+  void _loadUserData() async {
+    final data = await userRepository.getUserData();
 
-    if (firebaseUser != null) {
-      var response = await apiService.get(
-        Authentication.me,
-        await firebaseAuthService.getIdToken(),
-        headers: {},
-        fromJsonT: (json) => UserResponse.fromJson(json),
-      );
+    if (data != null) {
       setState(() {
-        user = response.data;
+        user = data;
       });
     }
   }
@@ -264,14 +257,11 @@ class _AccountSettingsState extends State<AccountSettings> {
       );
     }
 
-    String initials =
-        user?.name?.isNotEmpty == true ? user!.name[0].toUpperCase() : "?";
-
     return CircleAvatar(
       radius: 25,
       backgroundColor: const Color(0xFF41969D),
       child: Text(
-        initials,
+        userRepository.getUserInitial(user),
         style: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w700,

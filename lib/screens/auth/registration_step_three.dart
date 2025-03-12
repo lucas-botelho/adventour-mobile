@@ -13,6 +13,7 @@ import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:adventour/components/cta/arrow_back_button.dart';
 import 'dart:io' as io;
+import 'package:adventour/globals.dart' as globals;
 
 class RegistrationStepThree extends StatefulWidget {
   final String userId;
@@ -110,6 +111,8 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
           token: await firebaseService.getIdToken());
 
       if (result.success) {
+        globals.photoUrl = profilePictureUrl;
+
         Navigator.pushAndRemoveUntil(
           // ignore: use_build_context_synchronously
           context,
