@@ -57,7 +57,7 @@ class AuthScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const Activities(
+                        builder: (context) => Activities(
                               countryCode: 'pt',
                             )),
                   );
