@@ -1,9 +1,6 @@
-import 'package:adventour/models/responses/country/country.dart';
+import 'package:adventour/respositories/map_respository.dart';
 import 'package:adventour/screens/content/activities.dart';
-import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/error_service.dart';
-import 'package:adventour/services/firebase_auth_service.dart';
-import 'package:adventour/settings/constants.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:countries_world_map/data/maps/world_map.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +19,7 @@ class _AdventourMapState extends State<AdventourMap> {
   String countryIsoCode = "";
   String fetchedData = "";
   ErrorService errorService = ErrorService();
+  final mapRepository = MapRespository();
 
   @override
   void initState() {
@@ -137,23 +135,20 @@ class _AdventourMapState extends State<AdventourMap> {
     countryIsoCode = countryCode;
 
     try {
-      final result = await ApiService().get(
-        '${Country.getCountry}/$countryCode',
-        await FirebaseAuthService().getIdToken(),
-        headers: <String, String>{},
-        fromJsonT: (json) => CountryResponse.fromJson(json),
-      );
-
-      if (result.success) {
-        setState(() {
-          country = (result.data?.name ?? '').isEmpty ? '' : result.data!.name;
-          continent = (result.data?.continent ?? '').isEmpty
-              ? ''
-              : result.data!.continent;
-        });
-      } else {
-        // ignore: use_build_context_synchronously
-        errorService.displaySnackbarError(context, result.message);
+      var result = await mapRepository.getCountryData(countryCode);
+      if (result != null) {
+        if (result.success) {
+          setState(() {
+            country =
+                (result.data?.name ?? '').isEmpty ? '' : result.data!.name;
+            continent = (result.data?.continent ?? '').isEmpty
+                ? ''
+                : result.data!.continent;
+          });
+        } else {
+          // ignore: use_build_context_synchronously
+          errorService.displaySnackbarError(context, result.message);
+        }
       }
     } catch (e) {
       // ignore: use_build_context_synchronously

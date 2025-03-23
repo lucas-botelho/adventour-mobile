@@ -2,6 +2,7 @@ import 'package:adventour/components/layout/content_appbar.dart';
 import 'package:adventour/components/layout/sidemenu.dart';
 import 'package:adventour/components/media/media_slider.dart';
 import 'package:adventour/models/responses/country/country.dart';
+import 'package:adventour/respositories/map_respository.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:adventour/settings/constants.dart';
@@ -77,14 +78,9 @@ class _ActivitiesState extends State<Activities> {
     // if (countryCode.isEmpty) return;
 
     try {
-      final result = await ApiService().get(
-        '${Country.getCountry}/$countryCode',
-        await FirebaseAuthService().getIdToken(),
-        headers: <String, String>{},
-        fromJsonT: (json) => CountryResponse.fromJson(json),
-      );
+      var result = await MapRespository().getCountry(countryCode);
 
-      return result.data?.svg ?? "";
+      return result?.data?.svg ?? "";
     } catch (e) {
       debugPrint("Error fetching country: $e");
     }
@@ -114,42 +110,5 @@ class _ActivitiesState extends State<Activities> {
               ),
       ],
     );
-
-    // return Row(
-    //   children: [
-    //     SizedBox(
-    //       width: 100,
-    //       height: 100,
-    //       child: SimpleMap(
-    //         fit: BoxFit.contain,
-    //         countryBorder: const CountryBorder(
-    //           color: Colors.black,
-    //           width: 0.5,
-    //         ),
-    //         instructions: SMapPortugal.instructions,
-    //         defaultColor: Colors.grey.shade400,
-    //         callback: (id, name, tapDetails) async {
-    //           debugPrint("Tapped on: $name ($id)");
-    //         },
-    //       ),
-    //     ),
-    //     SizedBox(
-    //       width: 100,
-    //       height: 100,
-    //       child: SimpleMap(
-    //         fit: BoxFit.contain,
-    //         countryBorder: const CountryBorder(
-    //           color: Colors.black,
-    //           width: 0.5,
-    //         ),
-    //         instructions: SMapAngola.instructions,
-    //         defaultColor: Colors.grey.shade400,
-    //         callback: (id, name, tapDetails) async {
-    //           debugPrint("Tapped on: $name ($id)");
-    //         },
-    //       ),
-    //     ),
-    //   ],
-    // );
   }
 }

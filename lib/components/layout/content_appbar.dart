@@ -1,4 +1,5 @@
 import 'package:adventour/respositories/user_repository.dart';
+import 'package:adventour/utils/user_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:adventour/globals.dart' as globals;
 
@@ -75,7 +76,7 @@ class ContentAppbar extends StatelessWidget implements PreferredSizeWidget {
     if (photoUrl?.isEmpty ?? true) {
       var userdata = await userRepository.getUserData();
       photoUrl = userdata?.photoUrl.isEmpty == true
-          ? userRepository.getUserInitial(userdata)
+          ? UserUtils().getUserInitial(userdata)
           : userdata?.photoUrl;
     }
     return photoUrl!;

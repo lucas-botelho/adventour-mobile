@@ -2,6 +2,7 @@ import 'package:adventour/components/form/elements/single_digit.dart';
 import 'package:adventour/components/media/header_image_with_text.dart';
 import 'package:adventour/models/requests/auth/confirm_email.dart';
 import 'package:adventour/models/responses/auth/token.dart';
+import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
@@ -85,33 +86,30 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
   void confirmEmail() async {
     if (!formKey.currentState!.validate()) return;
     try {
-      final requestModel = EmailConfirmationRequest(
-        userId: widget.userId,
-        pin: _codeController1.text +
-            _codeController2.text +
-            _codeController3.text +
-            _codeController4.text,
-      );
+      List<String> code = [
+        _codeController1.text,
+        _codeController2.text,
+        _codeController3.text,
+        _codeController4.text
+      ];
 
-      final result = await ApiService().post(
-        token: widget.pinToken,
-        endpoint: Authentication.confirmEmail,
-        headers: <String, String>{},
-        body: requestModel.toJson(),
-        fromJsonT: (json) => TokenResponse.fromJson(json),
-      );
+      var result = await UserRepository()
+          .confirmEmail(widget.userId, code, widget.pinToken);
 
-      if (result.success) {
-        Navigator.pushReplacement(
+      if (result != null) {
+        if (result.success) {
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  RegistrationStepThree(userId: widget.userId),
+            ),
+          );
+        } else {
           // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(
-            builder: (context) => RegistrationStepThree(userId: widget.userId),
-          ),
-        );
-      } else {
-        // ignore: use_build_context_synchronously
-        errorService.displaySnackbarError(context, result.message);
+          errorService.displaySnackbarError(context, result.message);
+        }
       }
     } catch (e) {
       // ignore: use_build_context_synchronously

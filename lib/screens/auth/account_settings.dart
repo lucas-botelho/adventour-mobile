@@ -1,6 +1,7 @@
 import 'package:adventour/models/responses/auth/user.dart';
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
+import 'package:adventour/utils/user_utils.dart';
 import 'package:flutter/material.dart';
 
 class AccountSettings extends StatefulWidget {
@@ -261,7 +262,7 @@ class _AccountSettingsState extends State<AccountSettings> {
       radius: 25,
       backgroundColor: const Color(0xFF41969D),
       child: Text(
-        userRepository.getUserInitial(user),
+        UserUtils().getUserInitial(user),
         style: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w700,
