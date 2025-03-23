@@ -5,27 +5,29 @@ import 'package:adventour/models/responses/country/country.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:adventour/settings/constants.dart';
-import 'package:countries_world_map/countries_world_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Activities extends StatefulWidget {
   final String countryCode;
-  String? svg = "";
-  Activities({super.key, required this.countryCode});
+  final String continentName;
+  final int page = 1;
+  Activities(
+      {super.key, required this.countryCode, required this.continentName});
 
   @override
   State<Activities> createState() => _ActivitiesState();
 }
 
 class _ActivitiesState extends State<Activities> {
+  String? svg = "";
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchCountry(widget.countryCode).then((value) {
       setState(() {
-        widget.svg = value;
+        svg = value;
       });
     });
   }
@@ -93,12 +95,12 @@ class _ActivitiesState extends State<Activities> {
   Row countryslider() {
     return Row(
       children: [
-        widget.svg != null && widget.svg!.isNotEmpty
+        svg != null && svg!.isNotEmpty
             ? Container(
                 width: 100,
                 height: 100,
                 child: SvgPicture.string(
-                  widget.svg!,
+                  svg!,
                   fit: BoxFit.contain,
                 ),
               )

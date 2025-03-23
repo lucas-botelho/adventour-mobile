@@ -1,6 +1,6 @@
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/screens/auth/login.dart';
-import 'package:adventour/screens/content/activities.dart';
+import 'package:adventour/screens/world_map.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:adventour/screens/auth/registration_step_one.dart';
@@ -52,14 +52,12 @@ class AuthScreen extends StatelessWidget {
                 },
               ),
               CTAButton(
-                text: "Teste",
+                text: "map",
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Activities(
-                              countryCode: 'pt',
-                            )),
+                        builder: (context) => const AdventourMap()),
                   );
                 },
               ),

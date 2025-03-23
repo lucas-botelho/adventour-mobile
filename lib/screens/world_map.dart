@@ -1,4 +1,5 @@
 import 'package:adventour/models/responses/country/country.dart';
+import 'package:adventour/screens/content/activities.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/error_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
@@ -16,8 +17,9 @@ class AdventourMap extends StatefulWidget {
 }
 
 class _AdventourMapState extends State<AdventourMap> {
-  String selectedCountryName = "";
-  String selectedCountryContinent = "";
+  String country = "";
+  String continent = "";
+  String countryIsoCode = "";
   String fetchedData = "";
   ErrorService errorService = ErrorService();
 
@@ -37,7 +39,7 @@ class _AdventourMapState extends State<AdventourMap> {
             children: [
               styledHeader(),
               styledMap(),
-              if (selectedCountryName.isNotEmpty) ...displayFetchedData(),
+              if (country.isNotEmpty) ...displayFetchedData(),
               styledCTAButton(),
             ],
           ),
@@ -94,9 +96,18 @@ class _AdventourMapState extends State<AdventourMap> {
     return Padding(
       padding: const EdgeInsets.all(15),
       child: CTAButton(
-        text: "Explore",
-        onPressed: () => {print("Explore")},
-      ),
+          text: "Explore",
+          onPressed: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Activities(
+                      continentName: continent,
+                      countryCode: countryIsoCode,
+                    ),
+                  ),
+                )
+              }),
     );
   }
 
@@ -114,14 +125,16 @@ class _AdventourMapState extends State<AdventourMap> {
 
   List<Widget> displayFetchedData() {
     return [
-      Text(selectedCountryContinent),
+      Text(continent),
       _textDivider(),
-      Text(selectedCountryName),
+      Text(country),
     ];
   }
 
   Future<void> fetchCountry(String countryCode) async {
     if (countryCode.isEmpty) return;
+
+    countryIsoCode = countryCode;
 
     try {
       final result = await ApiService().get(
@@ -133,9 +146,8 @@ class _AdventourMapState extends State<AdventourMap> {
 
       if (result.success) {
         setState(() {
-          selectedCountryName =
-              (result.data?.name ?? '').isEmpty ? '' : result.data!.name;
-          selectedCountryContinent = (result.data?.continent ?? '').isEmpty
+          country = (result.data?.name ?? '').isEmpty ? '' : result.data!.name;
+          continent = (result.data?.continent ?? '').isEmpty
               ? ''
               : result.data!.continent;
         });
