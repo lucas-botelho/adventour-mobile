@@ -1,121 +1,86 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 class MediaSlider extends StatefulWidget {
-  const MediaSlider({super.key});
+  final Function(int)
+      onIndexChanged; // Callback to inform parent of index change
+
+  const MediaSlider({super.key, required this.onIndexChanged});
 
   @override
-  _MediaSliderState createState() => _MediaSliderState();
+  State<MediaSlider> createState() => _MediaSliderState();
 }
 
 class _MediaSliderState extends State<MediaSlider> {
-  late PageController _pageController;
+  final List<String> imagePaths = [
+    'assets/images/1.jpg',
+    'assets/images/2.jpg',
+    'assets/images/1.jpg',
+    'assets/images/2.jpg',
+    'assets/images/1.jpg',
+  ];
 
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(viewportFraction: 0.85, initialPage: 0);
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
+  int myCurrentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    final sliderHeight = MediaQuery.of(context).size.height * 0.45;
-    final sliderWidth = MediaQuery.of(context).size.width * 0.8;
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SizedBox(
-          height: sliderHeight,
-          width: double.infinity,
-          child: buildPageView(sliderHeight, sliderWidth),
-        );
-      },
-    );
-  }
-
-  Widget buildPageView(double sliderHeight, double sliderWidth) {
-    return PageView.builder(
-      controller: _pageController,
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return buildAnimatedBuilder(sliderHeight, sliderWidth, index);
-      },
-    );
-  }
-
-  Widget buildAnimatedBuilder(
-      double sliderHeight, double sliderWidth, int index) {
-    return AnimatedBuilder(
-      animation: _pageController,
-      builder: (context, child) {
-        double value = 1.0;
-        if (_pageController.position.haveDimensions) {
-          value = _pageController.page! - index;
-          value = (1 - (value.abs() * 0.3)).clamp(0.0, 1.0);
-        } else {
-          value = index == _pageController.initialPage
-              ? 1.0
-              : 0.7; // Initial scaling
-        }
-        return Center(
-          child: SizedBox(
-            height: Curves.easeOut.transform(value) * sliderHeight,
-            width: Curves.easeOut.transform(value) * sliderWidth,
-            child: child,
+    return Column(
+      children: [
+        CarouselSlider.builder(
+          itemCount: imagePaths.length,
+          itemBuilder: (context, index, realIndex) {
+            return GestureDetector(
+              onTap: () {
+                debugPrint("Tapped on image $index");
+              },
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeInOut,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(35),
+                      image: DecorationImage(
+                        image: AssetImage(imagePaths[index]),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 20,
+                    left: 20,
+                    child: GestureDetector(
+                      onTap: () {
+                        debugPrint("Heart icon tapped on image $index");
+                      },
+                      child: const Icon(
+                        Icons.favorite_border,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+          options: CarouselOptions(
+            height: MediaQuery.of(context).size.height * 0.35,
+            enableInfiniteScroll: true,
+            autoPlay: false,
+            viewportFraction: 0.65,
+            enlargeCenterPage: true,
+            autoPlayCurve: Curves.fastOutSlowIn,
+            autoPlayAnimationDuration: const Duration(milliseconds: 800),
+            onPageChanged: (index, reason) {
+              setState(() {
+                myCurrentIndex = index;
+              });
+              widget.onIndexChanged(index); // Notify parent
+            },
           ),
-        );
-      },
-      child: buildPageContent(index),
-    );
-  }
-
-  Widget buildPageContent(int index) {
-    return GestureDetector(
-      onTap: () {
-        debugPrint("Tapped on image $index");
-      },
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          buildImageContainer(),
-          buildHeartIcon(index),
-        ],
-      ),
-    );
-  }
-
-  Widget buildImageContainer() {
-    return Container(
-      margin: const EdgeInsets.symmetric(
-          horizontal: 10), // Adjust the margin to control spacing
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        image: const DecorationImage(
-          image: AssetImage('assets/images/login_image.jpg'),
-          fit: BoxFit.cover,
         ),
-      ),
-    );
-  }
-
-  Widget buildHeartIcon(int index) {
-    return Positioned(
-      top: 10,
-      left: 10,
-      child: GestureDetector(
-        onTap: () {
-          debugPrint("Heart icon tapped on image $index");
-        },
-        child: const Icon(
-          Icons.favorite_border,
-          color: Colors.white,
-        ),
-      ),
+      ],
     );
   }
 }
