@@ -1,5 +1,5 @@
 class AppSettings {
-  static const String apiBaseUrl = 'http://10.0.2.2/api';
+  static const String apiBaseUrl = 'http://10.0.2.2/deisi2056/api';
 }
 
 class Authentication {
@@ -14,6 +14,7 @@ class Authentication {
 class Country {
   static const String controller = 'country';
   static const String getCountry = "$controller/country";
+  static const String listCountries = "$controller/list/countries";
 }
 
 class Files {

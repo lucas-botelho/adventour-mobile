@@ -3,9 +3,6 @@ import 'package:adventour/components/layout/sidemenu.dart';
 import 'package:adventour/components/media/media_slider.dart';
 import 'package:adventour/models/responses/country/country.dart';
 import 'package:adventour/respositories/map_respository.dart';
-import 'package:adventour/services/api_service.dart';
-import 'package:adventour/services/firebase_auth_service.dart';
-import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -24,6 +21,7 @@ class _ActivitiesState extends State<Activities> {
   String? svg;
   int page = 1;
   int currentMediaIndex = 0;
+  List<CountryResponse> countries = [];
 
   final List<String> imagePaths = [
     'assets/images/1.jpg',
@@ -36,14 +34,18 @@ class _ActivitiesState extends State<Activities> {
   @override
   void initState() {
     super.initState();
-    fetchCountry(widget.countryCode);
+    fetchCountries();
   }
 
-  Future<void> fetchCountry(String countryCode) async {
+  Future<void> fetchCountries() async {
     try {
-      var result = await MapRespository().getCountry(countryCode);
+      var countriesResult =
+          await MapRespository().getCountries(widget.continentName, 1);
+      var country = await MapRespository().getCountry(widget.countryCode);
+
       setState(() {
-        svg = result?.data?.svg ?? "";
+        svg = country?.data?.svg ?? "";
+        countries = countriesResult?.data!.countries ?? [];
       });
     } catch (e) {
       debugPrint("Error fetching country: $e");
