@@ -24,11 +24,11 @@ class _AccountSettingsState extends State<AccountSettings> {
   }
 
   void _loadUserData() async {
-    final data = await userRepository.getUserData();
+    final response = await userRepository.getUserData();
 
-    if (data != null) {
+    if (response != null) {
       setState(() {
-        user = data;
+        user = response.data;
       });
     }
   }

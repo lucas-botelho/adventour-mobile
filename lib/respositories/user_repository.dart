@@ -16,7 +16,7 @@ class UserRepository {
   final firebaseAuthService = FirebaseAuthService();
   final apiService = ApiService();
 
-  Future<UserResponse?> getUserData() async {
+  Future<BaseApiResponse<UserResponse>?> getUserData() async {
     var firebaseUser = firebaseAuthService.getUser();
 
     if (firebaseUser != null) {
@@ -27,7 +27,7 @@ class UserRepository {
         fromJsonT: (json) => UserResponse.fromJson(json),
       );
 
-      return response.data;
+      return response;
     }
 
     return null;

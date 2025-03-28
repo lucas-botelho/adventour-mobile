@@ -4,7 +4,9 @@ import 'package:adventour/components/form/elements/form_passwordfield.dart';
 import 'package:adventour/components/form/elements/form_textfield.dart';
 import 'package:adventour/components/form/text_with_action.dart';
 import 'package:adventour/components/row/row_divider_with_text.dart';
+import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/screens/auth/registration_step_one.dart';
+import 'package:adventour/screens/auth/registration_step_two.dart';
 import 'package:adventour/screens/world_map.dart';
 import 'package:adventour/services/error_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
@@ -53,7 +55,14 @@ class _LoginState extends State<Login> {
               TextWithAction(
                 label: "Don't have an account?",
                 actionLabel: "Sign Up",
-                onPressed: () => pushToSignUp(context),
+                onPressed: () => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RegistrationStepOne(),
+                    ),
+                  )
+                },
               ),
             ],
           ),
@@ -116,45 +125,52 @@ class _LoginState extends State<Login> {
   }
 
   void signInWithGoogle() async {
-    var user = await firebaseAuthService.signInWithGoogle();
-    if (user != null) {
-      pushToAdventourMap();
-    } else {
-      errorService.displaySnackbarError(
-          context, "Failed to sign in with Google.");
-    }
-  }
-
-  void pushToAdventourMap() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const AdventourMap(),
-      ),
-      (route) => false,
-    );
+    await firebaseAuthService.signInWithGoogle();
+    login();
   }
 
   void signInWithEmailAndPassword() async {
     if (!formKey.currentState!.validate()) return;
 
-    var user = await firebaseAuthService.signUpWithEmail(
+    await firebaseAuthService.signUpWithEmail(
         _emailController.text, _passwordController.text);
 
-    if (user != null) {
-      pushToAdventourMap();
-    } else {
-      errorService.displaySnackbarError(
-          context, "Failed to sign in with email and password.");
-    }
+    login();
   }
 
-  void pushToSignUp(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const RegistrationStepOne(),
-      ),
-    );
+  void login() async {
+    var response = await UserRepository().getUserData();
+
+    if (response == null || response.statusCode == 500) {
+      errorService.displaySnackbarError(context, "Interal error.");
+      return;
+    }
+
+    if (!response.success && response.statusCode == 404) {
+      errorService.displaySnackbarError(
+          context, "You are not registered. Please sign up.");
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const RegistrationStepOne(),
+        ),
+      );
+
+      return;
+    }
+
+    if (response.success && response.statusCode == 200) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const AdventourMap(),
+        ),
+        (route) => false,
+      );
+      return;
+    }
+
+    errorService.displaySnackbarError(context, "Failed to sign in.");
   }
 }

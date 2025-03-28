@@ -20,9 +20,10 @@ class BaseApiResponse<T> {
           ? json['message'] ?? ''
           : json['title'] ?? 'An error occurred.',
       errors: json.containsKey('errors') ? _parseErrors(json['errors']) : null,
-      data: json.containsKey('data') && fromJsonT != null
-          ? fromJsonT(json['data'])
-          : null,
+      data:
+          json.containsKey('data') && json['data'] != null && fromJsonT != null
+              ? fromJsonT(json['data'])
+              : null,
       statusCode: statusCode,
     );
   }

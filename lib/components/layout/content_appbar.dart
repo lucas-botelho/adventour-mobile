@@ -74,10 +74,10 @@ class ContentAppbar extends StatelessWidget implements PreferredSizeWidget {
 
     var photoUrl = globals.photoUrl;
     if (photoUrl?.isEmpty ?? true) {
-      var userdata = await userRepository.getUserData();
-      photoUrl = userdata?.photoUrl.isEmpty == true
-          ? UserUtils().getUserInitial(userdata)
-          : userdata?.photoUrl;
+      var response = await userRepository.getUserData();
+      photoUrl = response?.data?.photoUrl.isEmpty == true
+          ? UserUtils().getUserInitial(response?.data)
+          : response?.data?.photoUrl;
     }
     return photoUrl!;
   }
