@@ -1,10 +1,6 @@
 import 'package:adventour/components/form/elements/single_digit.dart';
 import 'package:adventour/components/media/header_image_with_text.dart';
-import 'package:adventour/models/requests/auth/confirm_email.dart';
-import 'package:adventour/models/responses/auth/token.dart';
 import 'package:adventour/respositories/user_repository.dart';
-import 'package:adventour/services/api_service.dart';
-import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/text_with_action.dart';

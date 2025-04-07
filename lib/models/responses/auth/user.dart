@@ -3,7 +3,7 @@ class UserResponse {
   final String email;
   final String photoUrl;
   final String oauthId;
-  final String verified;
+  final bool verified;
   final String username;
 
   UserResponse(

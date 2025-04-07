@@ -33,9 +33,9 @@ class MapRespository {
   }
 
   Future<BaseApiResponse<CountryListResponse>?> getCountries(
-      String continentName, int page) async {
+      String continentName, int page, String countryCode) async {
     final result = await ApiService().get(
-      '${Country.listCountries}?continent=$continentName&page=$page&pageSize=5',
+      '${Country.listCountries}?continent=$continentName&page=$page&pageSize=5&selectedCountryCode=$countryCode',
       await FirebaseAuthService().getIdToken(),
       headers: <String, String>{},
       fromJsonT: (json) => CountryListResponse.fromJson(json),

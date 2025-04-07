@@ -64,9 +64,7 @@ class UserRepository {
   }
 
   Future<BaseApiResponse<TokenResponse>?> confirmEmail(
-      String userId, List<String> code, String token) async {
-    var token = await firebaseAuthService.getIdToken();
-
+      String userId, List<String> code, String pinToken) async {
     try {
       final requestModel = EmailConfirmationRequest(
         userId: userId,
@@ -74,7 +72,7 @@ class UserRepository {
       );
 
       final result = await apiService.post(
-        token: token,
+        token: pinToken,
         endpoint: Authentication.confirmEmail,
         headers: <String, String>{},
         body: requestModel.toJson(),

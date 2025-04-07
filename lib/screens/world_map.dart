@@ -63,15 +63,16 @@ class _AdventourMapState extends State<AdventourMap> {
   SizedBox styledMap() {
     return SizedBox(
       height: 500,
+      width: double.infinity, // Define largura total do ecrã
       child: InteractiveViewer(
         constrained: true,
         scaleEnabled: true,
         minScale: 1.0,
         maxScale: 20.0,
-        boundaryMargin: const EdgeInsets.all(double.infinity),
         child: Center(
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
+          child: Container(
+            constraints:
+                const BoxConstraints(maxWidth: 1200), // Limita o tamanho máximo
             child: SimpleMap(
               fit: BoxFit.contain,
               countryBorder: const CountryBorder(
