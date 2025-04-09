@@ -5,12 +5,14 @@ import 'package:adventour/models/responses/country/country.dart';
 import 'package:adventour/respositories/map_respository.dart';
 
 class CountrySlider extends StatefulWidget {
+  final String countryCode;
+  final Function(String) onCountryChanged; // Callback for country change
+
   const CountrySlider({
     super.key,
     required this.countryCode,
+    required this.onCountryChanged,
   });
-
-  final String countryCode;
 
   @override
   State<CountrySlider> createState() => _CountrySliderState();
@@ -31,6 +33,17 @@ class _CountrySliderState extends State<CountrySlider> {
   void initState() {
     super.initState();
     _initCountries();
+  }
+
+  void _onCountrySelected(int index) {
+    setState(() {
+      currentCountry = countries[index];
+    });
+
+    debugPrint("Selected country: ${currentCountry!.name}"); // Debug log
+
+    // Trigger the callback to notify the parent widget
+    widget.onCountryChanged(currentCountry!.code);
   }
 
   Future<void> _initCountries() async {
@@ -106,7 +119,11 @@ class _CountrySliderState extends State<CountrySlider> {
           : CarouselSlider.builder(
               itemCount: countries.length,
               itemBuilder: (context, index, realIndex) {
-                return _buildCountryItem(index);
+                return GestureDetector(
+                  onTap: () =>
+                      _onCountrySelected(index), // Handle country selection
+                  child: _buildCountryItem(index),
+                );
               },
               options: CarouselOptions(
                 initialPage: myCurrentIndex,
@@ -148,7 +165,7 @@ class _CountrySliderState extends State<CountrySlider> {
     bool isSelected = currentCountry?.code == country.code;
 
     return GestureDetector(
-      onTap: () => {debugPrint},
+      onTap: () => _onCountrySelected(index), // Call _onCountrySelected
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         opacity: isSelected ? 1.0 : 0.5,

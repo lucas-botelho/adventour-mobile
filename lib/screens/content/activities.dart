@@ -17,8 +17,20 @@ class Activities extends StatefulWidget {
 }
 
 class _ActivitiesState extends State<Activities> {
-  int page = 1;
-  int currentMediaIndex = 0;
+  late String selectedCountryCode; // Store the selected country code
+
+  @override
+  void initState() {
+    super.initState();
+    selectedCountryCode =
+        widget.countryCode; // Initialize with the initial country code
+  }
+
+  void _onCountryChanged(String newCountryCode) {
+    setState(() {
+      selectedCountryCode = newCountryCode; // Update the selected country code
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,20 +42,25 @@ class _ActivitiesState extends State<Activities> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Countries", style: Theme.of(context).textTheme.bodyLarge),
-            CountrySlider(countryCode: widget.countryCode),
+            CountrySlider(
+              countryCode: selectedCountryCode,
+              onCountryChanged: _onCountryChanged, // Pass the callback
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text("Activities",
                   style: Theme.of(context).textTheme.bodyLarge),
             ),
-            MediaSlider(countryCode: widget.countryCode),
+            MediaSlider(
+                countryCode: selectedCountryCode), // Use updated country code
           ],
         ),
       ),
       drawer: const SideMenu(),
       bottomNavigationBar: NavBar(
-          selectedIndex: 0,
-          onItemTapped: (index) => debugPrint("Tapped on index: $index")),
+        selectedIndex: 0,
+        onItemTapped: (index) => debugPrint("Tapped on index: $index"),
+      ),
     );
   }
 }

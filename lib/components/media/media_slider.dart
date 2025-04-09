@@ -18,11 +18,26 @@ class _MediaSliderState extends State<MediaSlider> {
   int myCurrentIndex = 0;
   bool isLoading = true; // Track loading state
   Set<int> favoriteAttractions = {}; // Track favorite attractions
+  late String currentCountryCode;
 
   @override
   void initState() {
     super.initState();
-    _initAttractions();
+    currentCountryCode =
+        widget.countryCode; // Initialize with the initial country code
+    _fetchAttractions(); // Fetch attractions for the initial country
+  }
+
+  @override
+  void didUpdateWidget(covariant MediaSlider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.countryCode != widget.countryCode) {
+      // Country code has changed, update state and fetch new data
+      setState(() {
+        currentCountryCode = widget.countryCode;
+      });
+      _fetchAttractions();
+    }
   }
 
   @override
@@ -162,12 +177,12 @@ class _MediaSliderState extends State<MediaSlider> {
     );
   }
 
-  Future<void> _initAttractions() async {
+  Future<void> _fetchAttractions() async {
     setState(() => isLoading = true); // Start loading
 
     try {
       final response = await attractionRespository.getAttractions(
-        countryCode: widget.countryCode,
+        countryCode: currentCountryCode,
       );
 
       if (response != null && response.data != null) {
@@ -180,7 +195,7 @@ class _MediaSliderState extends State<MediaSlider> {
         });
       } else {
         debugPrint(
-            "No attractions found for country code: ${widget.countryCode}");
+            "No attractions found for country code: $currentCountryCode");
       }
     } catch (e) {
       debugPrint("Error fetching attractions: $e");
