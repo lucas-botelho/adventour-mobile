@@ -34,6 +34,7 @@ class _MediaSliderState extends State<MediaSlider> {
     if (oldWidget.countryCode != widget.countryCode) {
       // Country code has changed, update state and fetch new data
       setState(() {
+        myCurrentIndex = 0; // Reset index to 0
         currentCountryCode = widget.countryCode;
       });
       _fetchAttractions();
