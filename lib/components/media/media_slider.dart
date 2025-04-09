@@ -32,6 +32,14 @@ class _MediaSliderState extends State<MediaSlider> {
       );
     }
 
+    if (attractions.isEmpty) {
+      return const Expanded(
+        child: Center(
+          child: Text("No attractions found."),
+        ),
+      );
+    }
+
     final currentAttraction = attractions[myCurrentIndex]!;
 
     return SizedBox(

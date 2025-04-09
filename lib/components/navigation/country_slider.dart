@@ -17,7 +17,7 @@ class CountrySlider extends StatefulWidget {
 }
 
 class _CountrySliderState extends State<CountrySlider> {
-  MapRespository mapRespository = MapRespository();
+  final MapRespository mapRespository = MapRespository();
   CountryResponse? currentCountry;
   List<CountryResponse> countries = [];
   int myCurrentIndex = 0;
@@ -60,8 +60,6 @@ class _CountrySliderState extends State<CountrySlider> {
           currentPreviousPage--;
           currentPage++;
         });
-      } else {
-        debugPrint("Failed to load current country.");
       }
     } catch (e) {
       debugPrint("Error fetching countries: $e");
@@ -70,25 +68,13 @@ class _CountrySliderState extends State<CountrySlider> {
     }
   }
 
-  Future<List<CountryResponse>> _fetchCountries({
-    required bool loadNext,
-  }) async {
-    if (isLoading || countries.length == totalCountries)
-      return []; // Verificação de limite total
+  Future<List<CountryResponse>> _fetchCountries(bool loadNext) async {
+    if (isLoading || countries.length == totalCountries) return [];
 
     setState(() => isLoading = true);
 
     try {
       int pageToLoad = loadNext ? currentPage : currentPreviousPage;
-
-      // Se já carregaste todos os países numa direção, começa a carregar na direção oposta
-      if (loadNext && countries.length >= totalCountries) {
-        loadNext = false;
-        pageToLoad = currentPreviousPage;
-      } else if (!loadNext && countries.length >= totalCountries) {
-        loadNext = true;
-        pageToLoad = currentPage;
-      }
 
       var response = await mapRespository.getCountries(
         currentCountry!.continent,
@@ -134,18 +120,16 @@ class _CountrySliderState extends State<CountrySlider> {
                     myCurrentIndex = index;
                   });
 
-                  // Trigger fetch earlier (e.g., 2 items before the end or start)
-                  if (index >= countries.length - 5 && !isLoading) {
-                    // Fetch next set of countries
-                    var newCountries = await _fetchCountries(loadNext: true);
+                  if (index >= countries.length - (pageSize / 4) &&
+                      !isLoading) {
+                    var newCountries = await _fetchCountries(true);
                     if (newCountries.isNotEmpty) {
                       setState(() {
                         countries.addAll(newCountries);
                       });
                     }
-                  } else if (index <= 5 && !isLoading) {
-                    // Fetch previous set of countries
-                    var newCountries = await _fetchCountries(loadNext: false);
+                  } else if (index <= pageSize / 4 && !isLoading) {
+                    var newCountries = await _fetchCountries(false);
                     if (newCountries.isNotEmpty) {
                       setState(() {
                         countries.insertAll(0, newCountries);
@@ -161,16 +145,10 @@ class _CountrySliderState extends State<CountrySlider> {
 
   Widget _buildCountryItem(int index) {
     var country = countries[index];
-    bool isSelected = currentCountry?.code ==
-        country.code; // Apenas o selecionado é destacado
+    bool isSelected = currentCountry?.code == country.code;
 
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          currentCountry = countries[index]; // Atualiza o país selecionado
-        });
-        debugPrint("Selected Country Code: ${country.code}");
-      },
+      onTap: () => {debugPrint},
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         opacity: isSelected ? 1.0 : 0.5,
