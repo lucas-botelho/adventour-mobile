@@ -41,12 +41,29 @@ class AttractionRespository {
       endpoint: '${Attraction.addToFavorites}?attractionId=$attractionId',
       token: await FirebaseAuthService().getIdToken(),
       headers: <String, String>{},
-      body: AddToFavoriteRequest(
+      body: ToggleFavoriteRequest(
               attractionId: attractionId, userId: response.data!.oauthId)
           .toJson(),
       fromJsonT: (json) => json as String,
     );
 
     return result;
+  }
+
+  Future<BaseApiResponse<String>?> removeFromFavorite(int attractionId) async {
+    var response = await UserRepository().getUserData();
+    if (response == null) {
+      return null;
+    }
+
+    return await ApiService().post(
+      endpoint: Attraction.removeFavorite,
+      token: await firebaseAuthService.getIdToken(),
+      headers: <String, String>{},
+      body: ToggleFavoriteRequest(
+              attractionId: attractionId, userId: response.data!.oauthId)
+          .toJson(),
+      fromJsonT: (json) => json as String,
+    );
   }
 }

@@ -148,7 +148,7 @@ class _MediaSliderState extends State<MediaSlider> {
       top: 20,
       left: 20,
       child: GestureDetector(
-        onTap: () => addToFavorite(index),
+        onTap: () => toggleFavorite(index),
         child: Icon(
           isFavorite ? Icons.favorite : Icons.favorite_border,
           color: isFavorite ? Colors.red : Colors.white,
@@ -205,6 +205,14 @@ class _MediaSliderState extends State<MediaSlider> {
     }
   }
 
+  void toggleFavorite(int index) {
+    if (favoriteAttractions.contains(attractions[index]!.id)) {
+      removeFromFavorite(index);
+    } else {
+      addToFavorite(index);
+    }
+  }
+
   void addToFavorite(int index) async {
     final attraction = attractions[index];
     if (attraction == null) return;
@@ -220,6 +228,26 @@ class _MediaSliderState extends State<MediaSlider> {
         SnackBar(
             content: Text(
                 "Failed to add ${attraction.name} to favorites. Please try again later.")),
+      );
+    }
+  }
+
+  void removeFromFavorite(int index) async {
+    final attraction = attractions[index];
+    if (attraction == null) return;
+
+    final response =
+        await attractionRespository.removeFromFavorite(attraction.id);
+
+    if (response?.success ?? false) {
+      setState(() {
+        favoriteAttractions.remove(attraction.id); // Remove from favorites
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                "Failed to remove ${attraction.name} from favorites. Please try again later.")),
       );
     }
   }

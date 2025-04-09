@@ -1,8 +1,8 @@
-class AddToFavoriteRequest {
+class ToggleFavoriteRequest {
   final int attractionId;
   final String userId;
 
-  AddToFavoriteRequest({required this.attractionId, required this.userId});
+  ToggleFavoriteRequest({required this.attractionId, required this.userId});
 
   Map<String, dynamic> toJson() {
     return {
