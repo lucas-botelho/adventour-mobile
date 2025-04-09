@@ -15,6 +15,10 @@ class Country {
   static const String controller = 'country';
   static const String getCountry = "$controller/country";
   static const String listCountries = "$controller/list/countries";
+}
+
+class Attraction {
+  static const String controller = 'attraction';
   static const String listAttractions = "$controller/list/attractions";
 }
 

@@ -12,7 +12,7 @@ class AttractionRespository {
     required String countryCode,
   }) async {
     final result = await ApiService().get(
-      '${Country.listAttractions}?countryCode=$countryCode',
+      '${Attraction.listAttractions}?countryCode=$countryCode',
       await FirebaseAuthService().getIdToken(),
       headers: <String, String>{},
       fromJsonT: (json) => BasicAttractionListResponse.fromJson(json),
