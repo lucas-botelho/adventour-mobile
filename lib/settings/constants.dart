@@ -20,6 +20,7 @@ class Country {
 class Attraction {
   static const String controller = 'attraction';
   static const String listAttractions = "$controller/list/attractions";
+  static const String addToFavorites = "$controller/favorite";
 }
 
 class Files {

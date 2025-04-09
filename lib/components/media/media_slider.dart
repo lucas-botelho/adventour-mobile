@@ -17,6 +17,7 @@ class _MediaSliderState extends State<MediaSlider> {
   final AttractionRespository attractionRespository = AttractionRespository();
   int myCurrentIndex = 0;
   bool isLoading = true; // Track loading state
+  Set<int> favoriteAttractions = {}; // Track favorite attractions
 
   @override
   void initState() {
@@ -115,23 +116,26 @@ class _MediaSliderState extends State<MediaSlider> {
         borderRadius: BorderRadius.circular(35),
         child: Image.network(
           attractions[index]!.attractionImages[0].url,
-          fit: BoxFit.cover, // Ensures the image takes all the space
-          width: double.infinity, // Makes the image fill the container width
-          height: double.infinity, // Makes the image fill the container height
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
         ),
       ),
     );
   }
 
   Widget _buildHeartIcon(int index) {
+    final attraction = attractions[index];
+    final isFavorite = favoriteAttractions.contains(attraction!.id);
+
     return Positioned(
       top: 20,
       left: 20,
       child: GestureDetector(
-        onTap: () => debugPrint("Heart icon tapped on image $index"),
-        child: const Icon(
-          Icons.favorite_border,
-          color: Colors.white,
+        onTap: () => addToFavorite(index),
+        child: Icon(
+          isFavorite ? Icons.favorite : Icons.favorite_border,
+          color: isFavorite ? Colors.red : Colors.white,
         ),
       ),
     );
@@ -169,6 +173,10 @@ class _MediaSliderState extends State<MediaSlider> {
       if (response != null && response.data != null) {
         setState(() {
           attractions = response.data!.attractions;
+          favoriteAttractions = response.data!.attractions
+              .where((attraction) => attraction.isFavorited)
+              .map((attraction) => attraction.id)
+              .toSet();
         });
       } else {
         debugPrint(
@@ -178,6 +186,25 @@ class _MediaSliderState extends State<MediaSlider> {
       debugPrint("Error fetching attractions: $e");
     } finally {
       setState(() => isLoading = false); // Stop loading
+    }
+  }
+
+  void addToFavorite(int index) async {
+    final attraction = attractions[index];
+    if (attraction == null) return;
+
+    final response = await attractionRespository.addToFavorite(attraction.id);
+
+    if (response?.success ?? false) {
+      setState(() {
+        favoriteAttractions.add(attraction.id); // Mark as favorite
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                "Failed to add ${attraction.name} to favorites. Please try again later.")),
+      );
     }
   }
 }

@@ -19,7 +19,7 @@ class UserResponse {
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       photoUrl: json['photoUrl'] ?? '',
-      oauthId: json['oauthid'] ?? '',
+      oauthId: json['oauthId'] ?? '',
       verified: json['verified'] ?? false,
       username: json['username'] ?? '',
     );
