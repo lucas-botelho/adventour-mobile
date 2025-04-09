@@ -6,7 +6,6 @@ import 'package:adventour/components/form/text_with_action.dart';
 import 'package:adventour/components/row/row_divider_with_text.dart';
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/screens/auth/registration_step_one.dart';
-import 'package:adventour/screens/auth/registration_step_two.dart';
 import 'package:adventour/screens/world_map.dart';
 import 'package:adventour/services/error_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';

@@ -36,7 +36,7 @@ class _ActivitiesState extends State<Activities> {
               child: Text("Activities",
                   style: Theme.of(context).textTheme.bodyLarge),
             ),
-            MediaSlider(),
+            MediaSlider(countryCode: widget.countryCode),
           ],
         ),
       ),

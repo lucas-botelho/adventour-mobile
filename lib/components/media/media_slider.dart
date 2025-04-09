@@ -1,33 +1,63 @@
+import 'package:adventour/models/responses/attraction/basic_attraction_response.dart';
+import 'package:adventour/respositories/attraction_respository.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 class MediaSlider extends StatefulWidget {
-  const MediaSlider({super.key});
+  final String countryCode;
+
+  const MediaSlider({super.key, required this.countryCode});
 
   @override
   State<MediaSlider> createState() => _MediaSliderState();
 }
 
 class _MediaSliderState extends State<MediaSlider> {
-  final List<String> imagePaths = [
-    'assets/images/1.jpg',
-    'assets/images/2.jpg',
-    'assets/images/1.jpg',
-    'assets/images/2.jpg',
-    'assets/images/1.jpg',
-  ];
-
+  List<BasicAttractionResponse?> attractions = [];
+  final AttractionRespository attractionRespository = AttractionRespository();
   int myCurrentIndex = 0;
+  bool isLoading = true; // Track loading state
+
+  @override
+  void initState() {
+    super.initState();
+    _initAttractions();
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(), // Show loader while loading
+      );
+    }
+
+    final currentAttraction = attractions[myCurrentIndex]!;
+
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.28,
+      height: MediaQuery.of(context).size.height * 0.50,
       child: Stack(
-        alignment: Alignment.topCenter,
+        alignment: Alignment.center,
         children: [
           _buildImageCarousel(),
-          Positioned(bottom: 0, child: _buildExploreButton()),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                vertical: MediaQuery.of(context).size.height * 0.13),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  currentAttraction.name,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Text(
+                  currentAttraction.description,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          _buildExploreButton(),
         ],
       ),
     );
@@ -35,15 +65,15 @@ class _MediaSliderState extends State<MediaSlider> {
 
   Widget _buildImageCarousel() {
     return CarouselSlider.builder(
-      itemCount: imagePaths.length,
+      itemCount: attractions.length,
       itemBuilder: (context, index, realIndex) {
         return _buildCarouselItem(index);
       },
       options: CarouselOptions(
-        height: MediaQuery.of(context).size.height * 0.25,
+        height: MediaQuery.of(context).size.height * 0.45,
         enableInfiniteScroll: true,
         autoPlay: false,
-        viewportFraction: 0.65,
+        viewportFraction: 0.70,
         enlargeCenterPage: true,
         autoPlayCurve: Curves.fastOutSlowIn,
         autoPlayAnimationDuration: const Duration(milliseconds: 800),
@@ -57,15 +87,12 @@ class _MediaSliderState extends State<MediaSlider> {
   }
 
   Widget _buildCarouselItem(int index) {
-    return GestureDetector(
-      onTap: () => debugPrint("Tapped on image $index"),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          _buildImageContainer(index),
-          _buildHeartIcon(index),
-        ],
-      ),
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        _buildImageContainer(index),
+        _buildHeartIcon(index),
+      ],
     );
   }
 
@@ -75,9 +102,14 @@ class _MediaSliderState extends State<MediaSlider> {
       curve: Curves.easeInOut,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(35),
-        image: DecorationImage(
-          image: AssetImage(imagePaths[index]),
-          fit: BoxFit.cover,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(35),
+        child: Image.network(
+          attractions[index]!.attractionImages[0].url,
+          fit: BoxFit.cover, // Ensures the image takes all the space
+          width: double.infinity, // Makes the image fill the container width
+          height: double.infinity, // Makes the image fill the container height
         ),
       ),
     );
@@ -98,20 +130,46 @@ class _MediaSliderState extends State<MediaSlider> {
   }
 
   Widget _buildExploreButton() {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+    return Positioned(
+      bottom: 0,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          elevation: 5,
         ),
-        elevation: 5,
-      ),
-      onPressed: () =>
-          debugPrint("Explore button tapped on index: $myCurrentIndex"),
-      child: const Text(
-        "Explore",
-        style: TextStyle(color: Colors.black),
+        onPressed: () =>
+            debugPrint("Explore button tapped on index: $myCurrentIndex"),
+        child: const Text(
+          "Explore",
+          style: TextStyle(color: Colors.black),
+        ),
       ),
     );
+  }
+
+  Future<void> _initAttractions() async {
+    setState(() => isLoading = true); // Start loading
+
+    try {
+      final response = await attractionRespository.getAttractions(
+        countryCode: widget.countryCode,
+      );
+
+      if (response != null && response.data != null) {
+        setState(() {
+          attractions = response.data!.attractions;
+        });
+      } else {
+        debugPrint(
+            "No attractions found for country code: ${widget.countryCode}");
+      }
+    } catch (e) {
+      debugPrint("Error fetching attractions: $e");
+    } finally {
+      setState(() => isLoading = false); // Stop loading
+    }
   }
 }
