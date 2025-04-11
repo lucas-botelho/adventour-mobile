@@ -5,18 +5,18 @@ import 'package:adventour/components/navigation/sidemenu.dart';
 import 'package:adventour/components/media/media_slider.dart';
 import 'package:flutter/material.dart';
 
-class Activities extends StatefulWidget {
+class CountryAttractions extends StatefulWidget {
   final String countryCode;
   final String continentName;
 
-  const Activities(
+  const CountryAttractions(
       {super.key, required this.countryCode, required this.continentName});
 
   @override
-  State<Activities> createState() => _ActivitiesState();
+  State<CountryAttractions> createState() => _CountryAttractionsState();
 }
 
-class _ActivitiesState extends State<Activities> {
+class _CountryAttractionsState extends State<CountryAttractions> {
   late String selectedCountryCode; // Store the selected country code
 
   @override

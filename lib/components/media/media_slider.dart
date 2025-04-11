@@ -1,5 +1,6 @@
 import 'package:adventour/models/responses/attraction/basic_attraction_response.dart';
 import 'package:adventour/respositories/attraction_respository.dart';
+import 'package:adventour/screens/content/attraction.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
@@ -168,8 +169,14 @@ class _MediaSliderState extends State<MediaSlider> {
           ),
           elevation: 5,
         ),
-        onPressed: () =>
-            debugPrint("Explore button tapped on index: $myCurrentIndex"),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AttractionDetails(
+              id: attractions[myCurrentIndex]!.id,
+            ),
+          ),
+        ),
         child: const Text(
           "Explore",
           style: TextStyle(color: Colors.black),

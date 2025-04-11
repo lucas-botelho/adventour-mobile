@@ -1,5 +1,5 @@
 import 'package:adventour/respositories/map_respository.dart';
-import 'package:adventour/screens/content/activities.dart';
+import 'package:adventour/screens/content/country_attractions.dart';
 import 'package:adventour/services/error_service.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:countries_world_map/data/maps/world_map.dart';
@@ -100,7 +100,7 @@ class _AdventourMapState extends State<AdventourMap> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Activities(
+                    builder: (context) => CountryAttractions(
                       continentName: continent,
                       countryCode: countryIsoCode,
                     ),

@@ -22,6 +22,7 @@ class Attraction {
   static const String listAttractions = "$controller/list/attractions";
   static const String addToFavorites = "$controller/favorite";
   static const String removeFavorite = "$controller/favorite/remove";
+  static const String attraction = "$controller/attraction";
 }
 
 class Files {

@@ -1,5 +1,6 @@
 import 'package:adventour/models/base_api_response.dart';
 import 'package:adventour/models/requests/attraction/add_favorite.dart';
+import 'package:adventour/models/responses/attraction/attraction_response.dart';
 import 'package:adventour/models/responses/attraction/basic_attraction_list_response.dart';
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/services/api_service.dart';
@@ -64,6 +65,15 @@ class AttractionRespository {
               attractionId: attractionId, userId: response.data!.oauthId)
           .toJson(),
       fromJsonT: (json) => json as String,
+    );
+  }
+
+  Future<BaseApiResponse<AttractionResponse>?> getAttraction(int id) async {
+    return await ApiService().get(
+      '${Attraction.attraction}/$id',
+      await FirebaseAuthService().getIdToken(),
+      headers: <String, String>{},
+      fromJsonT: (json) => AttractionResponse.fromJson(json),
     );
   }
 }
