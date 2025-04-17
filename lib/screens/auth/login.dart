@@ -2,7 +2,7 @@ import 'package:adventour/components/cta/arrow_back_button.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/form_passwordfield.dart';
 import 'package:adventour/components/form/elements/form_textfield.dart';
-import 'package:adventour/components/form/text_with_action.dart';
+import 'package:adventour/components/form/elements/text_with_action.dart';
 import 'package:adventour/components/row/row_divider_with_text.dart';
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/screens/auth/registration_step_one.dart';

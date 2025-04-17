@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:adventour/models/base_api_response.dart';
 import 'package:adventour/models/requests/auth/confirm_email.dart';
 import 'package:adventour/models/requests/auth/patch_public_data.dart';
@@ -6,7 +5,6 @@ import 'package:adventour/models/requests/auth/user_registration.dart';
 import 'package:adventour/models/responses/auth/patch_public_data.dart';
 import 'package:adventour/models/responses/auth/token.dart';
 import 'package:adventour/models/responses/auth/user.dart';
-import 'package:adventour/models/responses/files/file_upload.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:adventour/settings/constants.dart';
@@ -108,17 +106,5 @@ class UserRepository {
     } catch (e) {
       rethrow;
     }
-  }
-
-  Future<BaseApiResponse<FileUploadResponse>?> uploadProfilePicture(
-      File profileImage) async {
-    final response = await apiService.uploadFile(
-      endpoint: Files.upload,
-      file: profileImage,
-      token: await firebaseAuthService.getIdToken(),
-      fromJsonT: (json) => FileUploadResponse.fromJson(json),
-    );
-
-    return response;
   }
 }

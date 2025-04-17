@@ -87,4 +87,25 @@ class AttractionRespository {
       fromJsonT: (json) => AttractionInfoDataResponse.fromJson(json),
     );
   }
+
+  Future<BaseApiResponse<String>?> createReview({required int attractionId, required String review, required String title, required int rating, required List<String>? imagesUrls}) async {
+    var response = await UserRepository().getUserData();
+    if (response == null) {
+      return null;
+    }
+
+    return ApiService().post(
+      endpoint: "${Attraction.createReview}/$attractionId",
+      token: await firebaseAuthService.getIdToken(),
+      headers: <String, String>{},
+      body: {
+        'oAuthId': response.data!.oauthId,
+        'review': review,
+        'title': title,
+        'rating': rating,
+        'imagesUrls': imagesUrls,
+      },
+      fromJsonT: (json) => json as String,
+    );
+  }
 }

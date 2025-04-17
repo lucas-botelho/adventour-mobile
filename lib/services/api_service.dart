@@ -66,6 +66,42 @@ class ApiService {
     }
   }
 
+  Future<BaseApiResponse<T>> uploadFiles<T>({
+    String? token,
+    required String endpoint,
+    required List<File> files,
+    required T Function(Map<String, dynamic>) fromJsonT,
+  }) async {
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl/$endpoint'),
+      );
+
+      if (token != null && token.isNotEmpty) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+
+      // Add each file to the request
+      for (var file in files) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'files', // 👈 Your API must accept multiple files under this field name
+            file.path,
+          ),
+        );
+      }
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      return processResponse<T>(response, fromJsonT);
+    } catch (e) {
+      throw Exception('Failed to upload files: $e');
+    }
+  }
+
+
   Future<BaseApiResponse<T>> patch<T>({
     String? token,
     required String endpoint,

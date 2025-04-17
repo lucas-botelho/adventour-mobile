@@ -3,11 +3,12 @@ import 'package:adventour/components/media/attraction_image_slider.dart';
 import 'package:adventour/components/navigation/attraction_nav.dart';
 import 'package:adventour/components/navigation/navbar.dart';
 import 'package:adventour/components/navigation/sidemenu.dart';
+import 'package:adventour/components/tabs/reviews_tabs.dart';
 import 'package:adventour/models/responses/attraction/attraction_response.dart';
 import 'package:adventour/respositories/attraction_respository.dart';
 import 'package:flutter/material.dart';
 
-import '../../components/information_tab.dart';
+import '../../components/tabs/information_tab.dart';
 
 class AttractionDetails extends StatefulWidget {
   final int attractionId;
@@ -99,7 +100,7 @@ class _AttractionDetailsState extends State<AttractionDetails> {
               children: [
                 aboutTab(context),
                 InformationTabs(attractionId: widget.attractionId),
-                evaluationsTab(),
+                ReviewTabs(attractionId: widget.attractionId),
               ],
             ),
           ),

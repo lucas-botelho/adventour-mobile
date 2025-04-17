@@ -2,6 +2,7 @@ import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/styled_image_picker.dart';
 import 'package:adventour/components/form/elements/underlined_textfield.dart';
 import 'package:adventour/components/text/title_with_text.dart';
+import 'package:adventour/respositories/files_respository.dart';
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/screens/auth/registration_complete.dart';
 import 'package:adventour/services/error_service.dart';
@@ -123,18 +124,16 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
 
   Future<String?> uploadProfilePicture() async {
     try {
-      final response = await userRepsository.uploadProfilePicture(
-        profileImage!,
+      final response = await FileRepository().uploadSingleFile(
+        file: profileImage!,
       );
-      if (response != null) {
-        if (response.success) {
-          return response.data!.publicUrl;
-        } else {
-          // ignore: use_build_context_synchronously
-          errorService.displaySnackbarError(context, response.message);
-        }
+      if (response.success) {
+        return response.data!.publicUrl;
+      } else {
+        // ignore: use_build_context_synchronously
+        errorService.displaySnackbarError(context, response.message);
       }
-    } catch (e) {
+        } catch (e) {
       // ignore: use_build_context_synchronously
       errorService.displaySnackbarError(context, null);
     }

@@ -23,11 +23,12 @@ class Attraction {
   static const String addToFavorites = "$controller/favorite";
   static const String removeFavorite = "$controller/favorite/remove";
   static const String attraction = "$controller/attraction";
-
   static const String attractionInfo = "$controller/info";
+  static const String createReview = "$controller/review";
 }
 
 class Files {
   static const String controller = 'files';
   static const String upload = "$controller/upload";
+  static const String uploadMultiple = "$controller/upload/multiple";
 }

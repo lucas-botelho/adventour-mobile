@@ -3,7 +3,7 @@ import 'package:adventour/components/media/header_image_with_text.dart';
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:adventour/components/cta/cta_button.dart';
-import 'package:adventour/components/form/text_with_action.dart';
+import 'package:adventour/components/form/elements/text_with_action.dart';
 import 'package:adventour/screens/auth/registration_step_three.dart';
 import 'package:adventour/services/error_service.dart';
 
