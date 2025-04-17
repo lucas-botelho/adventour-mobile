@@ -110,7 +110,7 @@ class ApiService {
 
       return processResponse<T>(response, fromJsonT);
     } catch (e) {
-      throw Exception('Failed to process response');
+      throw Exception('Failed to process response: $e');
     }
   }
 

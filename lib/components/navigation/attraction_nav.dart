@@ -12,7 +12,7 @@ class AttractionNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const List<String> labels = ["About", "Information", "Evaluations"];
+    const List<String> labels = ["About", "Information", "Reviews"];
 
     return Padding(
       padding: const EdgeInsets.all(8.0),

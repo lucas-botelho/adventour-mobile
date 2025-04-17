@@ -173,7 +173,7 @@ class _MediaSliderState extends State<MediaSlider> {
           context,
           MaterialPageRoute(
             builder: (context) => AttractionDetails(
-              id: attractions[myCurrentIndex]!.id,
+              attractionId: attractions[myCurrentIndex]!.id,
             ),
           ),
         ),

@@ -1,5 +1,5 @@
 class AppSettings {
-  static const String apiBaseUrl = 'http://10.0.2.2/deisi2056/api';
+  static const String apiBaseUrl = 'http://10.0.2.2:8181/deisi2056/api';
 }
 
 class Authentication {
@@ -23,6 +23,8 @@ class Attraction {
   static const String addToFavorites = "$controller/favorite";
   static const String removeFavorite = "$controller/favorite/remove";
   static const String attraction = "$controller/attraction";
+
+  static const String attractionInfo = "$controller/info";
 }
 
 class Files {

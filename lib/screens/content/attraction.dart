@@ -7,10 +7,12 @@ import 'package:adventour/models/responses/attraction/attraction_response.dart';
 import 'package:adventour/respositories/attraction_respository.dart';
 import 'package:flutter/material.dart';
 
-class AttractionDetails extends StatefulWidget {
-  final int id;
+import '../../components/information_tab.dart';
 
-  const AttractionDetails({super.key, required this.id});
+class AttractionDetails extends StatefulWidget {
+  final int attractionId;
+
+  const AttractionDetails({super.key, required this.attractionId});
 
   @override
   State<AttractionDetails> createState() => _AttractionDetailsState();
@@ -32,7 +34,7 @@ class _AttractionDetailsState extends State<AttractionDetails> {
     setState(() => isLoading = true); // Start loading
 
     try {
-      var response = await AttractionRespository().getAttraction(widget.id);
+      var response = await AttractionRespository().getAttraction(widget.attractionId);
 
       if (response == null) {
         setState(() {
@@ -96,7 +98,7 @@ class _AttractionDetailsState extends State<AttractionDetails> {
               index: selectedTab,
               children: [
                 aboutTab(context),
-                informationTab(),
+                InformationTabs(attractionId: widget.attractionId),
                 evaluationsTab(),
               ],
             ),
@@ -112,18 +114,6 @@ class _AttractionDetailsState extends State<AttractionDetails> {
         padding: EdgeInsets.all(16.0),
         child: Text(
           'User reviews and evaluations will go here.',
-          style: TextStyle(fontSize: 16),
-        ),
-      ),
-    );
-  }
-
-  Center informationTab() {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text(
-          'Information about the attraction will go here.',
           style: TextStyle(fontSize: 16),
         ),
       ),
