@@ -2,6 +2,7 @@ import 'package:adventour/models/base_api_response.dart';
 import 'package:adventour/models/requests/attraction/add_favorite.dart';
 import 'package:adventour/models/responses/attraction/attraction_info_data_response.dart';
 import 'package:adventour/models/responses/attraction/attraction_response.dart';
+import 'package:adventour/models/responses/attraction/attraction_reviews_response.dart';
 import 'package:adventour/models/responses/attraction/basic_attraction_list_response.dart';
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/services/api_service.dart';
@@ -88,7 +89,12 @@ class AttractionRespository {
     );
   }
 
-  Future<BaseApiResponse<String>?> createReview({required int attractionId, required String review, required String title, required int rating, required List<String>? imagesUrls}) async {
+  Future<BaseApiResponse<String>?> createReview(
+      {required int attractionId,
+      required String review,
+      required String title,
+      required int rating,
+      required List<String>? imagesUrls}) async {
     var response = await UserRepository().getUserData();
     if (response == null) {
       return null;
@@ -106,6 +112,16 @@ class AttractionRespository {
         'imagesUrls': imagesUrls,
       },
       fromJsonT: (json) => json as String,
+    );
+  }
+
+  Future<BaseApiResponse<AttractionReviewsResponse>?> getReviews(
+      {required int attractionId}) async {
+    return ApiService().get(
+      "${Attraction.reviews}/$attractionId",
+      await firebaseAuthService.getIdToken(),
+      headers: <String, String>{},
+      fromJsonT: (json) => AttractionReviewsResponse.fromJson(json),
     );
   }
 }

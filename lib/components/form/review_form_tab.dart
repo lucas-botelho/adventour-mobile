@@ -11,7 +11,7 @@ import 'elements/text_box_input.dart';
 class ReviewFormTab extends StatefulWidget {
   final int attractionId;
 
-  final VoidCallback callback;
+  final void Function(bool reviewCreated) callback;
 
   const ReviewFormTab(
       {super.key, required this.attractionId, required this.callback});
@@ -66,8 +66,9 @@ class _ReviewFormTabState extends State<ReviewFormTab> {
         imagesUrls: imagesUrls,
       );
 
-      if (createReviewResponse?.statusCode != 200){
-        ErrorService().displayFieldErrors(context, createReviewResponse!.errors, (errors) {
+      if (createReviewResponse?.statusCode != 200) {
+        ErrorService().displayFieldErrors(context, createReviewResponse!.errors,
+            (errors) {
           setState(() {
             fieldErrors = errors;
           });
@@ -92,10 +93,8 @@ class _ReviewFormTabState extends State<ReviewFormTab> {
           const SnackBar(content: Text("Thank you for leaving a review!")),
         );
 
-        widget.callback();
+        widget.callback(true);
       }
-
-
     }
   }
 
@@ -173,7 +172,7 @@ class _ReviewFormTabState extends State<ReviewFormTab> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton(
-                  onPressed: widget.callback,
+                  onPressed: () => widget.callback(false),
                   style:
                       ElevatedButton.styleFrom(backgroundColor: Colors.white),
                   child: const Text(

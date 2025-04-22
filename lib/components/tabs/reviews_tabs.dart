@@ -13,6 +13,7 @@ class ReviewTabs extends StatefulWidget {
 
 class _ReviewTabsState extends State<ReviewTabs> with TickerProviderStateMixin {
   int currentIndex = 0;
+  bool refreshReviews = false;
 
   @override
   void initState() {
@@ -31,17 +32,22 @@ class _ReviewTabsState extends State<ReviewTabs> with TickerProviderStateMixin {
         index: currentIndex,
         children: [
           ReviewListTab(
-              attractionId: widget.attractionId,
-              onButtonPress: () {
-                setState(() {
-                  currentIndex = 1;
-                });
-              }),
-          ReviewFormTab(attractionId: widget.attractionId, callback: () {
-            setState(() {
-              currentIndex = 0;
-            });
-          }),
+            attractionId: widget.attractionId,
+            onButtonPress: () {
+              setState(() {
+                currentIndex = 1;
+              });
+            },
+          ),
+          ReviewFormTab(
+            attractionId: widget.attractionId,
+            callback: (bool reviewCreated) {
+              setState(() {
+                currentIndex = 0;
+                refreshReviews = reviewCreated;
+              });
+            },
+          ),
         ],
       ),
     );
