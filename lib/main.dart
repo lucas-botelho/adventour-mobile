@@ -1,6 +1,6 @@
 import 'package:adventour/firebase_options.dart';
+import 'package:adventour/screens/main_screen.dart';
 import 'package:flutter/material.dart'; //package with default components
-import 'package:adventour/screens/auth/auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: const Scaffold(
-        body: AuthScreen(),
+        body: InitialScreen(),
       ),
       // routes: ,
     );
