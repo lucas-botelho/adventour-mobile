@@ -49,7 +49,7 @@ class _ReviewListTabState extends State<ReviewListTab> {
         attractionReviews = response.data;
       });
     } catch (e) {
-      print('Erro ao buscar reviews: $e');
+      debugPrint("Error fetching reviews: $e");
     } finally {
       setState(() {
         isLoading = false;
@@ -183,7 +183,7 @@ class _ReviewListTabState extends State<ReviewListTab> {
           Row(
             children: [
               ...List.generate(
-                  review.data.rating.value ?? 0,
+                  review.data.rating.value,
                   (index) =>
                       const Icon(Icons.star, color: Colors.amber, size: 16)),
             ],
