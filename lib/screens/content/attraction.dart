@@ -35,7 +35,8 @@ class _AttractionDetailsState extends State<AttractionDetails> {
     setState(() => isLoading = true); // Start loading
 
     try {
-      var response = await AttractionRespository().getAttraction(widget.attractionId);
+      var response =
+          await AttractionRespository().getAttraction(widget.attractionId);
 
       if (response == null) {
         setState(() {
@@ -80,10 +81,7 @@ class _AttractionDetailsState extends State<AttractionDetails> {
     return Scaffold(
       appBar: ContentAppbar(title: attractionDetails!.name),
       drawer: const SideMenu(),
-      bottomNavigationBar: NavBar(
-        selectedIndex: 0,
-        onItemTapped: (index) => debugPrint("Tapped on index: $index"),
-      ),
+      bottomNavigationBar: NavBar(selectedIndex: 0),
       body: Column(
         children: [
           AttractionNav(

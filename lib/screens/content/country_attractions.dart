@@ -52,15 +52,12 @@ class _CountryAttractionsState extends State<CountryAttractions> {
                   style: Theme.of(context).textTheme.bodyLarge),
             ),
             MediaSlider(
-                countryCode: selectedCountryCode), // Use updated country code
+                countryCode: selectedCountryCode),
           ],
         ),
       ),
       drawer: const SideMenu(),
-      bottomNavigationBar: NavBar(
-        selectedIndex: 0,
-        onItemTapped: (index) => debugPrint("Tapped on index: $index"),
-      ),
+      bottomNavigationBar: const NavBar(selectedIndex: 0),
     );
   }
 }

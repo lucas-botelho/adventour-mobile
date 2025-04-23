@@ -84,8 +84,12 @@ class _InformationTabsState extends State<InformationTabs> {
 
         return Column(
           children: [
-            pages[_currentPage],
-            Expanded(child: Container()),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: pages[_currentPage],
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

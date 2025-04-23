@@ -1,3 +1,4 @@
+import 'package:adventour/components/navigation/navbar.dart';
 import 'package:adventour/models/responses/auth/user.dart';
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
@@ -42,6 +43,7 @@ class _AccountSettingsState extends State<AccountSettings> {
             ),
       ),
       child: Scaffold(
+        bottomNavigationBar: const NavBar(selectedIndex: 3),
         body: Column(
           children: [
             Padding(
