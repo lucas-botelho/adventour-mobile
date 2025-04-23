@@ -2,26 +2,17 @@ import 'package:adventour/models/responses/attraction/review_with_image_response
 
 class AttractionReviewsResponse {
   final List<ReviewWithImagesResponse> reviews;
+  final double averageRating;
 
-  AttractionReviewsResponse({required this.reviews});
+  AttractionReviewsResponse({required this.reviews, required this.averageRating});
 
   factory AttractionReviewsResponse.fromJson(Map<String, dynamic> json) {
     return AttractionReviewsResponse(
       reviews: (json['reviews'] as List<dynamic>)
           .map((e) => ReviewWithImagesResponse.fromJson(e))
           .toList(),
+      averageRating: (json['averageRating'] as num?)?.toDouble() ?? 0.0,
     );
-  }
-
-  double calculateAverageRating() {
-    if (reviews.isEmpty) {
-      return 0;
-    }
-    int sum = 0;
-    for (var review in reviews) {
-      sum += review.data.rating.value;
-    }
-    return sum / reviews.length;
   }
 
   int fiveStarCount() {

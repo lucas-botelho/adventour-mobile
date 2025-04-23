@@ -6,7 +6,7 @@ class AttractionResponse {
   final String? shortDescription;
   final List<AttractionImageResponse> attractionImages;
   final int countryId;
-  final int? averageRating;
+  final double? averageRating;
   final String? addressOne;
   final String? addressTwo;
   final String? longDescription;
@@ -33,7 +33,7 @@ class AttractionResponse {
               AttractionImageResponse.fromJson(item as Map<String, dynamic>))
           .toList(),
       countryId: json['countryId'] as int,
-      averageRating: json['averageRating'] as int?,
+      averageRating: (json['averageRating'] as num?)?.toDouble(),
       addressOne: json['addressOne'] as String?,
       addressTwo: json['addressTwo'] as String?,
       longDescription: json['longDescription'] as String?,

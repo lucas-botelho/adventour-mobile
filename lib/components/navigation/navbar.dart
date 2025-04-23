@@ -1,7 +1,7 @@
 import 'package:adventour/screens/auth/account_settings.dart';
 import 'package:adventour/screens/content/attraction.dart';
+import 'package:adventour/screens/content/favorites_screen.dart';
 import 'package:adventour/screens/world_map.dart';
-import 'package:adventour/settings/constants.dart';
 import 'package:flutter/material.dart';
 
 class NavBar extends StatefulWidget {
@@ -113,12 +113,4 @@ class _NavBarState extends State<NavBar> {
   }
 }
 
-class Favorites extends StatelessWidget {
-  const Favorites({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 

@@ -59,7 +59,6 @@ class _ReviewListTabState extends State<ReviewListTab> {
 
 
   Widget _buildRatingSummary() {
-    var average = attractionReviews?.calculateAverageRating() ?? 0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -83,14 +82,14 @@ class _ReviewListTabState extends State<ReviewListTab> {
           width: MediaQuery.of(context).size.width / 1.8,
           child: Row(
             children: [
-              Text(average.toStringAsFixed(1),
+              Text(attractionReviews?.averageRating.toStringAsFixed(1) ?? '0.0',
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       fontFamily: GoogleFonts.manuale().fontFamily)),
               const SizedBox(width: 8),
               ...List.generate(
-                  average.round(),
+                  attractionReviews?.averageRating.round() ?? 0,
                   (index) =>
                       const Icon(Icons.star, color: Colors.amber, size: 32)),
             ],
