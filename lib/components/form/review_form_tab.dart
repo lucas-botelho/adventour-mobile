@@ -5,6 +5,7 @@ import 'package:adventour/respositories/files_respository.dart';
 import 'package:adventour/services/error_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 import 'elements/text_box_input.dart';
 
@@ -27,6 +28,15 @@ class _ReviewFormTabState extends State<ReviewFormTab> {
   final TextEditingController titleController = TextEditingController();
   final List<XFile> _selectedImages = [];
   Map<String, String> fieldErrors = {};
+
+  late final AttractionRepository attractionRepository;
+
+  @override
+  void initState() {
+    super.initState();
+
+    attractionRepository = context.read<AttractionRepository>();
+  }
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -58,7 +68,7 @@ class _ReviewFormTabState extends State<ReviewFormTab> {
             [];
       }
 
-      var createReviewResponse = await AttractionRespository().createReview(
+      var createReviewResponse = await attractionRepository.createReview(
         attractionId: widget.attractionId,
         review: reviewText,
         title: titleText,

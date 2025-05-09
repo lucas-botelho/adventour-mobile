@@ -3,12 +3,13 @@ import 'package:adventour/components/media/attraction_image_slider.dart';
 import 'package:adventour/components/navigation/attraction_nav.dart';
 import 'package:adventour/components/navigation/navbar.dart';
 import 'package:adventour/components/navigation/sidemenu.dart';
+import 'package:adventour/components/tabs/information_tab.dart';
 import 'package:adventour/components/tabs/reviews_tabs.dart';
 import 'package:adventour/models/responses/attraction/attraction_response.dart';
 import 'package:adventour/respositories/attraction_respository.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../../components/tabs/information_tab.dart';
 
 class AttractionDetails extends StatefulWidget {
   final int attractionId;
@@ -24,11 +25,13 @@ class _AttractionDetailsState extends State<AttractionDetails> {
   AttractionResponse? attractionDetails;
   String? errorMessage;
   int selectedTab = 0;
+  late final AttractionRepository attractionRepository;
 
   @override
   void initState() {
     super.initState();
     _fetchAttractionDetails();
+    attractionRepository = context.read<AttractionRepository>();
   }
 
   Future<void> _fetchAttractionDetails() async {
@@ -36,7 +39,7 @@ class _AttractionDetailsState extends State<AttractionDetails> {
 
     try {
       var response =
-          await AttractionRespository().getAttraction(widget.attractionId);
+          await attractionRepository.getAttraction(widget.attractionId);
 
       if (response == null) {
         setState(() {

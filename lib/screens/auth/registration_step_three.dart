@@ -8,9 +8,10 @@ import 'package:adventour/screens/auth/registration_complete.dart';
 import 'package:adventour/services/error_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:adventour/components/cta/arrow_back_button.dart';
+import 'package:adventour/components/layout/auth_appbar.dart';
 import 'dart:io' as io;
 import 'package:adventour/globals.dart' as globals;
+import 'package:provider/provider.dart';
 
 class RegistrationStepThree extends StatefulWidget {
   final String userId;
@@ -23,9 +24,9 @@ class RegistrationStepThree extends StatefulWidget {
 
 class _RegistrationStepThreeState extends State<RegistrationStepThree> {
   final accountUpdateFormKey = GlobalKey<FormState>();
-  final firebaseService = FirebaseAuthService();
-  final errorService = ErrorService();
-  final userRepsository = UserRepository();
+  late final UserRepository userRepository;
+  late final ErrorService errorService;
+  late final FirebaseAuthService firebaseAuthService;
   var nameController = TextEditingController();
   io.File? profileImage;
 
@@ -36,12 +37,20 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    errorService = context.read<ErrorService>();
+    firebaseAuthService = context.read<FirebaseAuthService>();
+    userRepository = context.read<UserRepository>();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const ArrowBackButton(),
+          const AuthAppBar(),
           const TitleWithText(
             title: "Account Setup",
             text:
@@ -95,7 +104,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
     }
 
     try {
-      final result = await userRepsository.updateUserPublicData(
+      final result = await userRepository.updateUserPublicData(
           widget.userId, nameController.text, profilePictureUrl);
 
       if (result != null) {

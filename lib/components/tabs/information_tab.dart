@@ -2,9 +2,11 @@ import 'package:adventour/components/text/accordion.dart';
 import 'package:adventour/models/responses/attraction/attraction_info_data_response.dart';
 import 'package:adventour/respositories/attraction_respository.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class InformationTabs extends StatefulWidget {
   final int attractionId;
+
   const InformationTabs({super.key, required this.attractionId});
 
   @override
@@ -14,14 +16,16 @@ class InformationTabs extends StatefulWidget {
 class _InformationTabsState extends State<InformationTabs> {
   int _currentPage = 0;
   Future<AttractionInfoDataResponse?>? _futureResponse;
+  late final AttractionRepository attractionRepository;
 
   @override
   void initState() {
     super.initState();
+    attractionRepository = context.read<AttractionRepository>();
     _futureResponse =
-        AttractionRespository().getAttractionInfo(widget.attractionId).then(
+        attractionRepository.getAttractionInfo(widget.attractionId).then(
               (response) => response?.data,
-        );
+            );
   }
 
   void _goToPreviousPage() {
@@ -63,7 +67,8 @@ class _InformationTabsState extends State<InformationTabs> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 17),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 17),
                 child: Text(
                   infoType.typeTitle,
                   style: const TextStyle(
@@ -75,9 +80,9 @@ class _InformationTabsState extends State<InformationTabs> {
                 ),
               ),
               ...infos.map((info) => Accordion(
-                title: info.title,
-                description: info.description,
-              )),
+                    title: info.title,
+                    description: info.description,
+                  )),
             ],
           );
         }).toList();
@@ -95,15 +100,15 @@ class _InformationTabsState extends State<InformationTabs> {
               children: [
                 _currentPage > 0
                     ? TextButton(
-                  onPressed: _goToPreviousPage,
-                  child: const Text("< Back"),
-                )
+                        onPressed: _goToPreviousPage,
+                        child: const Text("< Back"),
+                      )
                     : const SizedBox(),
                 _currentPage < pages.length - 1
                     ? TextButton(
-                  onPressed: () => _goToNextPage(pages.length),
-                  child: const Text("Next >"),
-                )
+                        onPressed: () => _goToNextPage(pages.length),
+                        child: const Text("Next >"),
+                      )
                     : const SizedBox(),
               ],
             ),

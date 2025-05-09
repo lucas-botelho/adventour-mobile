@@ -1,4 +1,4 @@
-import 'package:adventour/components/cta/arrow_back_button.dart';
+import 'package:adventour/components/layout/auth_appbar.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/form_passwordfield.dart';
 import 'package:adventour/components/form/elements/form_textfield.dart';
@@ -11,6 +11,7 @@ import 'package:adventour/services/error_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RegistrationStepOne extends StatefulWidget {
   const RegistrationStepOne({super.key});
@@ -22,8 +23,10 @@ class RegistrationStepOne extends StatefulWidget {
 class _RegistrationStepOneState extends State<RegistrationStepOne> {
   final formKey = GlobalKey<FormState>();
   Map<String, String> fieldErrors = {};
-  final ErrorService errorService = ErrorService();
-  final FirebaseAuthService firebaseAuthService = FirebaseAuthService();
+
+  late final ErrorService errorService;
+  late final FirebaseAuthService firebaseAuthService;
+  late final UserRepository userRepository;
 
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -41,8 +44,18 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    errorService = context.read<ErrorService>();
+    firebaseAuthService = context.read<FirebaseAuthService>();
+    userRepository = context.read<UserRepository>();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AuthAppBar(),
       body: SingleChildScrollView(
         // Prevents overflow
         child: Padding(
@@ -50,7 +63,6 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const ArrowBackButton(),
               title(),
               Center(
                 child: signUpForm(context),
@@ -151,8 +163,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
 
   void register(User? user) async {
     try {
-      var result =
-          await UserRepository().createUser(user, _nameController.text);
+      final result = await userRepository.createUser(user, _nameController.text);
 
       if (result != null && result.success) {
         Navigator.push(
@@ -160,13 +171,15 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
           context,
           MaterialPageRoute(
             builder: (context) => RegistrationStepTwo(
-                userId: result.data!.userId, pinToken: result.data!.token),
+              userId: result.data!.userId,
+              pinToken: result.data!.token,
+            ),
           ),
         );
       } else {
         switch (result!.statusCode) {
           case 400:
-            // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
             errorService.displayFieldErrors(context, result.errors, (errors) {
               setState(() {
                 fieldErrors = errors;
@@ -175,7 +188,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
             break;
           case 409:
           case 500:
-            // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
             errorService.displaySnackbarError(context, result.message);
             break;
           default:
@@ -187,6 +200,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
       errorService.displaySnackbarError(context, null);
     }
   }
+
 
   void pushToLogin(BuildContext context) {
     Navigator.push(

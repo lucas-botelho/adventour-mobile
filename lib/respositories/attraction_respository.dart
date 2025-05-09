@@ -9,22 +9,28 @@ import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:adventour/settings/constants.dart';
 
-class AttractionRespository {
-  final apiService = ApiService();
-  final firebaseAuthService = FirebaseAuthService();
+class AttractionRepository {
+  final ApiService apiService;
+  final FirebaseAuthService firebaseAuthService;
+  final UserRepository userRepository;
+
+  AttractionRepository(
+      {required this.apiService,
+      required this.firebaseAuthService,
+      required this.userRepository});
 
   Future<BaseApiResponse<BasicAttractionListResponse>?> getAttractions({
     required String countryCode,
   }) async {
-    var user = await UserRepository().getUserData();
+    var user = await userRepository.getUserData();
 
     if (user == null) {
       return null;
     }
 
-    final result = await ApiService().get(
+    final result = await apiService.get(
       '${Attraction.listAttractions}?countryCode=$countryCode&oAuthId=${user.data?.oauthId}',
-      await FirebaseAuthService().getIdToken(),
+      await firebaseAuthService.getIdToken(),
       headers: <String, String>{},
       fromJsonT: (json) => BasicAttractionListResponse.fromJson(json),
     );
@@ -35,14 +41,14 @@ class AttractionRespository {
   Future<BaseApiResponse<String>?> addToFavorite(
     int attractionId,
   ) async {
-    var response = await UserRepository().getUserData();
+    var response = await userRepository.getUserData();
     if (response == null) {
       return null;
     }
 
-    final result = await ApiService().post(
+    final result = await apiService.post(
       endpoint: '${Attraction.addToFavorites}?attractionId=$attractionId',
-      token: await FirebaseAuthService().getIdToken(),
+      token: await firebaseAuthService.getIdToken(),
       headers: <String, String>{},
       body: ToggleFavoriteRequest(
               attractionId: attractionId, userId: response.data!.oauthId)
@@ -54,12 +60,12 @@ class AttractionRespository {
   }
 
   Future<BaseApiResponse<String>?> removeFromFavorite(int attractionId) async {
-    var response = await UserRepository().getUserData();
+    var response = await userRepository.getUserData();
     if (response == null) {
       return null;
     }
 
-    return await ApiService().post(
+    return await apiService.post(
       endpoint: Attraction.removeFavorite,
       token: await firebaseAuthService.getIdToken(),
       headers: <String, String>{},
@@ -71,9 +77,9 @@ class AttractionRespository {
   }
 
   Future<BaseApiResponse<AttractionResponse>?> getAttraction(int id) async {
-    return await ApiService().get(
+    return await apiService.get(
       '${Attraction.attraction}/$id',
-      await FirebaseAuthService().getIdToken(),
+      await firebaseAuthService.getIdToken(),
       headers: <String, String>{},
       fromJsonT: (json) => AttractionResponse.fromJson(json),
     );
@@ -81,9 +87,9 @@ class AttractionRespository {
 
   Future<BaseApiResponse<AttractionInfoDataResponse>?> getAttractionInfo(
       int id) async {
-    return await ApiService().get(
+    return await apiService.get(
       '${Attraction.attractionInfo}/$id',
-      await FirebaseAuthService().getIdToken(),
+      await firebaseAuthService.getIdToken(),
       headers: <String, String>{},
       fromJsonT: (json) => AttractionInfoDataResponse.fromJson(json),
     );
@@ -95,12 +101,12 @@ class AttractionRespository {
       required String title,
       required int rating,
       required List<String>? imagesUrls}) async {
-    var response = await UserRepository().getUserData();
+    var response = await userRepository.getUserData();
     if (response == null) {
       return null;
     }
 
-    return ApiService().post(
+    return apiService.post(
       endpoint: "${Attraction.createReview}/$attractionId",
       token: await firebaseAuthService.getIdToken(),
       headers: <String, String>{},
@@ -117,7 +123,7 @@ class AttractionRespository {
 
   Future<BaseApiResponse<AttractionReviewsResponse>?> getReviews(
       {required int attractionId}) async {
-    return ApiService().get(
+    return apiService.get(
       "${Attraction.reviews}/$attractionId",
       await firebaseAuthService.getIdToken(),
       headers: <String, String>{},

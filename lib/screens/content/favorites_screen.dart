@@ -2,6 +2,7 @@ import 'package:adventour/components/layout/content_appbar.dart';
 import 'package:adventour/components/navigation/navbar.dart';
 import 'package:adventour/respositories/attraction_respository.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Favorites extends StatefulWidget {
   const Favorites({super.key});
@@ -11,22 +12,33 @@ class Favorites extends StatefulWidget {
 }
 
 class _FavoritesState extends State<Favorites> {
+  late final AttractionRepository attractionRepository;
+
   List<Map<String, dynamic>> favorites = [
     {
       'id': 1,
-      'image': 'https://res.cloudinary.com/dgskluspn/image/upload/v1739805925/1000000033.jpg',
+      'image':
+          'https://res.cloudinary.com/dgskluspn/image/upload/v1739805925/1000000033.jpg',
       'title': 'Iron Train Mauritania',
       'rating': 5.0,
     },
     {
       'id': 2,
-      'image': 'https://res.cloudinary.com/dgskluspn/image/upload/v1744702589/33.jpg',
+      'image':
+          'https://res.cloudinary.com/dgskluspn/image/upload/v1744702589/33.jpg',
       'title': 'Climbing Mount\nKilimanjaro, Tanzania',
       'rating': 4.5,
     },
   ];
 
   String search = '';
+
+  @override
+  void initState() {
+    super.initState();
+
+    attractionRepository = context.read<AttractionRepository>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +48,7 @@ class _FavoritesState extends State<Favorites> {
 
     return Scaffold(
       appBar: const ContentAppbar(title: "Favorites"),
-      bottomNavigationBar: const NavBar(selectedIndex: 3),
+      bottomNavigationBar: const NavBar(selectedIndex: 2),
       backgroundColor: const Color(0xFF0F4C4C),
       body: SafeArea(
         child: Padding(
@@ -132,7 +144,8 @@ class _FavoritesState extends State<Favorites> {
                       Row(
                         children: List.generate(
                           fav['rating'].round(),
-                              (index) => const Icon(Icons.star, color: Colors.amber, size: 16),
+                          (index) => const Icon(Icons.star,
+                              color: Colors.amber, size: 16),
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -163,7 +176,7 @@ class _FavoritesState extends State<Favorites> {
       favorites.removeWhere((fav) => fav['id'] == id);
     });
 
-    final response = await AttractionRespository().removeFromFavorite(id);
+    final response = await attractionRepository.removeFromFavorite(id);
     if (response?.success ?? false) {
       setState(() {
         favorites.removeWhere((fav) => fav['id'] == id);

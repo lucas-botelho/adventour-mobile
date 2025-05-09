@@ -1,4 +1,4 @@
-import 'package:adventour/components/cta/arrow_back_button.dart';
+import 'package:adventour/components/layout/auth_appbar.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/form_passwordfield.dart';
 import 'package:adventour/components/form/elements/form_textfield.dart';
@@ -9,7 +9,9 @@ import 'package:adventour/screens/auth/registration_step_one.dart';
 import 'package:adventour/screens/world_map.dart';
 import 'package:adventour/services/error_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -21,11 +23,13 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
   Map<String, String> fieldErrors = {};
-  final ErrorService errorService = ErrorService();
-  final FirebaseAuthService firebaseAuthService = FirebaseAuthService();
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  late final UserRepository userRepository;
+  late final ErrorService errorService;
+  late final FirebaseAuthService firebaseAuthService;
 
   @override
   void dispose() {
@@ -35,8 +39,17 @@ class _LoginState extends State<Login> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    errorService = context.read<ErrorService>();
+    firebaseAuthService = context.read<FirebaseAuthService>();
+    userRepository = context.read<UserRepository>();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AuthAppBar(),
       body: SingleChildScrollView(
         // Prevents overflow
         child: Padding(
@@ -44,7 +57,6 @@ class _LoginState extends State<Login> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const ArrowBackButton(),
               title(),
               Center(
                 child: loginForm(context),
@@ -137,39 +149,43 @@ class _LoginState extends State<Login> {
     login();
   }
 
-  void login() async {
-    var response = await UserRepository().getUserData();
+  void login() {
+    userRepository.getUserData().then((response) {
+      if (response == null || response.statusCode == 500) {
+        errorService.displaySnackbarError(context, "Internal error.");
+        return;
+      }
 
-    if (response == null || response.statusCode == 500) {
-      errorService.displaySnackbarError(context, "Interal error.");
-      return;
-    }
+      if (!response.success && response.statusCode == 404) {
+        errorService.displaySnackbarError(
+          context,
+          "You are not registered. Please sign up.",
+        );
 
-    if (!response.success && response.statusCode == 404) {
-      errorService.displaySnackbarError(
-          context, "You are not registered. Please sign up.");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const RegistrationStepOne(),
+          ),
+        );
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const RegistrationStepOne(),
-        ),
-      );
+        return;
+      }
 
-      return;
-    }
+      if (response.success && response.statusCode == 200) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AdventourMap(),
+          ),
+          (route) => false,
+        );
+        return;
+      }
 
-    if (response.success && response.statusCode == 200) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const AdventourMap(),
-        ),
-        (route) => false,
-      );
-      return;
-    }
-
-    errorService.displaySnackbarError(context, "Failed to sign in.");
+      errorService.displaySnackbarError(context, "Failed to sign in.");
+    }).catchError((error) {
+      errorService.displaySnackbarError(context, "Unexpected error: $error");
+    });
   }
 }

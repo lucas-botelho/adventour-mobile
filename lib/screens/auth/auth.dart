@@ -51,16 +51,6 @@ class AuthScreen extends StatelessWidget {
                   );
                 },
               ),
-              CTAButton(
-                text: "map",
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const AdventourMap()),
-                  );
-                },
-              ),
             ],
           ),
         ),

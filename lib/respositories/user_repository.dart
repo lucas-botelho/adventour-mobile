@@ -11,8 +11,10 @@ import 'package:adventour/settings/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserRepository {
-  final firebaseAuthService = FirebaseAuthService();
-  final apiService = ApiService();
+  final FirebaseAuthService firebaseAuthService;
+  final ApiService apiService;
+
+  UserRepository({required this.firebaseAuthService, required this.apiService});
 
   Future<BaseApiResponse<UserResponse>?> getUserData() async {
     var firebaseUser = firebaseAuthService.getUser();

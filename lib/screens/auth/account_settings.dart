@@ -4,6 +4,7 @@ import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:adventour/utils/user_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AccountSettings extends StatefulWidget {
   const AccountSettings({super.key});
@@ -14,7 +15,7 @@ class AccountSettings extends StatefulWidget {
 
 class _AccountSettingsState extends State<AccountSettings> {
   final FirebaseAuthService firebaseAuthService = FirebaseAuthService();
-  final UserRepository userRepository = UserRepository();
+  late final UserRepository userRepository;
   UserResponse? user;
 
   @override
@@ -22,6 +23,7 @@ class _AccountSettingsState extends State<AccountSettings> {
   void initState() {
     super.initState();
     _loadUserData();
+    userRepository = context.read<UserRepository>();
   }
 
   void _loadUserData() async {

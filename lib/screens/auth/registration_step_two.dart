@@ -6,10 +6,12 @@ import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/text_with_action.dart';
 import 'package:adventour/screens/auth/registration_step_three.dart';
 import 'package:adventour/services/error_service.dart';
+import 'package:provider/provider.dart';
 
 class RegistrationStepTwo extends StatefulWidget {
   final String userId;
   final String pinToken;
+
   const RegistrationStepTwo(
       {required this.userId, required this.pinToken, super.key});
 
@@ -23,7 +25,15 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
   final TextEditingController _codeController2 = TextEditingController();
   final TextEditingController _codeController3 = TextEditingController();
   final TextEditingController _codeController4 = TextEditingController();
-  final ErrorService errorService = ErrorService();
+  late final ErrorService errorService;
+  late final UserRepository userRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    errorService = context.read<ErrorService>();
+    userRepository = context.read<UserRepository>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +99,7 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
         _codeController4.text
       ];
 
-      var result = await UserRepository()
+      var result = await userRepository
           .confirmEmail(widget.userId, code, widget.pinToken);
 
       if (result != null) {

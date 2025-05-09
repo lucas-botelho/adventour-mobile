@@ -1,4 +1,4 @@
-import 'package:adventour/components/cta/arrow_back_button.dart';
+import 'package:adventour/components/layout/auth_appbar.dart';
 import 'package:flutter/material.dart';
 
 class HeaderImageWithText extends StatelessWidget {
@@ -38,7 +38,7 @@ class HeaderImageWithText extends StatelessWidget {
             ),
           ),
         ),
-        const ArrowBackButton(),
+        const AuthAppBar(),
         Positioned.fill(
           top: screenHeight / 3,
           child: Padding(

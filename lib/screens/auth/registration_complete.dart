@@ -1,4 +1,4 @@
-import 'package:adventour/components/cta/arrow_back_button.dart';
+import 'package:adventour/components/layout/auth_appbar.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/images/circular_image.dart';
 import 'package:adventour/components/text/title_with_text.dart';
@@ -27,7 +27,7 @@ class RegistrationComplete extends StatelessWidget {
             children: [
               Padding(
                 padding: EdgeInsets.only(left: 20),
-                child: ArrowBackButton(),
+                child: AuthAppBar(),
               ),
             ],
           ),

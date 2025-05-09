@@ -2,8 +2,9 @@ import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/utils/user_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:adventour/globals.dart' as globals;
+import 'package:provider/provider.dart';
 
-class ContentAppbar extends StatelessWidget implements PreferredSizeWidget {
+class ContentAppbar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
 
   const ContentAppbar({
@@ -12,12 +13,28 @@ class ContentAppbar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
+  State<ContentAppbar> createState() => _ContentAppbarState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _ContentAppbarState extends State<ContentAppbar> {
+  late final UserRepository userRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    userRepository = context.read<UserRepository>();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: const Color(0xFF134546),
       centerTitle: true,
       title: Text(
-        title,
+        widget.title,
         textAlign: TextAlign.center,
         style: const TextStyle(
           color: Colors.white,
@@ -66,12 +83,7 @@ class ContentAppbar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-
   Future<String> networkImageUrl() async {
-    final UserRepository userRepository = UserRepository();
-
     var photoUrl = globals.photoUrl;
     if (photoUrl?.isEmpty ?? true) {
       var response = await userRepository.getUserData();

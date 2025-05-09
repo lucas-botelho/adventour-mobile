@@ -3,6 +3,7 @@ import 'package:adventour/respositories/attraction_respository.dart';
 import 'package:adventour/screens/content/attraction.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MediaSlider extends StatefulWidget {
   final String countryCode;
@@ -15,18 +16,21 @@ class MediaSlider extends StatefulWidget {
 
 class _MediaSliderState extends State<MediaSlider> {
   List<BasicAttractionResponse?> attractions = [];
-  final AttractionRespository attractionRespository = AttractionRespository();
   int myCurrentIndex = 0;
   bool isLoading = true; // Track loading state
   Set<int> favoriteAttractions = {}; // Track favorite attractions
   late String currentCountryCode;
 
-  @override
+  late final AttractionRepository attractionRepository;
+
+    @override
   void initState() {
     super.initState();
     currentCountryCode =
         widget.countryCode; // Initialize with the initial country code
     _fetchAttractions(); // Fetch attractions for the initial country
+    attractionRepository = context.read<AttractionRepository>();
+
   }
 
   @override
@@ -189,7 +193,7 @@ class _MediaSliderState extends State<MediaSlider> {
     setState(() => isLoading = true); // Start loading
 
     try {
-      final response = await attractionRespository.getAttractions(
+      final response = await attractionRepository.getAttractions(
         countryCode: currentCountryCode,
       );
 
@@ -224,7 +228,7 @@ class _MediaSliderState extends State<MediaSlider> {
     final attraction = attractions[index];
     if (attraction == null) return;
 
-    final response = await attractionRespository.addToFavorite(attraction.id);
+    final response = await attractionRepository.addToFavorite(attraction.id);
 
     if (response?.success ?? false) {
       setState(() {
@@ -244,7 +248,7 @@ class _MediaSliderState extends State<MediaSlider> {
     if (attraction == null) return;
 
     final response =
-        await attractionRespository.removeFromFavorite(attraction.id);
+        await attractionRepository.removeFromFavorite(attraction.id);
 
     if (response?.success ?? false) {
       setState(() {

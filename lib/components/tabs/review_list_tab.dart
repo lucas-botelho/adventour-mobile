@@ -3,6 +3,7 @@ import 'package:adventour/models/responses/attraction/review_with_image_response
 import 'package:adventour/respositories/attraction_respository.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class ReviewListTab extends StatefulWidget {
   final int attractionId;
@@ -18,17 +19,17 @@ class ReviewListTab extends StatefulWidget {
   State<ReviewListTab> createState() => _ReviewListTabState();
 }
 
-
 class _ReviewListTabState extends State<ReviewListTab> {
   bool isLoading = true;
   String? defaultMessage =
       'We don\'t have any reviews yet.\nBe the first to write one!';
   AttractionReviewsResponse? attractionReviews;
-
+  late final AttractionRepository attractionRepository;
 
   @override
   void initState() {
     super.initState();
+    attractionRepository = context.read<AttractionRepository>();
     _fetchReviews();
   }
 
@@ -38,10 +39,12 @@ class _ReviewListTabState extends State<ReviewListTab> {
     });
 
     try {
-      var response =
-      await AttractionRespository().getReviews(attractionId: widget.attractionId);
+      var response = await attractionRepository.getReviews(
+          attractionId: widget.attractionId);
 
-      if (response == null || response.data == null || response.success == false) {
+      if (response == null ||
+          response.data == null ||
+          response.success == false) {
         return;
       }
 
@@ -56,7 +59,6 @@ class _ReviewListTabState extends State<ReviewListTab> {
       });
     }
   }
-
 
   Widget _buildRatingSummary() {
     return Column(
