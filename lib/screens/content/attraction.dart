@@ -30,8 +30,9 @@ class _AttractionDetailsState extends State<AttractionDetails> {
   @override
   void initState() {
     super.initState();
-    _fetchAttractionDetails();
     attractionRepository = context.read<AttractionRepository>();
+
+    _fetchAttractionDetails();
   }
 
   Future<void> _fetchAttractionDetails() async {

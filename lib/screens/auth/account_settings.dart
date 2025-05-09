@@ -22,8 +22,8 @@ class _AccountSettingsState extends State<AccountSettings> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();
     userRepository = context.read<UserRepository>();
+    _loadUserData();
   }
 
   void _loadUserData() async {
