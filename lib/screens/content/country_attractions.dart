@@ -51,7 +51,7 @@ class _CountryAttractionsState extends State<CountryAttractions> {
               child: Text("Activities",
                   style: Theme.of(context).textTheme.bodyLarge),
             ),
-            MediaSlider(
+            AttractionSlider(
                 countryCode: selectedCountryCode),
           ],
         ),

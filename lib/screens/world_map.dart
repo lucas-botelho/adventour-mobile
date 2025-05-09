@@ -96,17 +96,20 @@ class _AdventourMapState extends State<AdventourMap> {
       padding: const EdgeInsets.all(15),
       child: CTAButton(
           text: "Explore",
-          onPressed: () => {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CountryAttractions(
-                      continentName: continent,
-                      countryCode: countryIsoCode,
-                    ),
-                  ),
-                )
-              }),
+          onPressed: country.isEmpty
+              ? () => errorService.displaySnackbarError(
+                  context, "Please select a country first")
+              : () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CountryAttractions(
+                          continentName: continent,
+                          countryCode: countryIsoCode,
+                        ),
+                      ),
+                    )
+                  }),
     );
   }
 

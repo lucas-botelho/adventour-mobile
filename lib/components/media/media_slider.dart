@@ -5,16 +5,16 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class MediaSlider extends StatefulWidget {
+class AttractionSlider extends StatefulWidget {
   final String countryCode;
 
-  const MediaSlider({super.key, required this.countryCode});
+  const AttractionSlider({super.key, required this.countryCode});
 
   @override
-  State<MediaSlider> createState() => _MediaSliderState();
+  State<AttractionSlider> createState() => _AttractionSliderState();
 }
 
-class _MediaSliderState extends State<MediaSlider> {
+class _AttractionSliderState extends State<AttractionSlider> {
   List<BasicAttractionResponse?> attractions = [];
   int myCurrentIndex = 0;
   bool isLoading = true; // Track loading state
@@ -28,13 +28,13 @@ class _MediaSliderState extends State<MediaSlider> {
     super.initState();
     currentCountryCode =
         widget.countryCode; // Initialize with the initial country code
-    _fetchAttractions(); // Fetch attractions for the initial country
     attractionRepository = context.read<AttractionRepository>();
+    _fetchAttractions(); // Fetch attractions for the initial country
 
   }
 
   @override
-  void didUpdateWidget(covariant MediaSlider oldWidget) {
+  void didUpdateWidget(covariant AttractionSlider oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.countryCode != widget.countryCode) {
       // Country code has changed, update state and fetch new data
