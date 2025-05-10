@@ -1,5 +1,6 @@
 import 'package:adventour/firebase_options.dart';
 import 'package:adventour/respositories/attraction_respository.dart';
+import 'package:adventour/respositories/files_respository.dart';
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/screens/auth/auth.dart';
 import 'package:adventour/screens/world_map.dart';
@@ -11,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+
+import 'respositories/map_respository.dart';
 
 //Starting function
 void main() async {
@@ -38,7 +41,14 @@ void main() async {
       ),
     ),
 
-
+    ProxyProvider2<ApiService, FirebaseAuthService, FileRepository>(
+      update: (_, apiService, firebaseAuthService, __) => FileRepository(
+          apiService: apiService, firebaseAuthService: firebaseAuthService),
+    ),
+    ProxyProvider2<ApiService, FirebaseAuthService, MapRepository>(
+      update: (_, apiService, firebaseAuthService, __) => MapRepository(
+          apiService: apiService, firebaseAuthService: firebaseAuthService),
+    ),
   ], child: const MyApp()));
 }
 

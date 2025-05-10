@@ -6,8 +6,11 @@ import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:adventour/settings/constants.dart';
 
 class FileRepository {
-  final ApiService apiService = ApiService();
-  final FirebaseAuthService firebaseAuthService = FirebaseAuthService();
+  final ApiService apiService;
+  final FirebaseAuthService firebaseAuthService;
+
+  FileRepository({required this.firebaseAuthService, required this.apiService});
+
 
   Future<BaseApiResponse<FileUploadResponse>> uploadSingleFile<T>({
     required File file,

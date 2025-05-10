@@ -5,6 +5,7 @@ import 'package:adventour/components/cta/cta_button.dart';
 import 'package:countries_world_map/data/maps/world_map.dart';
 import 'package:flutter/material.dart';
 import 'package:countries_world_map/countries_world_map.dart';
+import 'package:provider/provider.dart';
 
 class AdventourMap extends StatefulWidget {
   const AdventourMap({super.key});
@@ -19,11 +20,12 @@ class _AdventourMapState extends State<AdventourMap> {
   String countryIsoCode = "";
   String fetchedData = "";
   ErrorService errorService = ErrorService();
-  final mapRepository = MapRespository();
+  late final MapRepository mapRepository;
 
   @override
   void initState() {
     super.initState();
+    mapRepository = context.read<MapRepository>();
   }
 
   @override

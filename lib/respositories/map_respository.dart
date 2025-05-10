@@ -5,9 +5,11 @@ import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:adventour/settings/constants.dart';
 
-class MapRespository {
-  final apiService = ApiService();
-  final firebaseAuthService = FirebaseAuthService();
+class MapRepository {
+  final apiService;
+  final firebaseAuthService;
+
+  MapRepository({required this.firebaseAuthService, required this.apiService});
 
   Future<BaseApiResponse<CountryResponse>?> getCountryData(
       String countryIsoCode) async {

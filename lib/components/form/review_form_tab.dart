@@ -30,11 +30,11 @@ class _ReviewFormTabState extends State<ReviewFormTab> {
   Map<String, String> fieldErrors = {};
 
   late final AttractionRepository attractionRepository;
-
+  late final FileRepository fileRepository;
   @override
   void initState() {
     super.initState();
-
+    fileRepository = context.read<FileRepository>();
     attractionRepository = context.read<AttractionRepository>();
   }
 
@@ -60,7 +60,7 @@ class _ReviewFormTabState extends State<ReviewFormTab> {
           _selectedImages.map((xfile) => File(xfile.path)).toList();
       List<String> imagesUrls = [];
       var fileUploadResponse =
-          await FileRepository().uploadMultipleFiles(files: filesToUpload);
+          await fileRepository.uploadMultipleFiles(files: filesToUpload);
       if (fileUploadResponse.success) {
         imagesUrls = fileUploadResponse.data?.files
                 .map((file) => file.publicUrl)

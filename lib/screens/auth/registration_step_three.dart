@@ -30,6 +30,8 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
   var nameController = TextEditingController();
   io.File? profileImage;
 
+  late final FileRepository fileRepository;
+
   @override
   void dispose() {
     nameController.dispose();
@@ -42,6 +44,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
     errorService = context.read<ErrorService>();
     firebaseAuthService = context.read<FirebaseAuthService>();
     userRepository = context.read<UserRepository>();
+    fileRepository = context.read<FileRepository>();
   }
 
   @override
@@ -133,7 +136,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
 
   Future<String?> uploadProfilePicture() async {
     try {
-      final response = await FileRepository().uploadSingleFile(
+      final response = await fileRepository.uploadSingleFile(
         file: profileImage!,
       );
       if (response.success) {

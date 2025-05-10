@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:adventour/models/responses/country/country.dart';
 import 'package:adventour/respositories/map_respository.dart';
+import 'package:provider/provider.dart';
 
 class CountrySlider extends StatefulWidget {
   final String countryCode;
@@ -19,7 +20,7 @@ class CountrySlider extends StatefulWidget {
 }
 
 class _CountrySliderState extends State<CountrySlider> {
-  final MapRespository mapRespository = MapRespository();
+  late final MapRepository mapRespository;
   CountryResponse? currentCountry;
   List<CountryResponse> countries = [];
   int myCurrentIndex = 0;
@@ -32,6 +33,7 @@ class _CountrySliderState extends State<CountrySlider> {
   @override
   void initState() {
     super.initState();
+    mapRespository = context.read<MapRepository>();
     _initCountries();
   }
 
