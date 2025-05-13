@@ -1,6 +1,7 @@
 import 'package:adventour/models/responses/attraction/basic_attraction_response.dart';
 import 'package:adventour/respositories/attraction_respository.dart';
 import 'package:adventour/screens/content/attraction.dart';
+import 'package:adventour/services/error_service.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,8 @@ class _AttractionSliderState extends State<AttractionSlider> {
   late String currentCountryCode;
 
   late final AttractionRepository attractionRepository;
+  late final ErrorService errorService;
+
 
     @override
   void initState() {
@@ -29,6 +32,8 @@ class _AttractionSliderState extends State<AttractionSlider> {
     currentCountryCode =
         widget.countryCode; // Initialize with the initial country code
     attractionRepository = context.read<AttractionRepository>();
+    errorService = context.read<ErrorService>();
+
     _fetchAttractions(); // Fetch attractions for the initial country
 
   }
@@ -190,8 +195,6 @@ class _AttractionSliderState extends State<AttractionSlider> {
   }
 
   Future<void> _fetchAttractions() async {
-    setState(() => isLoading = true); // Start loading
-
     try {
       final response = await attractionRepository.getAttractions(
         countryCode: currentCountryCode,
@@ -235,11 +238,7 @@ class _AttractionSliderState extends State<AttractionSlider> {
         favoriteAttractions.add(attraction.id); // Mark as favorite
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                "Failed to add ${attraction.name} to favorites. Please try again later.")),
-      );
+      errorService.displaySnackbarError(context,  "Failed to add ${attraction.name} to favorites. Please try again later.");
     }
   }
 
@@ -255,11 +254,7 @@ class _AttractionSliderState extends State<AttractionSlider> {
         favoriteAttractions.remove(attraction.id); // Remove from favorites
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                "Failed to remove ${attraction.name} from favorites. Please try again later.")),
-      );
+      errorService.displaySnackbarError(context,  "Failed to remove ${attraction.name} from favorites. Please try again later.");
     }
   }
 }

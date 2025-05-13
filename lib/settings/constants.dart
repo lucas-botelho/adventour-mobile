@@ -26,6 +26,7 @@ class Attraction {
   static const String attractionInfo = "$controller/info";
   static const String createReview = "$controller/review";
   static const String reviews = "$controller/reviews";
+  static const String favorites = "$controller/favorites";
 }
 
 class Files {
