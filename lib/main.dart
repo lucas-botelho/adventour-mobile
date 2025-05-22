@@ -1,4 +1,5 @@
 import 'package:adventour/firebase_options.dart';
+import 'package:adventour/global_state.dart';
 import 'package:adventour/respositories/attraction_respository.dart';
 import 'package:adventour/respositories/files_respository.dart';
 import 'package:adventour/respositories/user_repository.dart';
@@ -7,12 +8,12 @@ import 'package:adventour/screens/world_map.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/error_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
+import 'package:adventour/services/geolocation_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-
 import 'respositories/map_respository.dart';
 
 //Starting function
@@ -21,33 +22,41 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => GlobalAppState()),
+
     //Providers that don't depend on other providers should be listed first
     Provider<ApiService>(create: (_) => ApiService()),
     Provider<ErrorService>(create: (_) => ErrorService()),
-    Provider<FirebaseAuthService>(create: (_) => FirebaseAuthService()),
-
-    //Repositories that depend on services
-    ProxyProvider2<ApiService, FirebaseAuthService, UserRepository>(
-      update: (_, apiService, firebaseAuthService, __) => UserRepository(
-          apiService: apiService, firebaseAuthService: firebaseAuthService),
+    Provider<GeolocationService>(create: (_) => GeolocationService()),
+    //Providers that depend on Providers
+    ProxyProvider<ApiService, FirebaseAuthService>(
+      update: (_, apiService, authService) =>
+          FirebaseAuthService(apiService: apiService),
     ),
+
+    ProxyProvider2<ApiService, FirebaseAuthService, UserRepository>(
+      update: (_, apiService, authService, __) =>
+          UserRepository(apiService: apiService, authService: authService),
+    ),
+
+    ProxyProvider2<ApiService, FirebaseAuthService, FileRepository>(
+      update: (_, apiService, authService, __) =>
+          FileRepository(apiService: apiService, authService: authService),
+    ),
+
+    ProxyProvider2<ApiService, FirebaseAuthService, MapRepository>(
+      update: (_, apiService, authService, __) =>
+          MapRepository(apiService: apiService, authService: authService),
+    ),
+
     ProxyProvider3<ApiService, FirebaseAuthService, UserRepository,
         AttractionRepository>(
       update: (_, apiService, authService, userRepo, __) =>
           AttractionRepository(
         apiService: apiService,
-        firebaseAuthService: authService,
+        authService: authService,
         userRepository: userRepo,
       ),
-    ),
-
-    ProxyProvider2<ApiService, FirebaseAuthService, FileRepository>(
-      update: (_, apiService, firebaseAuthService, __) => FileRepository(
-          apiService: apiService, firebaseAuthService: firebaseAuthService),
-    ),
-    ProxyProvider2<ApiService, FirebaseAuthService, MapRepository>(
-      update: (_, apiService, firebaseAuthService, __) => MapRepository(
-          apiService: apiService, firebaseAuthService: firebaseAuthService),
     ),
   ], child: const MyApp()));
 }

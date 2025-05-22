@@ -6,16 +6,16 @@ import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:adventour/settings/constants.dart';
 
 class MapRepository {
-  final apiService;
-  final firebaseAuthService;
+  final ApiService apiService;
+  final FirebaseAuthService authService;
 
-  MapRepository({required this.firebaseAuthService, required this.apiService});
+  MapRepository({required this.apiService, required this.authService});
 
   Future<BaseApiResponse<CountryResponse>?> getCountryData(
       String countryIsoCode) async {
-    final result = await ApiService().get(
+    final result = await apiService.get(
       '${Country.getCountry}/$countryIsoCode',
-      await firebaseAuthService.getIdToken(),
+      await authService.getIdToken(),
       headers: <String, String>{},
       fromJsonT: (json) => CountryResponse.fromJson(json),
     );
@@ -24,9 +24,9 @@ class MapRepository {
   }
 
   Future<BaseApiResponse<CountryResponse>?> getCountry(String isoCode) async {
-    final result = await ApiService().get(
+    final result = await apiService.get(
       '${Country.getCountry}/$isoCode',
-      await FirebaseAuthService().getIdToken(),
+      await authService.getIdToken(),
       headers: <String, String>{},
       fromJsonT: (json) => CountryResponse.fromJson(json),
     );
@@ -36,9 +36,9 @@ class MapRepository {
 
   Future<BaseApiResponse<CountryListResponse>?> getCountries(
       String continentName, int page, String countryCode) async {
-    final result = await ApiService().get(
+    final result = await apiService.get(
       '${Country.listCountries}?continent=$continentName&page=$page&pageSize=5&selectedCountryCode=$countryCode',
-      await FirebaseAuthService().getIdToken(),
+      await authService.getIdToken(),
       headers: <String, String>{},
       fromJsonT: (json) => CountryListResponse.fromJson(json),
     );

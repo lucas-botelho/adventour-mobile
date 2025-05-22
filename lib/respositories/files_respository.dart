@@ -7,9 +7,9 @@ import 'package:adventour/settings/constants.dart';
 
 class FileRepository {
   final ApiService apiService;
-  final FirebaseAuthService firebaseAuthService;
+  final FirebaseAuthService authService;
 
-  FileRepository({required this.firebaseAuthService, required this.apiService});
+  FileRepository({required this.authService, required this.apiService});
 
 
   Future<BaseApiResponse<FileUploadResponse>> uploadSingleFile<T>({
@@ -18,7 +18,7 @@ class FileRepository {
     return apiService.uploadFile(
       endpoint: Files.upload,
       file: file,
-      token: await firebaseAuthService.getIdToken(),
+      token: await authService.getIdToken(),
       fromJsonT: (json) => FileUploadResponse.fromJson(json),
     );
   }
@@ -29,7 +29,7 @@ class FileRepository {
     return apiService.uploadFiles<FilesUploadResponse>(
       endpoint: Files.uploadMultiple,
       files: files,
-      token: await firebaseAuthService.getIdToken(),
+      token: await authService.getIdToken(),
       fromJsonT: (json) => FilesUploadResponse.fromJson(json),
     );
   }

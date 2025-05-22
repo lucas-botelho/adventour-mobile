@@ -86,7 +86,7 @@ class _AttractionSliderState extends State<AttractionSlider> {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 Text(
-                  currentAttraction.description,
+                  currentAttraction.shortDescription,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],

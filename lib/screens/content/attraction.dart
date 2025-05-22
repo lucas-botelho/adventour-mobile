@@ -1,7 +1,6 @@
 import 'package:adventour/components/layout/content_appbar.dart';
 import 'package:adventour/components/media/attraction_image_slider.dart';
 import 'package:adventour/components/navigation/attraction_nav.dart';
-import 'package:adventour/components/navigation/navbar.dart';
 import 'package:adventour/components/navigation/sidemenu.dart';
 import 'package:adventour/components/tabs/information_tab.dart';
 import 'package:adventour/components/tabs/reviews_tabs.dart';
@@ -36,7 +35,6 @@ class _AttractionDetailsState extends State<AttractionDetails> {
   }
 
   Future<void> _fetchAttractionDetails() async {
-    setState(() => isLoading = true); // Start loading
 
     try {
       var response =
@@ -84,8 +82,6 @@ class _AttractionDetailsState extends State<AttractionDetails> {
 
     return Scaffold(
       appBar: ContentAppbar(title: attractionDetails!.name),
-      drawer: const SideMenu(),
-      bottomNavigationBar: NavBar(selectedIndex: 0),
       body: Column(
         children: [
           AttractionNav(

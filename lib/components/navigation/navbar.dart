@@ -1,8 +1,11 @@
+import 'package:adventour/global_state.dart';
 import 'package:adventour/screens/auth/account_settings.dart';
-import 'package:adventour/screens/content/attraction.dart';
+import 'package:adventour/screens/content/country_attractions.dart';
 import 'package:adventour/screens/content/favorites_screen.dart';
+import 'package:adventour/screens/content/itenerary.dart';
 import 'package:adventour/screens/world_map.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class NavBar extends StatefulWidget {
   final int selectedIndex;
@@ -19,6 +22,9 @@ class NavBar extends StatefulWidget {
 class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
+    final GlobalAppState globalState = context.read<GlobalAppState>();
+    final String continentName = globalState.continentName;
+    final String countryIsoCode = globalState.countryIsoCode;
     return Container(
       height: MediaQuery.of(context).size.height * 0.10,
       decoration: const BoxDecoration(
@@ -33,18 +39,31 @@ class _NavBarState extends State<NavBar> {
         children: [
           _buildNavItem(
             index: 0,
-            icon: Icons.explore,
+            icon: Icons.location_on,
             onItemTapped: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const AttractionDetails(
-                  attractionId: 1,
+                builder: (context) => CountryAttractions(
+                  continentName: continentName,
+                  countryCode: countryIsoCode,
                 ),
               ),
             ),
           ),
           _buildNavItem(
             index: 1,
+            icon: Icons.explore,
+            onItemTapped: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => IteneraryPlanner(
+                  countryCode: countryIsoCode,
+                ),
+              ),
+            ),
+          ),
+          _buildNavItem(
+            index: 2,
             icon: Icons.public,
             onItemTapped: () => Navigator.push(
               context,
@@ -54,7 +73,7 @@ class _NavBarState extends State<NavBar> {
             ),
           ),
           _buildNavItem(
-            index: 2,
+            index: 3,
             icon: Icons.favorite,
             onItemTapped: () => Navigator.push(
               context,
@@ -63,8 +82,8 @@ class _NavBarState extends State<NavBar> {
               ),
             ),
           ),
-           _buildNavItem(
-            index: 3,
+          _buildNavItem(
+            index: 4,
             icon: Icons.settings,
             onItemTapped: () => Navigator.push(
               context,
@@ -112,5 +131,3 @@ class _NavBarState extends State<NavBar> {
     );
   }
 }
-
-

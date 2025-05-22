@@ -14,7 +14,7 @@ class AccountSettings extends StatefulWidget {
 }
 
 class _AccountSettingsState extends State<AccountSettings> {
-  final FirebaseAuthService firebaseAuthService = FirebaseAuthService();
+  late final FirebaseAuthService authService;
   late final UserRepository userRepository;
   UserResponse? user;
 
@@ -23,6 +23,7 @@ class _AccountSettingsState extends State<AccountSettings> {
   void initState() {
     super.initState();
     userRepository = context.read<UserRepository>();
+    authService = context.read<FirebaseAuthService>();
     _loadUserData();
   }
 
@@ -45,7 +46,7 @@ class _AccountSettingsState extends State<AccountSettings> {
             ),
       ),
       child: Scaffold(
-        bottomNavigationBar: const NavBar(selectedIndex: 3),
+        bottomNavigationBar: const NavBar(selectedIndex: 4),
         body: Column(
           children: [
             Padding(
@@ -166,7 +167,7 @@ class _AccountSettingsState extends State<AccountSettings> {
       width: double.infinity,
       child: TextButton(
         onPressed: () async {
-          await firebaseAuthService.logout(context);
+          await authService.logout(context);
         },
         style: TextButton.styleFrom(
           backgroundColor: Colors.transparent,

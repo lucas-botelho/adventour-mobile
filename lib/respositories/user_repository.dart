@@ -11,18 +11,18 @@ import 'package:adventour/settings/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserRepository {
-  final FirebaseAuthService firebaseAuthService;
+  final FirebaseAuthService authService;
   final ApiService apiService;
 
-  UserRepository({required this.firebaseAuthService, required this.apiService});
+  UserRepository({required this.authService, required this.apiService});
 
   Future<BaseApiResponse<UserResponse>?> getUserData() async {
-    var firebaseUser = firebaseAuthService.getUser();
+    var firebaseUser = authService.getUser();
 
     if (firebaseUser != null) {
       var response = await apiService.get(
         Authentication.me,
-        await firebaseAuthService.getIdToken(),
+        await authService.getIdToken(),
         headers: {},
         fromJsonT: (json) => UserResponse.fromJson(json),
       );
@@ -39,7 +39,7 @@ class UserRepository {
       return null;
     }
 
-    var token = await firebaseAuthService.getIdToken();
+    var token = await authService.getIdToken();
 
     try {
       final requestModel = UserRegistrationRequest(
@@ -87,7 +87,7 @@ class UserRepository {
 
   Future<BaseApiResponse<PatchUserPublicDataResponse>?> updateUserPublicData(
       String userId, String name, String photoUrl) async {
-    var token = await firebaseAuthService.getIdToken();
+    var token = await authService.getIdToken();
 
     try {
       final requestModel = PatchUserPublicDataRequest(

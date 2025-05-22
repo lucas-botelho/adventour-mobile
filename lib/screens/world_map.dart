@@ -1,3 +1,4 @@
+import 'package:adventour/global_state.dart';
 import 'package:adventour/respositories/map_respository.dart';
 import 'package:adventour/screens/content/country_attractions.dart';
 import 'package:adventour/services/error_service.dart';
@@ -21,11 +22,13 @@ class _AdventourMapState extends State<AdventourMap> {
   String fetchedData = "";
   ErrorService errorService = ErrorService();
   late final MapRepository mapRepository;
+  late final GlobalAppState globalState;
 
   @override
   void initState() {
     super.initState();
     mapRepository = context.read<MapRepository>();
+    globalState = context.read<GlobalAppState>();
   }
 
   @override
@@ -37,10 +40,10 @@ class _AdventourMapState extends State<AdventourMap> {
           padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
           child: Column(
             children: [
-              styledHeader(),
-              styledMap(),
-              if (country.isNotEmpty) ...displayFetchedData(),
-              styledCTAButton(),
+              _buildHeader(),
+              _buildMap(),
+              if (country.isNotEmpty) ..._displayFetchedData(),
+              _buildCTAButton(),
             ],
           ),
         ),
@@ -48,7 +51,7 @@ class _AdventourMapState extends State<AdventourMap> {
     );
   }
 
-  Padding styledHeader() {
+  Padding _buildHeader() {
     return const Padding(
       padding: EdgeInsets.symmetric(vertical: 20),
       child: Text(
@@ -62,7 +65,7 @@ class _AdventourMapState extends State<AdventourMap> {
     );
   }
 
-  SizedBox styledMap() {
+  SizedBox _buildMap() {
     return SizedBox(
       height: 500,
       width: double.infinity, // Define largura total do ecrã
@@ -84,7 +87,7 @@ class _AdventourMapState extends State<AdventourMap> {
               instructions: SMapWorld.instructionsMercator,
               defaultColor: Colors.grey.shade400,
               callback: (id, name, tapDetails) async {
-                await fetchCountry(id);
+                await _fetchCountry(id);
               },
             ),
           ),
@@ -93,7 +96,7 @@ class _AdventourMapState extends State<AdventourMap> {
     );
   }
 
-  Padding styledCTAButton() {
+  Padding _buildCTAButton() {
     return Padding(
       padding: const EdgeInsets.all(15),
       child: CTAButton(
@@ -102,6 +105,8 @@ class _AdventourMapState extends State<AdventourMap> {
               ? () => errorService.displaySnackbarError(
                   context, "Please select a country first")
               : () => {
+                    globalState.setContinentAndCountry(
+                        continent, countryIsoCode),
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -115,7 +120,7 @@ class _AdventourMapState extends State<AdventourMap> {
     );
   }
 
-  Padding _textDivider() {
+  Padding _buildTextDivider() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Container(
@@ -127,15 +132,15 @@ class _AdventourMapState extends State<AdventourMap> {
     );
   }
 
-  List<Widget> displayFetchedData() {
+  List<Widget> _displayFetchedData() {
     return [
       Text(continent),
-      _textDivider(),
+      _buildTextDivider(),
       Text(country),
     ];
   }
 
-  Future<void> fetchCountry(String countryCode) async {
+  Future<void> _fetchCountry(String countryCode) async {
     if (countryCode.isEmpty) return;
 
     countryIsoCode = countryCode;

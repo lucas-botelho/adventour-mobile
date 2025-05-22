@@ -56,26 +56,26 @@ class _AttractionImageSliderState extends State<AttractionImageSlider> {
     );
   }
 
-  Widget _buildIndicator() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: widget.imageUrls.asMap().entries.map((entry) {
-        return GestureDetector(
-          onTap: () => setState(() {
-            currentIndex = entry.key;
-          }),
-          child: Container(
-            width: 8.0,
-            height: 8.0,
-            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color:
-                  currentIndex == entry.key ? Colors.blueAccent : Colors.grey,
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
+  // Widget _buildIndicator() {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: widget.imageUrls.asMap().entries.map((entry) {
+  //       return GestureDetector(
+  //         onTap: () => setState(() {
+  //           currentIndex = entry.key;
+  //         }),
+  //         child: Container(
+  //           width: 8.0,
+  //           height: 8.0,
+  //           margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+  //           decoration: BoxDecoration(
+  //             shape: BoxShape.circle,
+  //             color:
+  //                 currentIndex == entry.key ? Colors.blueAccent : Colors.grey,
+  //           ),
+  //         ),
+  //       );
+  //     }).toList(),
+  //   );
+  // }
 }

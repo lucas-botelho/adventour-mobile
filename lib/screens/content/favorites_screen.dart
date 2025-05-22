@@ -38,7 +38,7 @@ class _FavoritesState extends State<Favorites> {
 
     return Scaffold(
       appBar: const ContentAppbar(title: "Favorites"),
-      bottomNavigationBar: const NavBar(selectedIndex: 2),
+      bottomNavigationBar: const NavBar(selectedIndex: 3),
       backgroundColor: const Color(0xFF0F4C4C),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

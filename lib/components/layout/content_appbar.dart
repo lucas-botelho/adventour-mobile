@@ -31,6 +31,7 @@ class _ContentAppbarState extends State<ContentAppbar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      iconTheme: const IconThemeData(color: Colors.white),
       backgroundColor: const Color(0xFF134546),
       centerTitle: true,
       title: Text(
@@ -41,20 +42,11 @@ class _ContentAppbarState extends State<ContentAppbar> {
           fontSize: 24,
         ),
       ),
-      leading: Builder(
-        builder: (context) => IconButton(
-          icon: const Icon(Icons.menu),
-          color: Colors.white,
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
-      ),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 10),
           child: FutureBuilder<String>(
-            future: networkImageUrl(), // Fetch the image URL asynchronously
+            future: _fetchImageUrl(), // Fetch the image URL asynchronously
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircleAvatar(
@@ -83,7 +75,7 @@ class _ContentAppbarState extends State<ContentAppbar> {
     );
   }
 
-  Future<String> networkImageUrl() async {
+  Future<String> _fetchImageUrl() async {
     var photoUrl = globals.photoUrl;
     if (photoUrl?.isEmpty ?? true) {
       var response = await userRepository.getUserData();

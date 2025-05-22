@@ -26,7 +26,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
   final accountUpdateFormKey = GlobalKey<FormState>();
   late final UserRepository userRepository;
   late final ErrorService errorService;
-  late final FirebaseAuthService firebaseAuthService;
+  late final FirebaseAuthService authService;
   var nameController = TextEditingController();
   io.File? profileImage;
 
@@ -42,7 +42,7 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
   void initState() {
     super.initState();
     errorService = context.read<ErrorService>();
-    firebaseAuthService = context.read<FirebaseAuthService>();
+    authService = context.read<FirebaseAuthService>();
     userRepository = context.read<UserRepository>();
     fileRepository = context.read<FileRepository>();
   }

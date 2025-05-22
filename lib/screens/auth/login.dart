@@ -9,7 +9,6 @@ import 'package:adventour/screens/auth/registration_step_one.dart';
 import 'package:adventour/screens/world_map.dart';
 import 'package:adventour/services/error_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +28,7 @@ class _LoginState extends State<Login> {
 
   late final UserRepository userRepository;
   late final ErrorService errorService;
-  late final FirebaseAuthService firebaseAuthService;
+  late final FirebaseAuthService authService;
 
   @override
   void dispose() {
@@ -42,7 +41,7 @@ class _LoginState extends State<Login> {
   void initState() {
     super.initState();
     errorService = context.read<ErrorService>();
-    firebaseAuthService = context.read<FirebaseAuthService>();
+    authService = context.read<FirebaseAuthService>();
     userRepository = context.read<UserRepository>();
   }
 
@@ -136,14 +135,14 @@ class _LoginState extends State<Login> {
   }
 
   void signInWithGoogle() async {
-    await firebaseAuthService.signInWithGoogle();
+    await authService.signInWithGoogle();
     login();
   }
 
   void signInWithEmailAndPassword() async {
     if (!formKey.currentState!.validate()) return;
 
-    await firebaseAuthService.signUpWithEmail(
+    await authService.signUpWithEmail(
         _emailController.text, _passwordController.text);
 
     login();

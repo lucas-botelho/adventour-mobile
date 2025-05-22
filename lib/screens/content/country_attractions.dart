@@ -56,7 +56,6 @@ class _CountryAttractionsState extends State<CountryAttractions> {
           ],
         ),
       ),
-      drawer: const SideMenu(),
       bottomNavigationBar: const NavBar(selectedIndex: 0),
     );
   }

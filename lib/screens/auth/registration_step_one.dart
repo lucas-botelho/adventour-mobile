@@ -25,7 +25,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
   Map<String, String> fieldErrors = {};
 
   late final ErrorService errorService;
-  late final FirebaseAuthService firebaseAuthService;
+  late final FirebaseAuthService authService;
   late final UserRepository userRepository;
 
   final TextEditingController _passwordController = TextEditingController();
@@ -48,7 +48,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
     super.initState();
 
     errorService = context.read<ErrorService>();
-    firebaseAuthService = context.read<FirebaseAuthService>();
+    authService = context.read<FirebaseAuthService>();
     userRepository = context.read<UserRepository>();
   }
 
@@ -148,7 +148,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
   }
 
   void signInWithGoogle() async {
-    var user = await firebaseAuthService.signInWithGoogle();
+    var user = await authService.signInWithGoogle();
     register(user);
   }
 
@@ -156,7 +156,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
     if (!formKey.currentState!.validate()) return;
 
     register(
-      await firebaseAuthService.signUpWithEmail(
+      await authService.signUpWithEmail(
           _emailController.text, _passwordController.text),
     );
   }

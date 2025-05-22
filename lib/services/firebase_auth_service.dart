@@ -9,8 +9,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 class FirebaseAuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  FirebaseAuthService() {
+  late final ApiService apiService;
+  FirebaseAuthService({required this.apiService}) {
     _firebaseAuth.authStateChanges().listen((User? user) {
       if (user == null) {
         print("User is signed out");
@@ -59,7 +59,7 @@ class FirebaseAuthService {
 
   Future<User?> signUpWithEmail(String email, String password) async {
     try {
-      final result = await ApiService().get(
+      final result = await apiService.get(
         '${Authentication.emailRegistred}/$email',
         null,
         headers: <String, String>{},
@@ -92,7 +92,7 @@ class FirebaseAuthService {
         return null;
       }
 
-      final result = await ApiService().get(
+      final result = await apiService.get(
         '${Authentication.emailRegistred}/${googleUser?.email}',
         null,
         headers: <String, String>{},
