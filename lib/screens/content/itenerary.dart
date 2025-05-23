@@ -60,6 +60,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
     errorService = context.read<ErrorService>();
     _fetchAttractions();
     _getCountryName();
+    _fetchItineraries();
 
     // Initialize the new itinerary with one day and no timeslots
     itineraries = [
@@ -667,14 +668,14 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
     );
   }
 
-  Future<void> _getCountryName() async {
+  void _getCountryName() async {
     final countryData = await mapRepository.getCountry(widget.countryCode);
     if (countryData != null && countryData.data != null) {
       countryName = countryData.data!.name;
     }
   }
 
-  Future<void> _fetchAttractions() async {
+  void _fetchAttractions() async {
     try {
       final response = await attractionRepository.getAttractions(
         countryCode: widget.countryCode,
@@ -693,7 +694,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
     }
   }
 
-  Future<void> _saveItinerary() async {
+  void _saveItinerary() async {
     final response = await itineraryRepository.saveItinerary(selectedItinerary);
 
     if (response != null && response.success && response.data != null) {
@@ -706,6 +707,18 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
         SnackBar(
             content: Text(response?.message ?? 'Failed to create itinerary')),
       );
+    }
+  }
+
+  void _fetchItineraries() async {
+    final response = await itineraryRepository.getItineraries(widget.countryCode);
+
+    if (response != null && response.success && response.data != null) {
+      setState(() {
+        itineraries.addAll(response.data!.itineraries);
+      });
+    } else {
+      errorService.displaySnackbarError(context, response?.message);
     }
   }
 

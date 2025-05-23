@@ -37,6 +37,5 @@ class Files {
 
 class Itinerary {
   static const String controller = 'Itinerary';
-  static const String create = "$controller/itinerary";
-  static const String getItinerary = "$controller/get";
+  static const String itinerary = "$controller/itinerary";
 }

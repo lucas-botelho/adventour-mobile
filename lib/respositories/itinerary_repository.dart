@@ -1,5 +1,6 @@
 import 'package:adventour/models/base_api_response.dart';
 import 'package:adventour/models/itinerary/itinerary.dart';
+import 'package:adventour/models/responses/itinerary/itinerarylist.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:adventour/settings/constants.dart';
@@ -15,11 +16,8 @@ class ItineraryRepository {
   ) async {
     final token = await authService.getIdToken();
     try {
-
-
-
       final response = await apiService.post(
-        endpoint: Itinerary.create,
+        endpoint: Itinerary.itinerary,
         token: token,
         headers: <String, String>{},
         body: itinerary.toJson(),
@@ -29,6 +27,24 @@ class ItineraryRepository {
       return response;
     } catch (e) {
       print('Error saving itinerary: $e');
+    }
+  }
+
+  Future<BaseApiResponse<ItineraryListResponse>?> getItineraries(String countryCode) async {
+    final token = await authService.getIdToken();
+
+    try {
+      final response = await apiService.get(
+        '${Itinerary.itinerary}?countryCode=$countryCode',
+        token,
+        headers: <String, String>{},
+        fromJsonT: (json) => ItineraryListResponse.fromJson(json),
+      );
+
+      return response;
+    } catch (e) {
+      print('Error fetching itineraries: $e');
+      return null;
     }
   }
 }
