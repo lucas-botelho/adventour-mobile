@@ -1,55 +1,54 @@
 import 'dart:math' as math;
 
 import 'package:adventour/components/cta/cta_button.dart';
+import 'package:adventour/components/media/itinerary_header.dart';
+import 'package:adventour/components/navigation/itinerary_builder_search_bar.dart';
+import 'package:adventour/models/itinerary/day.dart';
+import 'package:adventour/models/itinerary/itinerary.dart';
+import 'package:adventour/models/itinerary/timeslot.dart';
 import 'package:adventour/models/responses/attraction/basic_attraction_response.dart';
 import 'package:adventour/respositories/attraction_respository.dart';
+import 'package:adventour/respositories/itinerary_repository.dart';
 import 'package:adventour/respositories/map_respository.dart';
-import 'package:adventour/screens/world_map.dart';
+import 'package:adventour/services/error_service.dart';
 import 'package:adventour/services/geolocation_service.dart';
 import 'package:flutter/material.dart';
 import 'package:adventour/components/navigation/navbar.dart';
 import 'package:provider/provider.dart';
 
-class IteneraryPlanner extends StatefulWidget {
+class ItineraryPlanner extends StatefulWidget {
   final String countryCode;
 
-  const IteneraryPlanner({super.key, required this.countryCode});
+  const ItineraryPlanner({super.key, required this.countryCode});
 
   @override
-  State<IteneraryPlanner> createState() => _IteneraryPlannerState();
+  State<ItineraryPlanner> createState() => _ItineraryPlannerState();
 }
 
-class _IteneraryPlannerState extends State<IteneraryPlanner> {
+class _ItineraryPlannerState extends State<ItineraryPlanner> {
+  // Constants
   final _headerHeightFactor = 0.32;
   final _edgeInsetsFactor = 0.03;
-  final List<int> selectedAttractions = [];
+
+  //Placeholders
+  String countryName = "Unknown Country";
+
+  //Repositories
   late final GeolocationService geolocationService;
   late final AttractionRepository attractionRepository;
+  late final ItineraryRepository itineraryRepository;
   late final MapRepository mapRepository;
-  late ItineraryOption selectedItinerary;
-  late List<ItineraryOption> availableItineraries;
-  String countryName = "Unknown Country";
-  List<DayItinerary> itineraryDays = [
-    DayItinerary(dayTitle: "Day 1", slots: [
-      TimeSlot(time: "08:00 - 12:00", title: "Auberge Djoni"),
-      TimeSlot(time: "12:00 - 13:00", title: "Le Manur Restaurant"),
-    ]),
-  ];
+  late final ErrorService errorService;
 
-  List<DayItinerary> itineraryDays2 = [
-    DayItinerary(dayTitle: "Day 1", slots: [
-      TimeSlot(time: "08:00 - 12:00", title: "Auberge Djoni"),
-      TimeSlot(time: "12:00 - 13:00", title: "Le Manur Restaurant"),
-    ]),
-    DayItinerary(dayTitle: "Day 2", slots: [
-      TimeSlot(time: "08:00 - 12:00", title: "Auberge Djoni"),
-      TimeSlot(time: "12:00 - 13:00", title: "Le Manur Restaurant"),
-    ]),
-  ];
+  late ItineraryModel selectedItinerary;
+  List<ItineraryModel> itineraries =
+      []; //itineraries list used on the dropdown and used for the login of submission
+  List<BasicAttractionResponse> attractions =
+      []; //attractions list used on the drawer
 
-
-
-  List<BasicAttractionResponse> attractions = [];
+  //State variables
+  List<int> selectedAttractions = [];
+  int currentDayIndex = 0;
 
   @override
   initState() {
@@ -57,16 +56,19 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
     geolocationService = context.read<GeolocationService>();
     attractionRepository = context.read<AttractionRepository>();
     mapRepository = context.read<MapRepository>();
+    itineraryRepository = context.read<ItineraryRepository>();
+    errorService = context.read<ErrorService>();
     _fetchAttractions();
     _getCountryName();
 
-    availableItineraries = [
-      ItineraryOption(id: null, name: 'My sakura'),
-      ItineraryOption(id: 1, name: 'Weekend Trip'),
-      ItineraryOption(id: 2, name: 'Favorites'),
+    // Initialize the new itinerary with one day and no timeslots
+    itineraries = [
+      ItineraryModel(
+          id: null,
+          name: 'New itinerary',
+          days: [Day(dayNumber: 1, timeslots: [])]),
     ];
-
-    selectedItinerary = availableItineraries.first;
+    selectedItinerary = itineraries.first;
   }
 
   @override
@@ -82,40 +84,16 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
       body: SizedBox.expand(
         child: Stack(
           children: [
-            _buildHeaderImage(),
+            ItineraryHeaderImage(
+                attractions: attractions,
+                context: context,
+                headerHeightFactor: _headerHeightFactor),
             _buildCountryTitle(),
             _buildPlannerContainer(),
           ],
         ),
       ),
     );
-  }
-
-  Future<void> _getCountryName() async {
-    final countryData = await mapRepository.getCountry(widget.countryCode);
-    if (countryData != null && countryData.data != null) {
-      countryName = countryData.data!.name;
-    }
-  }
-
-  Future<void> _fetchAttractions() async {
-    try {
-      final response = await attractionRepository.getAttractions(
-        countryCode: widget.countryCode,
-      );
-
-      if (response != null && response.data != null) {
-        setState(() {
-          attractions = response.data!.attractions;
-        });
-      } else {
-        // debugPrint("No attractions found for country code: $currentCountryCode");
-      }
-    } catch (e) {
-      debugPrint("Error fetching attractions: $e");
-    } finally {
-      // setState(() => isLoading = false); // Stop loading
-    }
   }
 
   Widget _buildCreateButton() {
@@ -125,23 +103,23 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
         padding: const EdgeInsets.only(bottom: 16),
         child: CTAButton(
           text: "Save my itinerary",
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AdventourMap(),
-            ),
-          ),
+          onPressed: _saveItinerary,
         ),
       ),
     );
   }
 
-  Widget _buildConfirmSelectionButton() {
+  Widget _buildConfirmSelectionButton(Day day) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: CTAButton(
         text: "Confirm selection",
-        onPressed: () => {},
+        onPressed: () {
+          Navigator.pop(
+            context,
+            List<TimeSlot>.from(day.timeslots ?? []), // <- envia cópia da lista
+          );
+        },
       ),
     );
   }
@@ -190,8 +168,8 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
               children: [
                 _buildContainerHeader(),
                 const SizedBox(height: 12),
-                ...List.generate(itineraryDays.length, (index) {
-                  final day = itineraryDays[index];
+                ...List.generate(selectedItinerary.days!.length, (index) {
+                  final day = selectedItinerary.days![index];
                   return _buildDayAccordion(day, index);
                 }),
                 const SizedBox(height: 16),
@@ -209,7 +187,14 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
   Widget _buildAddNewDayButton() {
     return Center(
       child: ElevatedButton.icon(
-        onPressed: _addNewDay,
+        onPressed: () => {
+          setState(() {
+            selectedItinerary.days!.add(Day(
+              dayNumber: selectedItinerary.days!.length + 1,
+              timeslots: [],
+            ));
+          }),
+        },
         icon: const Icon(Icons.add),
         label: const Text("Add Day"),
         style: ElevatedButton.styleFrom(
@@ -243,22 +228,10 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
     );
   }
 
-  void _addNewDay() {
-    //todo: fazer post para criar dia na base de dados
-
-    setState(() {
-      itineraryDays.add(
-        DayItinerary(
-          dayTitle: "Day ${itineraryDays.length + 1}",
-          slots: [],
-        ),
-      );
-    });
-  }
-
-  Widget _buildDayAccordion(DayItinerary day, int index) {
+  Widget _buildDayAccordion(Day day, int index) {
     return Dismissible(
-      key: ValueKey('day-$index'), // <- chave única mesmo com títulos repetidos
+      key: ValueKey('day-${day.dayNumber}-${day.timeslots?.length ?? 0}'),
+      // <- chave única mesmo com títulos repetidos
       direction: DismissDirection.endToStart,
       dismissThresholds: const {
         DismissDirection.endToStart: 0.20,
@@ -281,7 +254,7 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
       },
       onDismissed: (direction) {
         setState(() {
-          itineraryDays.removeAt(index);
+          selectedItinerary.days!.removeAt(index);
         });
       },
       child: Container(
@@ -291,13 +264,17 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
           borderRadius: BorderRadius.circular(12),
         ),
         child: ExpansionTile(
-          title: Text(day.dayTitle,
+          initiallyExpanded: index == currentDayIndex,
+          title: Text("Day ${day.dayNumber.toString()}",
               style: const TextStyle(fontWeight: FontWeight.w400)),
           children: [
-            ...day.slots.map((slot) {
+            ...(day.timeslots ?? [])
+                .where((slot) => slot.attraction != null)
+                .map((slot) {
               return ListTile(
-                title: Text(slot.title),
-                subtitle: Text(slot.time),
+                title: Text(slot.attraction!.name),
+                subtitle: Text(
+                    '${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}'),
                 trailing: const Icon(Icons.directions),
               );
             }),
@@ -326,12 +303,11 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
     );
   }
 
-
-  void _showAttractionDrawer(DayItinerary day) {
-    //Mantido fora do builder para não reiniciar a cada setModalState
+  void _showAttractionDrawer(Day day) async {
     String searchQuery = '';
 
-    showModalBottomSheet(
+    final result = await showModalBottomSheet<List<TimeSlot>>(
+      // <- Resultado será lista de TimeSlot
       context: context,
       isScrollControlled: true,
       backgroundColor: const Color(0xFF1B4D4B),
@@ -339,9 +315,6 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
-        final screenWidth = MediaQuery.of(context).size.width;
-        final cardSize = (screenWidth - 48) / 2;
-
         return StatefulBuilder(
           builder: (context, setModalState) {
             return DraggableScrollableSheet(
@@ -355,23 +328,35 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      _buildAttractionDrawerDragLine(context),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                       const SizedBox(height: 12),
-                      _buildDrawerTitle(),
-                      _buildSearchBar((value) {
+                      const Text(
+                        "Select an activity",
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white),
+                      ),
+                      ItineraryBuilderSearchBar(onChanged: (value) {
                         setModalState(() {
                           searchQuery = value.toLowerCase();
                         });
                       }),
                       const SizedBox(height: 16),
-                      _buildDrawerScrollableContent(
+                      _buildDrawerModal(
                         scrollController,
-                        cardSize,
                         setModalState,
-                        screenWidth,
-                        searchQuery, //Passa a query
+                        searchQuery,
+                        day,
                       ),
-                      _buildConfirmSelectionButton()
+                      _buildConfirmSelectionButton(day)
                     ],
                   ),
                 );
@@ -381,36 +366,27 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
         );
       },
     );
+
+    if (result != null) {
+      setState(() {
+        final index = selectedItinerary.days!.indexOf(day);
+        selectedItinerary.days![index] = Day(
+          dayNumber: day.dayNumber,
+          timeslots: result,
+        );
+      });
+    }
   }
 
-  Widget _buildSearchBar(ValueSetter<String> onChanged) {
-    return TextField(
-      onChanged: onChanged,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        hintText: 'Search attractions...',
-        hintStyle: const TextStyle(color: Colors.white54),
-        prefixIcon: const Icon(Icons.search, color: Colors.white),
-        filled: true,
-        fillColor: Colors.white.withOpacity(0.1),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDrawerScrollableContent(
+  Widget _buildDrawerModal(
     ScrollController scrollController,
-    double cardSize,
     StateSetter setModalState,
-    double screenWidth,
     String searchQuery,
+    Day day,
   ) {
-    // Filtra as atrações com base na query de pesquisa
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardSize = (screenWidth - 48) / 2;
+
     final filteredAttractions = attractions
         .where((a) => a.name.toLowerCase().contains(searchQuery))
         .toList();
@@ -422,7 +398,8 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
           spacing: 16,
           runSpacing: 16,
           children: filteredAttractions.map((attraction) {
-            final isSelected = selectedAttractions.contains(attraction.id);
+            final isSelected =
+                day.timeslots!.any((t) => t.attractionId == attraction.id);
             return Stack(
               children: [
                 SizedBox(
@@ -430,37 +407,8 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
                   height: cardSize,
                   child: _buildAttractionCard(attraction),
                 ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: GestureDetector(
-                    onTap: () {
-                      setModalState(() {
-                        if (isSelected) {
-                          selectedAttractions.remove(attraction.id);
-                        } else {
-                          selectedAttractions.add(attraction.id);
-                        }
-                      });
-                    },
-                    child: Container(
-                      width: math.max(5.0, screenWidth * 0.06),
-                      height: math.max(5.0, screenWidth * 0.06),
-                      decoration: BoxDecoration(
-                        color:
-                            isSelected ? Colors.green[200] : Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          isSelected ? Icons.check : Icons.add,
-                          size: math.max(5.0, screenWidth * 0.06) * 0.6,
-                          color: isSelected ? Colors.green : Colors.grey,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                _buildCardPlusButton(context, setModalState, isSelected,
+                    attraction, screenWidth, day),
               ],
             );
           }).toList(),
@@ -469,22 +417,132 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
     );
   }
 
-  Widget _buildDrawerTitle() {
-    return const Text(
-      "Select an activity",
-      style: TextStyle(
-          fontSize: 20, fontWeight: FontWeight.w400, color: Colors.white),
+  Widget _buildCardPlusButton(
+    BuildContext context,
+    StateSetter setModalState,
+    bool isSelected,
+    BasicAttractionResponse attraction,
+    double screenWidth,
+    Day day,
+  ) {
+    return Positioned(
+      top: 8,
+      right: 8,
+      child: GestureDetector(
+        onTap: () async {
+          if (!isSelected) {
+            final selectedTimes = await showDialog<Map<String, TimeOfDay>>(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) => _buildTimeSlotDialog(context, attraction.name),
+            );
+
+            if (selectedTimes != null) {
+              final startTime = selectedTimes['start']!;
+              final endTime = selectedTimes['end']!;
+
+              setModalState(() {
+                day.timeslots = List<TimeSlot>.from(day.timeslots ?? [])
+                  ..add(TimeSlot(
+                    name: attraction.name,
+                    attraction: attraction,
+                    startTime: timeOfDayToDateTime(startTime),
+                    endTime: timeOfDayToDateTime(endTime),
+                    attractionId: attraction.id,
+                  ));
+              });
+            }
+          } else {
+            setModalState(() {
+              day.timeslots = List<TimeSlot>.from(day.timeslots ?? [])
+                ..removeWhere((t) => t.attractionId == attraction.id);
+            });
+          }
+        },
+        child: Container(
+          width: math.max(5.0, screenWidth * 0.06),
+          height: math.max(5.0, screenWidth * 0.06),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.green[200] : Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Icon(
+              isSelected ? Icons.check : Icons.add,
+              size: math.max(5.0, screenWidth * 0.06) * 0.6,
+              color: isSelected ? Colors.green : Colors.grey,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildAttractionDrawerDragLine(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.1,
-      height: 4,
-      decoration: BoxDecoration(
-        color: Colors.grey,
-        borderRadius: BorderRadius.circular(8),
-      ),
+  Widget _buildTimeSlotDialog(
+      BuildContext dialogContext, String attractionName) {
+    TimeOfDay? startTime;
+    TimeOfDay? endTime;
+
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return AlertDialog(
+          title: Text('Selecionar horário para $attractionName'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  final picked = await showTimePicker(
+                    context: dialogContext,
+                    initialTime: TimeOfDay.now(),
+                  );
+                  if (picked != null) setState(() => startTime = picked);
+                },
+                child: Text(startTime != null
+                    ? 'Início: ${startTime!.format(context)}'
+                    : 'Selecionar início'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () async {
+                  final picked = await showTimePicker(
+                    context: dialogContext,
+                    initialTime: TimeOfDay.now(),
+                  );
+                  if (picked != null) setState(() => endTime = picked);
+                },
+                child: Text(endTime != null
+                    ? 'Fim: ${endTime!.format(context)}'
+                    : 'Selecionar fim'),
+              ),
+            ],
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: (startTime != null && endTime != null)
+                      ? () => Navigator.pop(dialogContext, {
+                            'start': startTime!,
+                            'end': endTime!,
+                          })
+                      : null,
+                  child: const Text('Confirm'),
+                ),
+              ],
+            )
+          ],
+        );
+      },
     );
   }
 
@@ -529,32 +587,31 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
   }
 
   Widget _buildDropdownButton() {
-    return DropdownButton<ItineraryOption>(
+    return DropdownButton<ItineraryModel>(
       value: selectedItinerary,
       icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        fontWeight: FontWeight.w500,
-        color: Colors.black,
-      ),
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
       dropdownColor: Colors.white,
-      items: availableItineraries.map<DropdownMenuItem<ItineraryOption>>((item) {
-        return DropdownMenuItem<ItineraryOption>(
+      items: itineraries.map<DropdownMenuItem<ItineraryModel>>((item) {
+        return DropdownMenuItem<ItineraryModel>(
           value: item,
-          child: Text(item.name),
+          child: Text(item.name!),
         );
       }).toList(),
-      onChanged: (ItineraryOption? value) {
+      onChanged: (ItineraryModel? value) {
         if (value != null) {
           debugPrint("Selected itinerary: ${value.name} and id: ${value.id}");
 
           setState(() {
-            itineraryDays = itineraryDays2;
+            //todo: trocar conteudo do itenerario
             selectedItinerary = value;
           });
         }
       },
-    )
-    ;
+    );
   }
 
   Widget _buildAttractionCard(BasicAttractionResponse attraction) {
@@ -577,7 +634,6 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
               ),
             ),
           ),
-          _buildPlusButtonOnAttractionCard(attraction),
           Padding(
             padding: const EdgeInsets.all(8),
             child: Column(
@@ -611,77 +667,55 @@ class _IteneraryPlannerState extends State<IteneraryPlanner> {
     );
   }
 
-  Widget _buildPlusButtonOnAttractionCard(BasicAttractionResponse attraction) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final plusButtonSize = math.max(5.0, screenWidth * 0.06);
-    final isSelected = selectedAttractions.contains(attraction.id);
-
-    return Positioned(
-      top: 8,
-      right: 8,
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            if (!isSelected) {
-              selectedAttractions.add(attraction.id);
-            } else {
-              selectedAttractions.remove(attraction.id);
-            }
-          });
-        },
-        child: Container(
-          width: plusButtonSize,
-          height: plusButtonSize,
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.green[200] : Colors.grey[200],
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Center(
-            child: Icon(isSelected ? Icons.check : Icons.add,
-                size: plusButtonSize * 0.6,
-                color: isSelected ? Colors.green : Colors.grey),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeaderImage() {
-    String? imageUrl;
-
-    if (attractions.isNotEmpty &&
-        attractions.first.attractionImages.isNotEmpty) {
-      imageUrl = attractions.first.attractionImages.first.url;
+  Future<void> _getCountryName() async {
+    final countryData = await mapRepository.getCountry(widget.countryCode);
+    if (countryData != null && countryData.data != null) {
+      countryName = countryData.data!.name;
     }
+  }
 
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * _headerHeightFactor,
-      width: double.infinity,
-      child: imageUrl != null
-          ? Image.network(imageUrl, fit: BoxFit.cover)
-          : Image.asset('assets/images/step_two_image.jpg', fit: BoxFit.cover),
-    );
+  Future<void> _fetchAttractions() async {
+    try {
+      final response = await attractionRepository.getAttractions(
+        countryCode: widget.countryCode,
+      );
+
+      if (response != null && response.data != null) {
+        setState(() {
+          attractions = response.data!.attractions;
+        });
+      } else {
+        errorService.displaySnackbarError(context, response?.message);
+      }
+    } catch (e) {
+      errorService.displaySnackbarError(context,
+          'There was an error loading the attractions for this country');
+    }
+  }
+
+  Future<void> _saveItinerary() async {
+    final response = await itineraryRepository.saveItinerary(selectedItinerary);
+
+    if (response != null && response.success && response.data != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Itinerary created successfully')),
+      );
+      Navigator.of(context).pop();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(response?.message ?? 'Failed to create itinerary')),
+      );
+    }
+  }
+
+  String formatTime(DateTime dateTime) {
+    final time = TimeOfDay.fromDateTime(dateTime);
+    return time.format(context); // depende do contexto
   }
 }
 
-class TimeSlot {
-  final String time;
-  final String title;
-
-  TimeSlot({required this.time, required this.title});
+DateTime timeOfDayToDateTime(TimeOfDay tod) {
+  final now = DateTime.now();
+  return DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
 }
-
-class DayItinerary {
-  final String dayTitle;
-  final List<TimeSlot> slots;
-
-  DayItinerary({required this.dayTitle, required this.slots});
-}
-
-class ItineraryOption {
-  final int? id; // pode ser null para novos itinerários
-  final String name;
-
-  ItineraryOption({this.id, required this.name});
-}
-

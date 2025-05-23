@@ -27,18 +27,19 @@ class BasicAttractionResponse {
 
   factory BasicAttractionResponse.fromJson(Map<String, dynamic> json) {
     return BasicAttractionResponse(
-      id: json['id'] as int,
-      isFavorited: json['isFavorited'] as bool,
-      name: json['name'] as String,
-      shortDescription: json['shortDescription'] as String,
+      id: json['id'] as int? ?? 0,
+      isFavorited: json['isFavorited'] == true,
+      name: json['name'] as String? ?? '',
+      shortDescription: json['shortDescription'] as String? ?? '',
       longDescription: json['longDescription'] as String?,
       distanceMeters: (json['distanceMeters'] as num?)?.toDouble(),
-      attractionImages: (json['attractionImages'] as List<dynamic>)
-          .map((item) =>
+      attractionImages: (json['attractionImages'] as List<dynamic>?)
+          ?.map((item) =>
           AttractionImageResponse.fromJson(item as Map<String, dynamic>))
-          .toList(),
-      country: json['country'] as String,
-      address: json['address'] as String,
+          .toList() ??
+          [],
+      country: json['country'] as String? ?? '',
+      address: json['address'] as String? ?? '',
       rating: (json['rating'] as num?)?.toDouble(),
     );
   }

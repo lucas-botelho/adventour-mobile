@@ -2,8 +2,10 @@ import 'package:adventour/firebase_options.dart';
 import 'package:adventour/global_state.dart';
 import 'package:adventour/respositories/attraction_respository.dart';
 import 'package:adventour/respositories/files_respository.dart';
+import 'package:adventour/respositories/itinerary_repository.dart';
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/screens/auth/auth.dart';
+import 'package:adventour/screens/content/itenerary.dart';
 import 'package:adventour/screens/world_map.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/error_service.dart';
@@ -37,6 +39,11 @@ void main() async {
     ProxyProvider2<ApiService, FirebaseAuthService, UserRepository>(
       update: (_, apiService, authService, __) =>
           UserRepository(apiService: apiService, authService: authService),
+    ),
+
+    ProxyProvider2<ApiService, FirebaseAuthService, ItineraryRepository>(
+      update: (_, apiService, authService, __) =>
+          ItineraryRepository(apiService: apiService, authService: authService),
     ),
 
     ProxyProvider2<ApiService, FirebaseAuthService, FileRepository>(

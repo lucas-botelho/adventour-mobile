@@ -24,19 +24,27 @@ class AttractionResponse {
   });
 
   factory AttractionResponse.fromJson(Map<String, dynamic> json) {
-    return AttractionResponse(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      shortDescription: json['shortDescription'] as String?,
-      attractionImages: (json['attractionImages'] as List<dynamic>)
-          .map((item) =>
-              AttractionImageResponse.fromJson(item as Map<String, dynamic>))
-          .toList(),
-      countryId: json['countryId'] as int,
-      averageRating: (json['averageRating'] as num?)?.toDouble(),
-      addressOne: json['addressOne'] as String?,
-      addressTwo: json['addressTwo'] as String?,
-      longDescription: json['longDescription'] as String?,
-    );
+    try {
+      print('Attraction JSON: $json');
+
+      return AttractionResponse(
+        id: json['id'] as int,
+        name: json['name'] as String,
+        shortDescription: json['shortDescription'] as String?,
+        attractionImages: (json['attractionImages'] as List<dynamic>)
+            .map((item) =>
+                AttractionImageResponse.fromJson(item as Map<String, dynamic>))
+            .toList(),
+        countryId: json['countryId'] as int,
+        averageRating: (json['averageRating'] as num?)?.toDouble(),
+        addressOne: json['addressOne'] as String?,
+        addressTwo: json['addressTwo'] as String?,
+        longDescription: json['longDescription'] as String?,
+      );
+    } catch (e, stack) {
+      print('Error in AttractionResponse.fromJson: $e');
+      print(stack);
+      rethrow;
+    }
   }
 }

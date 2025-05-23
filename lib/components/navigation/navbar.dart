@@ -56,7 +56,7 @@ class _NavBarState extends State<NavBar> {
             onItemTapped: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => IteneraryPlanner(
+                builder: (context) => ItineraryPlanner(
                   countryCode: countryIsoCode,
                 ),
               ),

@@ -29,6 +29,8 @@ class AttractionRepository {
       return null;
     }
 
+    var token = await authService.getIdToken();
+
     final result = await apiService.get(
       '${Attraction.listAttractions}?countryCode=$countryCode&oAuthId=${user.data?.oauthId}',
       await authService.getIdToken(),

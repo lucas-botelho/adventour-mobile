@@ -34,3 +34,9 @@ class Files {
   static const String upload = "$controller/upload";
   static const String uploadMultiple = "$controller/upload/multiple";
 }
+
+class Itinerary {
+  static const String controller = 'Itinerary';
+  static const String create = "$controller/itinerary";
+  static const String getItinerary = "$controller/get";
+}
