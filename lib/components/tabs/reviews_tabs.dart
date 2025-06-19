@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 
 class ReviewTabs extends StatefulWidget {
   final int attractionId;
+  final void Function(bool reviewCreated) callback;
 
-  const ReviewTabs({super.key, required this.attractionId});
+
+  const ReviewTabs({super.key, required this.attractionId, required this.callback});
 
   @override
   State<ReviewTabs> createState() => _ReviewTabsState();
@@ -27,29 +29,28 @@ class _ReviewTabsState extends State<ReviewTabs> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: IndexedStack(
-        index: currentIndex,
-        children: [
-          ReviewListTab(
-            attractionId: widget.attractionId,
-            onButtonPress: () {
-              setState(() {
-                currentIndex = 1;
-              });
-            },
-          ),
-          ReviewFormTab(
-            attractionId: widget.attractionId,
-            callback: (bool reviewCreated) {
-              setState(() {
-                currentIndex = 0;
-                refreshReviews = reviewCreated;
-              });
-            },
-          ),
-        ],
-      ),
+    return IndexedStack(
+      index: currentIndex,
+      children: [
+        ReviewListTab(
+          attractionId: widget.attractionId,
+          onButtonPress: () {
+            setState(() {
+              currentIndex = 1;
+            }); //needs to be passed on constructor to change the index stack as a callback
+          },
+        ),
+        ReviewFormTab(
+          attractionId: widget.attractionId,
+          callback: (bool reviewCreated) {
+            setState(() {
+              currentIndex = 0;
+            });
+
+            widget.callback(reviewCreated);
+          },
+        ),
+      ],
     );
   }
 }

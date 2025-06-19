@@ -8,7 +8,6 @@ import 'package:adventour/respositories/attraction_respository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 class AttractionDetails extends StatefulWidget {
   final int attractionId;
 
@@ -34,7 +33,6 @@ class _AttractionDetailsState extends State<AttractionDetails> {
   }
 
   Future<void> _fetchAttractionDetails() async {
-
     try {
       var response =
           await attractionRepository.getAttraction(widget.attractionId);
@@ -97,7 +95,16 @@ class _AttractionDetailsState extends State<AttractionDetails> {
               children: [
                 aboutTab(context),
                 InformationTabs(attractionId: widget.attractionId),
-                ReviewTabs(attractionId: widget.attractionId),
+                ReviewTabs(
+                    attractionId: widget.attractionId,
+                    callback: (bool reviewCreated) {
+                      setState(() {
+                        if (reviewCreated) {
+                          isLoading = reviewCreated;
+                          _fetchAttractionDetails();
+                        }
+                      });
+                    }),
               ],
             ),
           ),

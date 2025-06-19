@@ -81,15 +81,14 @@ class _ReviewListTabState extends State<ReviewListTab> {
         ),
         const SizedBox(height: 8),
         SizedBox(
-          width: MediaQuery.of(context).size.width / 1.8,
+          width: MediaQuery.of(context).size.width ,
           child: Row(
             children: [
-              Text(attractionReviews?.averageRating.toStringAsFixed(1) ?? '0.0',
+              Text('Average rating: ',
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       fontFamily: GoogleFonts.manuale().fontFamily)),
-              const SizedBox(width: 8),
               ...List.generate(
                   attractionReviews?.averageRating.round() ?? 0,
                   (index) =>
@@ -119,31 +118,45 @@ class _ReviewListTabState extends State<ReviewListTab> {
   }
 
   Widget _buildRatingBar(String label, int count) {
+    int total = attractionReviews?.reviews.length ?? 0;
+
+    double? progressValue = 0;
+    if (total > 0) {
+      final normalized = count / total;
+      if (normalized.isFinite && !normalized.isNaN) {
+        progressValue = normalized;
+      }
+    }
+
     return Row(
       children: [
         SizedBox(
-            width: MediaQuery.of(context).size.width * 0.2,
-            child: Text(label,
-                style: TextStyle(
-                    fontFamily: GoogleFonts.manuale().fontFamily,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800))),
+          width: MediaQuery.of(context).size.width * 0.2,
+          child: Text(label,
+              style: TextStyle(
+                  fontFamily: GoogleFonts.manuale().fontFamily,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800)),
+        ),
         Expanded(
           child: LinearProgressIndicator(
-            value: count / attractionReviews!.reviews.length,
+            value: progressValue,
             backgroundColor: Colors.grey.shade200,
             valueColor: const AlwaysStoppedAnimation<Color>(Colors.amber),
           ),
         ),
         const SizedBox(width: 8),
-        Text(count.toString(),
-            style: TextStyle(
-                fontFamily: GoogleFonts.manuale().fontFamily,
-                fontSize: 10,
-                fontWeight: FontWeight.w800)),
+        Text(
+          count.toString(),
+          style: TextStyle(
+              fontFamily: GoogleFonts.manuale().fontFamily,
+              fontSize: 10,
+              fontWeight: FontWeight.w800),
+        ),
       ],
     );
   }
+
 
   Widget _buildReviewCard(ReviewWithImagesResponse review) {
     return Padding(
@@ -213,11 +226,13 @@ class _ReviewListTabState extends State<ReviewListTab> {
                 _buildRatingSummary(),
                 if (attractionReviews == null ||
                     attractionReviews!.reviews.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 32),
-                    child: Text(
-                      defaultMessage!,
-                      textAlign: TextAlign.center,
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 32),
+                      child: Text(
+                        defaultMessage!,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   )
                 else

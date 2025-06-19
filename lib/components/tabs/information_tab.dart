@@ -95,22 +95,25 @@ class _InformationTabsState extends State<InformationTabs> {
                 child: pages[_currentPage],
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _currentPage > 0
-                    ? TextButton(
-                        onPressed: _goToPreviousPage,
-                        child: const Text("< Back"),
-                      )
-                    : const SizedBox(),
-                _currentPage < pages.length - 1
-                    ? TextButton(
-                        onPressed: () => _goToNextPage(pages.length),
-                        child: const Text("Next >"),
-                      )
-                    : const SizedBox(),
-              ],
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _currentPage > 0
+                      ? TextButton(
+                          onPressed: _goToPreviousPage,
+                          child: const Text("< Back"),
+                        )
+                      : const SizedBox(),
+                  _currentPage < pages.length - 1
+                      ? TextButton(
+                          onPressed: () => _goToNextPage(pages.length),
+                          child: const Text("Next >"),
+                        )
+                      : const SizedBox(),
+                ],
+              ),
             ),
           ],
         );
