@@ -1,6 +1,7 @@
 import 'package:adventour/components/navigation/navbar.dart';
 import 'package:adventour/models/responses/auth/user.dart';
 import 'package:adventour/respositories/user_repository.dart';
+import 'package:adventour/screens/legal/privacy_policy_page.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:adventour/utils/user_utils.dart';
 import 'package:flutter/material.dart';
@@ -94,10 +95,15 @@ class _AccountSettingsState extends State<AccountSettings> {
                       onPressed: () {}),
                   lineDivider(),
                   buildArrowButtons(
-                      icon:
-                          const Icon(Icons.lock, color: Colors.white, size: 30),
-                      label: "Privacy Policy",
-                      onPressed: () {}),
+                    icon: const Icon(Icons.lock, color: Colors.white, size: 30),
+                    label: "Privacy Policy",
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => const PrivacyPolicyPage()),
+                      );
+                    },
+                  ),
                   lineDivider(),
                   logoutOption(),
                 ],
