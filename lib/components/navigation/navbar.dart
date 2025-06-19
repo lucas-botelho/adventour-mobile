@@ -26,18 +26,15 @@ class _NavBarState extends State<NavBar> {
     final String continentName = globalState.continentName;
     final String countryIsoCode = globalState.countryIsoCode;
     return Container(
-      height: MediaQuery.of(context).size.height * 0.10,
+      height: MediaQuery.of(context).size.height * 0.1,
       decoration: const BoxDecoration(
         color: Color.fromARGB(255, 190, 246, 251),
-        // borderRadius: BorderRadius.only(
-        //   topLeft: Radius.circular(30),
-        //   topRight: Radius.circular(30),
-        // ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildNavItem(
+            label: 'Country',
             index: 0,
             icon: Icons.location_on,
             onItemTapped: () => Navigator.push(
@@ -51,6 +48,7 @@ class _NavBarState extends State<NavBar> {
             ),
           ),
           _buildNavItem(
+            label: 'Planner',
             index: 1,
             icon: Icons.explore,
             onItemTapped: () => Navigator.push(
@@ -63,6 +61,7 @@ class _NavBarState extends State<NavBar> {
             ),
           ),
           _buildNavItem(
+            label: 'Map',
             index: 2,
             icon: Icons.public,
             onItemTapped: () => Navigator.push(
@@ -73,6 +72,7 @@ class _NavBarState extends State<NavBar> {
             ),
           ),
           _buildNavItem(
+            label: 'Favorites',
             index: 3,
             icon: Icons.favorite,
             onItemTapped: () => Navigator.push(
@@ -83,6 +83,7 @@ class _NavBarState extends State<NavBar> {
             ),
           ),
           _buildNavItem(
+            label: 'Settings',
             index: 4,
             icon: Icons.settings,
             onItemTapped: () => Navigator.push(
@@ -97,36 +98,42 @@ class _NavBarState extends State<NavBar> {
     );
   }
 
-  Widget _buildNavItem(
-      {required int index,
-      required IconData icon,
-      required VoidCallback onItemTapped}) {
+  Widget _buildNavItem({
+    required int index,
+    required IconData icon,
+    required String label,
+    required VoidCallback onItemTapped,
+  }) {
     final bool isSelected = widget.selectedIndex == index;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 0),
-      padding: const EdgeInsets.all(5),
-      decoration: isSelected
-          ? BoxDecoration(
-              color: Colors.teal.shade800,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.teal.shade900,
-                  blurRadius: 20,
-                  spreadRadius: 5,
-                )
-              ],
-            )
-          : const BoxDecoration(),
-      child: IconButton(
-        icon: Icon(
-          icon,
-          size: 42,
-          color: isSelected ? Colors.white : Colors.black,
-        ),
-        onPressed: isSelected ? null : onItemTapped,
-        splashRadius: 30, // Optional: customize splash effect size
+    return GestureDetector(
+      onTap: isSelected ? null : onItemTapped,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isSelected ? Colors.teal.shade100 : Colors.transparent,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(
+              icon,
+              size: 24,
+              color: isSelected ? Colors.black : Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: isSelected ? Colors.black : Colors.black54,
+            ),
+          ),
+        ],
       ),
     );
   }

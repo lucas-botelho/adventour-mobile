@@ -2,7 +2,7 @@ import 'package:adventour/models/itinerary/day.dart';
 
 class ItineraryModel {
   final int? id;
-  final String? name;
+  String? name;
   final List<Day>? days;
   final String? userId;
 

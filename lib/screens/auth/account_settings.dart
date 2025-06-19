@@ -19,7 +19,6 @@ class _AccountSettingsState extends State<AccountSettings> {
   UserResponse? user;
 
   @override
-  @override
   void initState() {
     super.initState();
     userRepository = context.read<UserRepository>();
@@ -55,18 +54,12 @@ class _AccountSettingsState extends State<AccountSettings> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Account",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  _buildTitle(),
                   lineDivider(),
-                  userNameOption(user),
+                  iconOption(() {}, user?.name ?? '', userImage(user), ''),
                   lineDivider(),
                   iconOption(
-                      () {},
+                      _showChangeEmailModal,
                       "Email",
                       const Icon(Icons.email, color: Colors.white, size: 50),
                       user?.email ?? ''),
@@ -116,8 +109,18 @@ class _AccountSettingsState extends State<AccountSettings> {
     );
   }
 
+  Text _buildTitle() {
+    return const Text(
+      "Account",
+      style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w700,
+      ),
+    );
+  }
+
   Widget buildButtonsStyle({
-    required Widget icon, // Change from Icon to Widget
+    required Widget icon,
     required String label,
     String? subText,
     VoidCallback? onPressed,
@@ -215,24 +218,14 @@ class _AccountSettingsState extends State<AccountSettings> {
     );
   }
 
-  Widget iconOption(Function onClick, String text, Icon icon, String subText) {
+  Widget iconOption(
+      VoidCallback onClick, String text, Widget icon, String subText) {
     return buildButtonsStyle(
       icon: icon,
       label: text,
       subText: subText,
       trailingWidget: TextButton(
-        onPressed: () {},
-        child: editTextButton(),
-      ),
-    );
-  }
-
-  Widget userNameOption(UserResponse? user) {
-    return buildButtonsStyle(
-      icon: userImage(user),
-      label: user?.name ?? '',
-      trailingWidget: TextButton(
-        onPressed: () {},
+        onPressed: onClick,
         child: editTextButton(),
       ),
     );
@@ -298,6 +291,48 @@ class _AccountSettingsState extends State<AccountSettings> {
                 fontWeight: FontWeight.w700,
                 color: Colors.black)),
       ),
+    );
+  }
+
+  void _showChangeEmailModal() {
+    final TextEditingController emailController =
+        TextEditingController(text: user?.email ?? '');
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Change Email'),
+          content: TextFormField(
+            controller: emailController,
+            decoration: const InputDecoration(
+              labelText: 'New Email',
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.emailAddress,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final newEmail = emailController.text.trim();
+                if (newEmail.isNotEmpty && newEmail != user?.email) {
+                  // await authService.updateEmail(newEmail);
+
+                  // Optional: refresh local user info
+                  _loadUserData();
+
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

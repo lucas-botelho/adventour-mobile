@@ -177,4 +177,28 @@ class ApiService {
       statusCode: response.statusCode,
     );
   }
+
+  Future<BaseApiResponse<T>> delete<T>({
+    String? token,
+    required String endpoint,
+    required Map<String, String> headers,
+    required T Function(dynamic) fromJsonT,
+  }) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/$endpoint'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization':
+          token != null && token.isNotEmpty ? 'Bearer $token' : '',
+          ...headers,
+        },
+      );
+
+      return processResponse<T>(response, fromJsonT);
+    } catch (e) {
+      throw Exception('Failed to process DELETE request: $e');
+    }
+  }
+
 }

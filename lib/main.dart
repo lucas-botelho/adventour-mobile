@@ -5,7 +5,6 @@ import 'package:adventour/respositories/files_respository.dart';
 import 'package:adventour/respositories/itinerary_repository.dart';
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/screens/auth/auth.dart';
-import 'package:adventour/screens/content/itenerary.dart';
 import 'package:adventour/screens/world_map.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/error_service.dart';

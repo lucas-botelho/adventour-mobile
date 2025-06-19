@@ -1,7 +1,6 @@
 import 'package:adventour/components/layout/content_appbar.dart';
 import 'package:adventour/components/navigation/country_slider.dart';
 import 'package:adventour/components/navigation/navbar.dart';
-import 'package:adventour/components/navigation/sidemenu.dart';
 import 'package:adventour/components/media/media_slider.dart';
 import 'package:flutter/material.dart';
 

@@ -588,32 +588,58 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
   }
 
   Widget _buildDropdownButton() {
-    return DropdownButton<ItineraryModel>(
-      value: selectedItinerary,
-      icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-          ),
-      dropdownColor: Colors.white,
-      items: itineraries.map<DropdownMenuItem<ItineraryModel>>((item) {
-        return DropdownMenuItem<ItineraryModel>(
+    return PopupMenuButton<ItineraryModel>(
+      tooltip: 'Select itinerary',
+      itemBuilder: (context) => itineraries.map((item) {
+        return PopupMenuItem<ItineraryModel>(
           value: item,
-          child: Text(item.name!),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  item.name!,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+
+              if(item.id != null) //nao mostrar para o novo
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red, size: 24),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _deleteItinerary(item);
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+            ],
+          ),
         );
       }).toList(),
-      onChanged: (ItineraryModel? value) {
-        if (value != null) {
-          debugPrint("Selected itinerary: ${value.name} and id: ${value.id}");
-
-          setState(() {
-            //todo: trocar conteudo do itenerario
-            selectedItinerary = value;
-          });
-        }
+      onSelected: (ItineraryModel selected) {
+        setState(() {
+          selectedItinerary = selected;
+        });
       },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            selectedItinerary.name ?? 'Select itinerary',
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+            ),
+          ),
+          const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+        ],
+      ),
     );
   }
+
+
 
   Widget _buildAttractionCard(BasicAttractionResponse attraction) {
     final imageUrl = attraction.attractionImages.isNotEmpty
@@ -695,6 +721,43 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
   }
 
   void _saveItinerary() async {
+    final TextEditingController nameController = TextEditingController();
+
+    // Mostra o modal para introduzir o nome
+    final bool confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Name your itinerary'),
+          content: TextField(
+            controller: nameController,
+            decoration: const InputDecoration(hintText: 'Enter itinerary name'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (nameController.text.trim().isNotEmpty) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    ) ??
+        false;
+
+    if (!confirmed) return;
+
+    // Define o nome no objeto antes de guardar
+    selectedItinerary.name = nameController.text.trim();
+
     final response = await itineraryRepository.saveItinerary(selectedItinerary);
 
     if (response != null && response.success && response.data != null) {
@@ -726,9 +789,61 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
     final time = TimeOfDay.fromDateTime(dateTime);
     return time.format(context); // depende do contexto
   }
+
+  void _deleteItinerary(ItineraryModel item) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Confirm delete"),
+        content: Text("Are you sure you want to delete itinerary '${item.name}'?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    final response = await itineraryRepository.deleteItinerary(item.id!);
+
+    if (response != null && response.success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response.data ?? 'Itinerary deleted successfully.')),
+      );
+
+      setState(() {
+        itineraries.removeWhere((i) => i.id == item.id);
+        if (selectedItinerary.id == item.id && itineraries.isNotEmpty) {
+          selectedItinerary = itineraries.first;
+        } else if (itineraries.isEmpty) {
+          itineraries = [
+            ItineraryModel(
+                id: null,
+                name: 'New itinerary',
+                days: [Day(dayNumber: 1, timeslots: [])]),
+          ];
+          selectedItinerary = itineraries.first;
+        }
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response?.message ?? 'Failed to delete itinerary.')),
+      );
+    }
+  }
+
+
+  DateTime timeOfDayToDateTime(TimeOfDay tod) {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
+  }
 }
 
-DateTime timeOfDayToDateTime(TimeOfDay tod) {
-  final now = DateTime.now();
-  return DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
-}
+

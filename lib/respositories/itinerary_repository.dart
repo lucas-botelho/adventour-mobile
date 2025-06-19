@@ -28,6 +28,8 @@ class ItineraryRepository {
     } catch (e) {
       print('Error saving itinerary: $e');
     }
+
+    return null;
   }
 
   Future<BaseApiResponse<ItineraryListResponse>?> getItineraries(String countryCode) async {
@@ -47,4 +49,23 @@ class ItineraryRepository {
       return null;
     }
   }
+
+  Future<BaseApiResponse<String>?> deleteItinerary(int itineraryId) async {
+    final token = await authService.getIdToken();
+
+    try {
+      final response = await apiService.delete(
+        endpoint: '${Itinerary.itinerary}/$itineraryId',
+        token: token,
+        headers: <String, String>{},
+        fromJsonT: (json) => json.toString(),
+      );
+
+      return response;
+    } catch (e) {
+      print('Error deleting itinerary: $e');
+      return null;
+    }
+  }
+
 }

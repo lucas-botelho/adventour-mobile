@@ -33,7 +33,7 @@ class AttractionRepository {
 
     final result = await apiService.get(
       '${Attraction.listAttractions}?countryCode=$countryCode&oAuthId=${user.data?.oauthId}',
-      await authService.getIdToken(),
+      token,
       headers: <String, String>{},
       fromJsonT: (json) => BasicAttractionListResponse.fromJson(json),
     );

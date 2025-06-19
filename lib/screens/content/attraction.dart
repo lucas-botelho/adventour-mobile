@@ -1,7 +1,6 @@
 import 'package:adventour/components/layout/content_appbar.dart';
 import 'package:adventour/components/media/attraction_image_slider.dart';
 import 'package:adventour/components/navigation/attraction_nav.dart';
-import 'package:adventour/components/navigation/sidemenu.dart';
 import 'package:adventour/components/tabs/information_tab.dart';
 import 'package:adventour/components/tabs/reviews_tabs.dart';
 import 'package:adventour/models/responses/attraction/attraction_response.dart';

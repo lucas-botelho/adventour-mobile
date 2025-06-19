@@ -17,7 +17,7 @@ class Favorites extends StatefulWidget {
 class _FavoritesState extends State<Favorites> {
   late final AttractionRepository attractionRepository;
   late final ErrorService errorService;
-  FavoritesResponse? favorites;
+  FavoritesResponse? favorites = null;
   bool isLoading = true;
   String search = '';
 
@@ -42,55 +42,61 @@ class _FavoritesState extends State<Favorites> {
       backgroundColor: const Color(0xFF0F4C4C),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Center(
-                      child: Text(
-                        "View and Manage Your Favorite\nAdventures",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Averia Libre',
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+          : favorites == null
+              ? const Center(
+                  child: Text(
+                      "You haven't found any favorite attractions yet, have a look around!"))
+              : SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Center(
+                          child: Text(
+                            "View and Manage Your Favorite\nAdventures",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: 'Averia Libre',
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      onChanged: (value) {
-                        setState(() => search = value);
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Search',
-                        filled: true,
-                        fillColor: Colors.white,
-                        prefixIcon: const Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
+                        const SizedBox(height: 16),
+                        TextField(
+                          onChanged: (value) {
+                            setState(() => search = value);
+                          },
+                          style: const TextStyle(color: Colors.black),
+                          decoration: InputDecoration(
+                            hintText: 'Search',
+                            filled: true,
+                            fillColor: Colors.white,
+                            prefixIcon: const Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 16),
+                        Expanded(
+                          child: ListView.separated(
+                            itemCount: filtered.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 10),
+                            itemBuilder: (context, index) {
+                              final fav = filtered[index];
+                              return _buildFavoriteCard(fav);
+                            },
+                          ),
+                        )
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: ListView.separated(
-                        itemCount: filtered.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 10),
-                        itemBuilder: (context, index) {
-                          final fav = filtered[index];
-                          return _buildFavoriteCard(fav);
-                        },
-                      ),
-                    )
-                  ],
+                  ),
                 ),
-              ),
-            ),
     );
   }
 
@@ -119,17 +125,16 @@ class _FavoritesState extends State<Favorites> {
               ),
               child: fav.imageUrl.isEmpty
                   ? const Center(
-                child: Icon(Icons.image, size: 40, color: Colors.white),
-              )
+                      child: Icon(Icons.image, size: 40, color: Colors.white),
+                    )
                   : Image.network(
-                fav.imageUrl,
-                fit: BoxFit.cover,
-                height: double.infinity,
-                width: double.infinity,
-              ),
+                      fav.imageUrl,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                    ),
             ),
           ),
-
           const SizedBox(width: 12),
           Expanded(
             child: Padding(
@@ -208,7 +213,9 @@ class _FavoritesState extends State<Favorites> {
           isLoading = false;
         });
       } else {
-        errorService.displaySnackbarError(context, "Failed to fetch favorites");
+        setState(() {
+          isLoading = false;
+        });
       }
     } catch (e) {
       debugPrint("Error fetching favorites: $e");
