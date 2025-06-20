@@ -1,4 +1,5 @@
 import 'package:adventour/respositories/user_repository.dart';
+import 'package:adventour/screens/auth/account_settings.dart';
 import 'package:adventour/utils/user_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:adventour/globals.dart' as globals;
@@ -46,34 +47,47 @@ class _ContentAppbarState extends State<ContentAppbar> {
         Padding(
           padding: const EdgeInsets.only(right: 10),
           child: FutureBuilder<String>(
-            future: _fetchImageUrl(), // Fetch the image URL asynchronously
+            future: _fetchImageUrl(), // Busca a imagem de perfil
             builder: (context, snapshot) {
+              Widget avatar;
+
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircleAvatar(
+                avatar = const CircleAvatar(
                   radius: 18,
-                  child: Icon(Icons.person), // Placeholder icon while loading
+                  child: Icon(Icons.person),
                 );
               } else if (snapshot.hasError ||
                   !snapshot.hasData ||
                   snapshot.data!.isEmpty) {
-                return const CircleAvatar(
+                avatar = const CircleAvatar(
                   radius: 18,
-                  child: Icon(
-                      Icons.error), // Show error icon if something goes wrong
+                  child: Icon(Icons.error),
                 );
               } else {
-                return CircleAvatar(
+                avatar = CircleAvatar(
                   radius: 18,
-                  backgroundImage:
-                      NetworkImage(snapshot.data!), // Load the fetched image
+                  backgroundImage: NetworkImage(snapshot.data!),
                 );
               }
+
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AccountSettings(),
+                    ),
+                  );
+                },
+                child: avatar,
+              );
             },
           ),
         ),
       ],
     );
   }
+
 
   Future<String> _fetchImageUrl() async {
     var photoUrl = globals.photoUrl;
