@@ -6,11 +6,14 @@ import 'package:adventour/components/form/elements/text_with_action.dart';
 import 'package:adventour/components/row/row_divider_with_text.dart';
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/screens/auth/registration_step_one.dart';
+import 'package:adventour/screens/auth/registration_step_three.dart';
 import 'package:adventour/screens/world_map.dart';
 import 'package:adventour/services/error_service.dart';
 import 'package:adventour/services/firebase_auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'registration_step_two.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -66,10 +69,9 @@ class _LoginState extends State<Login> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   socialLoginGoogle(context),
-                  socialLoginGoogle(context),
+                  // socialLoginGoogle(context),
                 ],
               ),
-
               TextWithAction(
                 label: "Don't have an account?",
                 actionLabel: "Sign Up",
@@ -135,7 +137,6 @@ class _LoginState extends State<Login> {
     );
   }
 
-
   Form loginForm(BuildContext context) {
     return Form(
       key: formKey,
@@ -174,7 +175,7 @@ class _LoginState extends State<Login> {
   void signInWithEmailAndPassword() async {
     if (!formKey.currentState!.validate()) return;
 
-    await authService.signUpWithEmail(
+    await authService.signInWithEmail(
         _emailController.text, _passwordController.text);
 
     login();
@@ -204,14 +205,36 @@ class _LoginState extends State<Login> {
       }
 
       if (response.success && response.statusCode == 200) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const AdventourMap(),
-          ),
-          (route) => false,
-        );
-        return;
+        switch (response.data?.registrationStep ?? 0) {
+          case 1:
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => RegistrationStepTwo(
+                  userId: response.data!.id,
+                  pinToken: '',
+                  email: response.data!.email,
+                ),
+              ),
+            );
+            break;
+          case 2:
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    RegistrationStepThree(userId: response.data!.oauthId),
+              ),
+            );
+            break;
+          default:
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const AdventourMap(),
+              ),
+            );
+        }
       }
 
       errorService.displaySnackbarError(context, "Failed to sign in.");

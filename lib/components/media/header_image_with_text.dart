@@ -1,4 +1,3 @@
-import 'package:adventour/components/layout/auth_appbar.dart';
 import 'package:flutter/material.dart';
 
 class HeaderImageWithText extends StatelessWidget {

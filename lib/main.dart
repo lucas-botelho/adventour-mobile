@@ -1,3 +1,4 @@
+import 'package:adventour/components/router/main_router.dart';
 import 'package:adventour/firebase_options.dart';
 import 'package:adventour/global_state.dart';
 import 'package:adventour/respositories/attraction_respository.dart';
@@ -5,6 +6,8 @@ import 'package:adventour/respositories/files_respository.dart';
 import 'package:adventour/respositories/itinerary_repository.dart';
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/screens/auth/auth.dart';
+import 'package:adventour/screens/auth/registration_step_three.dart';
+import 'package:adventour/screens/auth/registration_step_two.dart';
 import 'package:adventour/screens/world_map.dart';
 import 'package:adventour/services/api_service.dart';
 import 'package:adventour/services/error_service.dart';
@@ -76,21 +79,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Adventour",
       theme: buildTheme(),
-      home: Scaffold(
-        body: StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (_, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            } else if (snapshot.hasData) {
-              return const AdventourMap(); // Authenticated
-            } else {
-              return const AuthScreen(); // Not authenticated
-            }
-          },
-        ),
-      ),
-      // routes: ,
+      home: const MainRouter(),
     );
   }
 
@@ -99,10 +88,8 @@ class MyApp extends StatelessWidget {
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFF134546),
-        error: const Color(0xFFD32F2F), // Global error color
-      ).copyWith(
-        surface: const Color(0xFF134546),
-      ),
+        error: const Color(0xFFD32F2F),
+      ).copyWith(surface: const Color(0xFF134546)),
       scaffoldBackgroundColor: const Color(0xFF134546),
       textTheme: TextTheme(
         bodyLarge: GoogleFonts.maidenOrange(color: Colors.white, fontSize: 20),
@@ -111,26 +98,21 @@ class MyApp extends StatelessWidget {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          textStyle: GoogleFonts.maidenOrange(
-              color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400),
+          textStyle: GoogleFonts.maidenOrange(fontSize: 16),
           foregroundColor: Colors.white,
-          // Text color
           backgroundColor: const Color(0xFF41969D),
-          // Button background color
           minimumSize: const Size(88, 36),
-          // Minimum button size
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          // Button padding
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)), // Button shape
+            borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-            textStyle: GoogleFonts.maidenOrange(
-                color: Colors.white, fontSize: 20, fontWeight: FontWeight.w400),
-            foregroundColor: Colors.white),
+          textStyle: GoogleFonts.maidenOrange(fontSize: 20),
+          foregroundColor: Colors.white,
+        ),
       ),
     );
   }
