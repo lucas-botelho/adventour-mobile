@@ -269,8 +269,15 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
           title: Text("Day ${day.dayNumber.toString()}",
               style: const TextStyle(fontWeight: FontWeight.w400)),
           children: [
-            ...(day.timeslots ?? [])
+            ...((day.timeslots ?? [])
                 .where((slot) => slot.attraction != null)
+                .toList()
+              ..sort((a, b) {
+                final startComparison = a.startTime.compareTo(b.startTime);
+                return startComparison != 0
+                    ? startComparison
+                    : a.endTime.compareTo(b.endTime);
+              }))
                 .map((slot) {
               return ListTile(
                 title: Text(slot.attraction!.name),
@@ -733,11 +740,12 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
           content: TextField(
             controller: nameController,
             decoration: const InputDecoration(hintText: 'Enter itinerary name'),
+            style: TextStyle(color: Colors.black),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: const Text('Cancel',style: TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
               onPressed: () {
