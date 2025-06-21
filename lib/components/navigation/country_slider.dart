@@ -167,7 +167,7 @@ class _CountrySliderState extends State<CountrySlider> {
     bool isSelected = currentCountry?.code == country.code;
 
     return GestureDetector(
-      onTap: () => _onCountrySelected(index), // Call _onCountrySelected
+      onTap: () => _onCountrySelected(index),
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         opacity: isSelected ? 1.0 : 0.5,
@@ -189,6 +189,8 @@ class _CountrySliderState extends State<CountrySlider> {
                 country.name,
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -196,4 +198,5 @@ class _CountrySliderState extends State<CountrySlider> {
       ),
     );
   }
+
 }

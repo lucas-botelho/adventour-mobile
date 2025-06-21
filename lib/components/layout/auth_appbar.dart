@@ -10,6 +10,10 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(iconTheme: const IconThemeData(color: Colors.white));
+    return AppBar(
+      backgroundColor: const Color(0xFF134546),
+      elevation: 0,
+      iconTheme: const IconThemeData(color: Colors.white),
+    );
   }
 }

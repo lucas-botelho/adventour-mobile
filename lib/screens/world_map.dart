@@ -36,16 +36,28 @@ class _AdventourMapState extends State<AdventourMap> {
     return Scaffold(
       backgroundColor: const Color(0xFF1B4D4B),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-          child: Column(
-            children: [
-              _buildHeader(),
-              _buildMap(),
-              if (country.isNotEmpty) ..._displayFetchedData(),
-              _buildCTAButton(),
-            ],
-          ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                    child: Column(
+                      children: [
+                        _buildHeader(),
+                        _buildMap(),
+                        if (country.isNotEmpty) ..._displayFetchedData(),
+                        const Spacer(),
+                        _buildCTAButton(),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

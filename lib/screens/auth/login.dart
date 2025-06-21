@@ -61,7 +61,15 @@ class _LoginState extends State<Login> {
                 child: loginForm(context),
               ),
               const RowDividerWithText(),
-              socialLoginButtons(context),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  socialLoginGoogle(context),
+                  socialLoginGoogle(context),
+                ],
+              ),
+
               TextWithAction(
                 label: "Don't have an account?",
                 actionLabel: "Sign Up",
@@ -88,21 +96,45 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Widget socialLoginButtons(BuildContext context) {
+  Widget socialLoginGoogle(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ElevatedButton(
+          ElevatedButton.icon(
             onPressed: () => signInWithGoogle(),
-            child: const Text("Log In with Google"),
+            icon: Image.asset(
+              'assets/images/google_icon.png',
+              height: 20,
+              width: 20,
+            ),
+            label: const Padding(
+              padding: EdgeInsets.only(left: 8),
+              child: Text(
+                "Google",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 18,
+                  letterSpacing: 1,
+                ),
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              elevation: 2,
+            ),
           ),
-          // LogInWithGoogle(context, "Log In with Apple"),
         ],
       ),
     );
   }
+
 
   Form loginForm(BuildContext context) {
     return Form(

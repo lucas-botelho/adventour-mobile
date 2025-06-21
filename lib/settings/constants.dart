@@ -6,6 +6,7 @@ class Authentication {
   static const String controller = 'authentication';
   // static const String test = "$controller/test";
   static const String user = "$controller/user";
+  static const String resendCodeEmail = "$controller/resend/confirmation";
   static const String confirmEmail = "$controller/email/confirm";
   static const String emailRegistred = "$controller/exist";
   static const String me = "$controller/user/me";

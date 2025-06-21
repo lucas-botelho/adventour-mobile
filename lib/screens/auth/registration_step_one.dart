@@ -173,6 +173,7 @@ class _RegistrationStepOneState extends State<RegistrationStepOne> {
             builder: (context) => RegistrationStepTwo(
               userId: result.data!.userId,
               pinToken: result.data!.token,
+              email: user?.email ?? '',
             ),
           ),
         );

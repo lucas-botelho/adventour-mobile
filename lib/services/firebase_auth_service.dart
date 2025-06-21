@@ -10,6 +10,7 @@ class FirebaseAuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   late final ApiService apiService;
+
   FirebaseAuthService({required this.apiService}) {
     _firebaseAuth.authStateChanges().listen((User? user) {
       if (user == null) {
@@ -71,12 +72,14 @@ class FirebaseAuthService {
       }
 
       UserCredential userCredential =
-          await _firebaseAuth.signInWithEmailAndPassword(
+          await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
       return userCredential.user;
-    } catch (e) {
+    } catch (e, stacktrace) {
+      print("Error during email sign-up: $e");
+      print(stacktrace);
       return null;
     }
   }

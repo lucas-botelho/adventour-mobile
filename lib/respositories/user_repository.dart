@@ -63,6 +63,34 @@ class UserRepository {
     }
   }
 
+  Future<BaseApiResponse<TokenResponse>?> resendCode(
+      User? user) async {
+    if (user == null) {
+      return null;
+    }
+
+    var token = await authService.getIdToken();
+
+    try {
+
+      final result = await apiService.post(
+        token: token,
+        endpoint: Authentication.resendCodeEmail,
+        headers: <String, String>{},
+        body: {
+          "email": user.email,
+        },
+        fromJsonT: (json) => TokenResponse.fromJson(json),
+      );
+
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+
+
   Future<BaseApiResponse<TokenResponse>?> confirmEmail(
       String userId, List<String> code, String pinToken) async {
     try {

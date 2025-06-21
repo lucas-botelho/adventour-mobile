@@ -20,7 +20,7 @@ class TextWithAction extends StatelessWidget {
         Text(label),
         TextButton(
           onPressed: onPressed,
-          child: Text(actionLabel, style: const TextStyle(color: Colors.black)),
+          child: Text(actionLabel, style: const TextStyle(color: Colors.teal)),
         ),
       ],
     );

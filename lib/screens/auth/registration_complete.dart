@@ -18,47 +18,67 @@ class RegistrationComplete extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 20),
-                child: AuthAppBar(),
-              ),
-            ],
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 42),
-            child: TitleWithText(
-                title: "Register Complete!",
-                text: "You have successfully created your account."),
-          ),
-          CircularPicture(url: imageUrl),
-          Text(
-            name,
-            style: const TextStyle(fontSize: 26),
-          ),
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 60),
-            child: CTAButton(
-              text: 'Enjoy',
-              onPressed: () => {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AdventourMap(),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: AuthAppBar(),
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 42),
+                        child: TitleWithText(
+                          title: "Register Complete!",
+                          text: "You have successfully created your account.",
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      CircularPicture(url: imageUrl),
+                      const SizedBox(height: 12),
+                      Text(
+                        name,
+                        style: const TextStyle(fontSize: 26),
+                        textAlign: TextAlign.center,
+                      ),
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 60,
+                        ),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: CTAButton(
+                            text: 'Enjoy',
+                            onPressed: () {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const AdventourMap(),
+                                ),
+                                    (route) => false,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  (route) => false,
                 ),
-              },
-            ),
-          ),
-        ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

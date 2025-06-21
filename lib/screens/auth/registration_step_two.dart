@@ -1,6 +1,9 @@
 import 'package:adventour/components/form/elements/single_digit.dart';
+import 'package:adventour/components/layout/auth_appbar.dart';
 import 'package:adventour/components/media/header_image_with_text.dart';
 import 'package:adventour/respositories/user_repository.dart';
+import 'package:adventour/services/firebase_auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:adventour/components/cta/cta_button.dart';
 import 'package:adventour/components/form/elements/text_with_action.dart';
@@ -11,9 +14,13 @@ import 'package:provider/provider.dart';
 class RegistrationStepTwo extends StatefulWidget {
   final String userId;
   final String pinToken;
+  final String email;
 
   const RegistrationStepTwo(
-      {required this.userId, required this.pinToken, super.key});
+      {required this.userId,
+      required this.pinToken,
+      required this.email,
+      super.key});
 
   @override
   State<RegistrationStepTwo> createState() => _RegistrationStepTwoState();
@@ -27,33 +34,39 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
   final TextEditingController _codeController4 = TextEditingController();
   late final ErrorService errorService;
   late final UserRepository userRepository;
+  late final FirebaseAuthService authService;
+  String? resentVerificationCode;
 
   @override
   void initState() {
     super.initState();
     errorService = context.read<ErrorService>();
     userRepository = context.read<UserRepository>();
+    authService = context.read<FirebaseAuthService>();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const HeaderImageWithText(
-            title: "Verify Your Identity",
-            text: "We have just sent a verification code to 938794423",
-            imagePath: 'assets/images/step_two_image.jpg',
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
+      appBar: AuthAppBar(),
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        HeaderImageWithText(
+                          title: "Verify Your Identity",
+                          text:
+                          "We have just sent a verification code to ${widget.email}",
+                          imagePath: 'assets/images/step_two_image.jpg',
+                        ),
+                        const SizedBox(height: 20),
                         Form(
                           key: formKey,
                           child: Row(
@@ -66,26 +79,25 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 20, 10, 90),
-                          child: TextWithAction(
-                            label: "Didn't receive the code?",
-                            actionLabel: "Resend Code",
-                            onPressed: () {},
-                          ),
-                        ),
                         const SizedBox(height: 20),
+                        TextWithAction(
+                          label: "Didn't receive the code?",
+                          actionLabel: "Resend Code",
+                          onPressed: resendEmail,
+                        ),
+                        const SizedBox(height: 40),
                         CTAButton(
-                            text: "Verification", onPressed: confirmEmail),
+                          text: "Verification",
+                          onPressed: confirmEmail,
+                        ),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
+                ),
+              );
+            },
+          ),
+        ),
     );
   }
 
@@ -99,8 +111,12 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
         _codeController4.text
       ];
 
-      var result = await userRepository
-          .confirmEmail(widget.userId, code, widget.pinToken);
+      var result = await userRepository.confirmEmail(
+          widget.userId,
+          code,
+          resentVerificationCode != null
+              ? resentVerificationCode!
+              : widget.pinToken);
 
       if (result != null) {
         if (result.success) {
@@ -118,6 +134,35 @@ class _RegistrationStepTwoState extends State<RegistrationStepTwo> {
         }
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
+      errorService.displaySnackbarError(context, null);
+    }
+  }
+
+  void resendEmail() async {
+    try {
+      var user = authService.getUser();
+
+      if (user == null) {
+        // ignore: use_build_context_synchronously
+        errorService.displaySnackbarError(
+            context, "Your session has expired. Please sign up again.");
+        return;
+      }
+
+      final result = await userRepository.resendCode(user);
+
+      if (result != null) {
+
+        resentVerificationCode = result.data?.token ?? null;
+
+        errorService.displaySnackbarError(context, result.message);
+      } else {
+        // ignore: use_build_context_synchronously
+        errorService.displaySnackbarError(
+            context, "Internal error, please try again later.");
+      }
+    } catch (error) {
       // ignore: use_build_context_synchronously
       errorService.displaySnackbarError(context, null);
     }

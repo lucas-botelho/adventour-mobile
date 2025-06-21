@@ -50,39 +50,50 @@ class _RegistrationStepThreeState extends State<RegistrationStepThree> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const AuthAppBar(),
-          const TitleWithText(
-            title: "Account Setup",
-            text:
-                "Finish your account setup by uploading profile picture and set your username.",
-          ),
-          StyledImagePicker(
-            onImageSelected: (onImageSelected),
-          ),
-          Form(
-            key: accountUpdateFormKey,
-            child: Column(
-              children: [
-                UnderlinedTextField(
-                  controller: nameController,
-                  hintText: "Username",
+      appBar: AuthAppBar(),
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 20),
+                        const TitleWithText(
+                          title: "Account Setup",
+                          text:
+                          "Finish your account setup by uploading profile picture and set your username.",
+                        ),
+                        const SizedBox(height: 20),
+                        StyledImagePicker(
+                          onImageSelected: (onImageSelected),
+                        ),
+                        const SizedBox(height: 20),
+                        Form(
+                          key: accountUpdateFormKey,
+                          child: UnderlinedTextField(
+                            controller: nameController,
+                            hintText: "Username",
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        CTAButton(
+                          text: "Submit",
+                          onPressed: submitForm,
+                        ),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+                  ),
                 ),
-              ],
-            ),
+              );
+            },
           ),
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 60),
-            child: CTAButton(
-              text: "Submit",
-              onPressed: submitForm,
-            ),
-          ),
-        ],
-      ),
+        ),
     );
   }
 

@@ -47,70 +47,91 @@ class _AccountSettingsState extends State<AccountSettings> {
       ),
       child: Scaffold(
         bottomNavigationBar: const NavBar(selectedIndex: 4),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 90, 20, 0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildTitle(),
-                  lineDivider(),
-                  iconOption(() {}, user?.name ?? '', userImage(user), ''),
-                  lineDivider(),
-                  iconOption(
-                      _showChangeEmailModal,
-                      "Email",
-                      const Icon(Icons.email, color: Colors.white, size: 50),
-                      user?.email ?? ''),
-                  lineDivider(),
-                  iconOption(
-                      () {},
-                      "Phone Number",
-                      const Icon(Icons.phone, color: Colors.white, size: 50),
-                      ''),
-                ],
-              ),
-            ),
-            screenDivider(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildArrowButtons(
-                      icon: const Icon(Icons.notifications,
-                          color: Color.fromARGB(255, 255, 186, 59), size: 30),
-                      label: "Notifications",
-                      description: "Turn notifications on or off",
-                      onPressed: () {}),
-                  lineDivider(),
-                  buildArrowButtons(
-                      icon: const Icon(Icons.flag,
-                          color: Color.fromARGB(255, 33, 219, 243), size: 30),
-                      label: "Language",
-                      description: "Change your language",
-                      onPressed: () {}),
-                  lineDivider(),
-                  buildArrowButtons(
-                    icon: const Icon(Icons.lock, color: Colors.white, size: 30),
-                    label: "Privacy Policy",
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => const PrivacyPolicyPage()),
-                      );
-                    },
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 90, 20, 0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildTitle(),
+                              lineDivider(),
+                              iconOption(() {}, user?.name ?? '', userImage(user), ''),
+                              lineDivider(),
+                              iconOption(
+                                  _showChangeEmailModal,
+                                  "Email",
+                                  const Icon(Icons.email,
+                                      color: Colors.white, size: 50),
+                                  user?.email ?? ''),
+                              lineDivider(),
+                              iconOption(
+                                      () {},
+                                  "Phone Number",
+                                  const Icon(Icons.phone,
+                                      color: Colors.white, size: 50),
+                                  ''),
+                            ],
+                          ),
+                        ),
+                        screenDivider(),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              buildArrowButtons(
+                                  icon: const Icon(Icons.notifications,
+                                      color: Color.fromARGB(255, 255, 186, 59),
+                                      size: 30),
+                                  label: "Notifications",
+                                  description: "Turn notifications on or off",
+                                  onPressed: () {}),
+                              lineDivider(),
+                              buildArrowButtons(
+                                  icon: const Icon(Icons.flag,
+                                      color: Color.fromARGB(255, 33, 219, 243),
+                                      size: 30),
+                                  label: "Language",
+                                  description: "Change your language",
+                                  onPressed: () {}),
+                              lineDivider(),
+                              buildArrowButtons(
+                                icon: const Icon(Icons.lock,
+                                    color: Colors.white, size: 30),
+                                label: "Privacy Policy",
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                        const PrivacyPolicyPage()),
+                                  );
+                                },
+                              ),
+                              lineDivider(),
+                              logoutOption(),
+                            ],
+                          ),
+                        ),
+                        const Spacer(),
+                      ],
+                    ),
                   ),
-                  lineDivider(),
-                  logoutOption(),
-                ],
-              ),
-            ),
-          ],
+                ),
+              );
+            },
+          ),
         ),
+
       ),
     );
   }
