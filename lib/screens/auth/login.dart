@@ -235,9 +235,9 @@ class _LoginState extends State<Login> {
               ),
             );
         }
+      } else {
+        errorService.displaySnackbarError(context, "Failed to sign in.");
       }
-
-      errorService.displaySnackbarError(context, "Failed to sign in.");
     }).catchError((error) {
       errorService.displaySnackbarError(context, "Unexpected error: $error");
     });

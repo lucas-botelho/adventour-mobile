@@ -847,7 +847,6 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
     }
   }
 
-
   DateTime timeOfDayToDateTime(TimeOfDay tod) {
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
