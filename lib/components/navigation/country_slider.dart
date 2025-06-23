@@ -1,3 +1,4 @@
+import 'package:adventour/global_state.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -29,17 +30,20 @@ class _CountrySliderState extends State<CountrySlider> {
   final int pageSize = 5;
   bool isLoading = false;
   int totalCountries = 0;
+  late final GlobalAppState globalState;
 
   @override
   void initState() {
     super.initState();
     mapRespository = context.read<MapRepository>();
     _initCountries();
+    globalState = context.read<GlobalAppState>();
   }
 
   void _onCountrySelected(int index) {
     setState(() {
       currentCountry = countries[index];
+      globalState.setCountryIsoCode(currentCountry!.code);
     });
 
     debugPrint("Selected country: ${currentCountry!.name}"); // Debug log

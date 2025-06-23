@@ -89,7 +89,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                 attractions: attractions,
                 context: context,
                 headerHeightFactor: _headerHeightFactor),
-            _buildCountryTitle(),
+            // _buildCountryTitle(),
             _buildPlannerContainer(),
           ],
         ),
@@ -494,7 +494,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
     return StatefulBuilder(
       builder: (context, setState) {
         return AlertDialog(
-          title: Text('Selecionar horário para $attractionName'),
+          title: Text('Schedule your visit to $attractionName!'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -507,8 +507,8 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                   if (picked != null) setState(() => startTime = picked);
                 },
                 child: Text(startTime != null
-                    ? 'Início: ${startTime!.format(context)}'
-                    : 'Selecionar início'),
+                    ? 'Start: ${startTime!.format(context)}'
+                    : 'Starting time'),
               ),
               const SizedBox(height: 10),
               ElevatedButton(
@@ -520,8 +520,8 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                   if (picked != null) setState(() => endTime = picked);
                 },
                 child: Text(endTime != null
-                    ? 'Fim: ${endTime!.format(context)}'
-                    : 'Selecionar fim'),
+                    ? 'End: ${endTime!.format(context)}'
+                    : 'Ending time'),
               ),
             ],
           ),
@@ -535,7 +535,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                     foregroundColor: Colors.white,
                   ),
                   onPressed: () => Navigator.pop(dialogContext),
-                  child: const Text('Cancelar'),
+                  child: const Text('Cancel'),
                 ),
                 ElevatedButton(
                   onPressed: (startTime != null && endTime != null)

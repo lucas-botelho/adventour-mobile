@@ -22,9 +22,8 @@ class NavBar extends StatefulWidget {
 class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
-    final GlobalAppState globalState = context.read<GlobalAppState>();
-    final String continentName = globalState.continentName;
-    final String countryIsoCode = globalState.countryIsoCode;
+    final String continentName = context.watch<GlobalAppState>().continentName;
+    final String countryIsoCode = context.watch<GlobalAppState>().countryIsoCode;
     return Container(
       height: MediaQuery.of(context).size.height * 0.1,
       decoration: const BoxDecoration(

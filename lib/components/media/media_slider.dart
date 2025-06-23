@@ -25,8 +25,7 @@ class _AttractionSliderState extends State<AttractionSlider> {
   late final AttractionRepository attractionRepository;
   late final ErrorService errorService;
 
-
-    @override
+  @override
   void initState() {
     super.initState();
     currentCountryCode =
@@ -35,7 +34,6 @@ class _AttractionSliderState extends State<AttractionSlider> {
     errorService = context.read<ErrorService>();
 
     _fetchAttractions(); // Fetch attractions for the initial country
-
   }
 
   @override
@@ -77,23 +75,62 @@ class _AttractionSliderState extends State<AttractionSlider> {
           _buildImageCarousel(),
           Padding(
             padding: EdgeInsets.symmetric(
-                vertical: MediaQuery.of(context).size.height * 0.13),
+              vertical: MediaQuery.of(context).size.height * 0.13,
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(
-                  currentAttraction.name,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                Text(
-                  currentAttraction.shortDescription,
-                  style: Theme.of(context).textTheme.bodySmall,
+                buildTitle(context, currentAttraction),
+                SizedBox(height: 8),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.55,
+                  child: Text(
+                    currentAttraction.shortDescription,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.white,
+                      fontSize: 18,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(1, 1),
+                          blurRadius: 3,
+                          color: Colors.black,
+                        ),
+                      ],
+                    ),
+                    softWrap: true,
+                    overflow: TextOverflow.visible,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ],
             ),
           ),
           _buildExploreButton(),
         ],
+      ),
+    );
+  }
+
+  SizedBox buildTitle(
+      BuildContext context, BasicAttractionResponse currentAttraction) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.55,
+      child: Text(
+        currentAttraction.name,
+        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          color: Colors.white,
+          fontSize: 26,
+          shadows: [
+            Shadow(
+              offset: Offset(1, 1),
+              blurRadius: 3,
+              color: Colors.black.withOpacity(0.7),
+            ),
+          ],
+        ),
+        softWrap: true,
+        overflow: TextOverflow.visible,
+        textAlign: TextAlign.center,
       ),
     );
   }
@@ -238,7 +275,8 @@ class _AttractionSliderState extends State<AttractionSlider> {
         favoriteAttractions.add(attraction.id); // Mark as favorite
       });
     } else {
-      errorService.displaySnackbarError(context,  "Failed to add ${attraction.name} to favorites. Please try again later.");
+      errorService.displaySnackbarError(context,
+          "Failed to add ${attraction.name} to favorites. Please try again later.");
     }
   }
 
@@ -254,7 +292,8 @@ class _AttractionSliderState extends State<AttractionSlider> {
         favoriteAttractions.remove(attraction.id); // Remove from favorites
       });
     } else {
-      errorService.displaySnackbarError(context,  "Failed to remove ${attraction.name} from favorites. Please try again later.");
+      errorService.displaySnackbarError(context,
+          "Failed to remove ${attraction.name} from favorites. Please try again later.");
     }
   }
 }

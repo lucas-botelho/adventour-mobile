@@ -13,6 +13,16 @@ class GlobalAppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setContinent(String continent) {
+    _continentName = continent;
+    notifyListeners();
+  }
+
+  void setCountryIsoCode(String isoCode) {
+    _countryIsoCode = isoCode;
+    notifyListeners();
+  }
+
   void clear() {
     _continentName = '';
     _countryIsoCode = '';
