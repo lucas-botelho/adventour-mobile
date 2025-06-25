@@ -331,6 +331,7 @@ class _AccountSettingsState extends State<AccountSettings> {
         return AlertDialog(
           title: const Text('Change Email'),
           content: TextFormField(
+            style: TextStyle(color: Colors.black),
             controller: emailController,
             decoration: const InputDecoration(
               labelText: 'New Email',
@@ -341,7 +342,7 @@ class _AccountSettingsState extends State<AccountSettings> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: const Text('Cancel', style: TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
               onPressed: () async {

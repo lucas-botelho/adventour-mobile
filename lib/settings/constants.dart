@@ -1,5 +1,5 @@
 class AppSettings {
-  static const String apiBaseUrl = 'http://10.0.2.2:8181/deisi2056/api';
+  static const String apiBaseUrl = 'http://adventour.duckdns.org:8080/api';
 }
 
 class Authentication {
