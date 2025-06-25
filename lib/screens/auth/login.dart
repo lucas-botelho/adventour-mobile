@@ -194,12 +194,7 @@ class _LoginState extends State<Login> {
           "You are not registered. Please sign up.",
         );
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const RegistrationStepOne(),
-          ),
-        );
+        authService.logout(context);
 
         return;
       }
