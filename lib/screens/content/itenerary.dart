@@ -270,14 +270,14 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
               style: const TextStyle(fontWeight: FontWeight.w400)),
           children: [
             ...((day.timeslots ?? [])
-                .where((slot) => slot.attraction != null)
-                .toList()
-              ..sort((a, b) {
-                final startComparison = a.startTime.compareTo(b.startTime);
-                return startComparison != 0
-                    ? startComparison
-                    : a.endTime.compareTo(b.endTime);
-              }))
+                    .where((slot) => slot.attraction != null)
+                    .toList()
+                  ..sort((a, b) {
+                    final startComparison = a.startTime.compareTo(b.startTime);
+                    return startComparison != 0
+                        ? startComparison
+                        : a.endTime.compareTo(b.endTime);
+                  }))
                 .map((slot) {
               return ListTile(
                 title: Text(slot.attraction!.name),
@@ -503,6 +503,24 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                   final picked = await showTimePicker(
                     context: dialogContext,
                     initialTime: TimeOfDay.now(),
+                    builder: (BuildContext context, Widget? child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.black,
+                            ),
+                          ),
+                          textTheme:
+                              Theme.of(context).primaryTextTheme.copyWith(
+                                    bodyLarge: const TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                        ),
+                        child: child!,
+                      );
+                    },
                   );
                   if (picked != null) setState(() => startTime = picked);
                 },
@@ -516,6 +534,24 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                   final picked = await showTimePicker(
                     context: dialogContext,
                     initialTime: TimeOfDay.now(),
+                    builder: (BuildContext context, Widget? child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.black,
+                            ),
+                          ),
+                          textTheme:
+                          Theme.of(context).primaryTextTheme.copyWith(
+                            bodyLarge: const TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
                   );
                   if (picked != null) setState(() => endTime = picked);
                 },
@@ -609,8 +645,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-
-              if(item.id != null) //nao mostrar para o novo
+              if (item.id != null) //nao mostrar para o novo
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red, size: 24),
                   onPressed: () {
@@ -636,17 +671,15 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
             selectedItinerary.name ?? 'Select itinerary',
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
-            ),
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                ),
           ),
           const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
         ],
       ),
     );
   }
-
-
 
   Widget _buildAttractionCard(BasicAttractionResponse attraction) {
     final imageUrl = attraction.attractionImages.isNotEmpty
@@ -732,33 +765,35 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
 
     // Mostra o modal para introduzir o nome
     final bool confirmed = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Name your itinerary'),
-          content: TextField(
-            controller: nameController,
-            decoration: const InputDecoration(hintText: 'Enter itinerary name'),
-            style: TextStyle(color: Colors.black),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel',style: TextStyle(color: Colors.black)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (nameController.text.trim().isNotEmpty) {
-                  Navigator.of(context).pop(true);
-                }
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    ) ??
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Name your itinerary'),
+              content: TextField(
+                controller: nameController,
+                decoration:
+                    const InputDecoration(hintText: 'Enter itinerary name'),
+                style: TextStyle(color: Colors.black),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel',
+                      style: TextStyle(color: Colors.black)),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (nameController.text.trim().isNotEmpty) {
+                      Navigator.of(context).pop(true);
+                    }
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        ) ??
         false;
 
     if (!confirmed) return;
@@ -782,7 +817,8 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
   }
 
   void _fetchItineraries() async {
-    final response = await itineraryRepository.getItineraries(widget.countryCode);
+    final response =
+        await itineraryRepository.getItineraries(widget.countryCode);
 
     if (response != null && response.success && response.data != null) {
       setState(() {
@@ -795,7 +831,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
 
   String formatTime(DateTime dateTime) {
     final time = TimeOfDay.fromDateTime(dateTime);
-    return time.format(context); // depende do contexto
+    return time.format(context);
   }
 
   void _deleteItinerary(ItineraryModel item) async {
@@ -803,11 +839,12 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Confirm delete"),
-        content: Text("Are you sure you want to delete itinerary '${item.name}'?"),
+        content:
+            Text("Are you sure you want to delete itinerary '${item.name}'?", style: TextStyle(color: Colors.black),),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel"),
+            child: const Text("Cancel", style: TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
@@ -823,7 +860,8 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
 
     if (response != null && response.success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response.data ?? 'Itinerary deleted successfully.')),
+        SnackBar(
+            content: Text(response.data ?? 'Itinerary deleted successfully.')),
       );
 
       setState(() {
@@ -842,7 +880,8 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response?.message ?? 'Failed to delete itinerary.')),
+        SnackBar(
+            content: Text(response?.message ?? 'Failed to delete itinerary.')),
       );
     }
   }
@@ -852,5 +891,3 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
     return DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
   }
 }
-
-
