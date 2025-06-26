@@ -32,7 +32,7 @@ class AttractionRepository {
     var token = await authService.getIdToken();
 
     final result = await apiService.get(
-      '${Attraction.listAttractions}?countryCode=$countryCode',
+      '${Attraction.listAttractions}?countryCode=$countryCode&oAuthId=${user.data?.oauthId}',
       token,
       headers: <String, String>{},
       fromJsonT: (json) => BasicAttractionListResponse.fromJson(json),
@@ -136,7 +136,7 @@ class AttractionRepository {
 
   Future<BaseApiResponse<FavoritesResponse>?> getFavorites() async {
     return apiService.get(
-      "${Attraction.favorites}",
+        "${Attraction.favorites}",
       await authService.getIdToken(),
       headers: <String, String>{},
       fromJsonT: (json) => FavoritesResponse.fromJson(json),
@@ -153,4 +153,6 @@ class AttractionRepository {
   //     fromJsonT: (json) => json as String,
   //   );
   // }
+
+
 }
