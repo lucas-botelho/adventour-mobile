@@ -406,11 +406,11 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
   }
 
   Widget _buildDrawerModal(
-    ScrollController scrollController,
-    StateSetter setModalState,
-    String searchQuery,
-    Day day,
-  ) {
+      ScrollController scrollController,
+      StateSetter setModalState,
+      String searchQuery,
+      Day day
+      ) {
     final screenWidth = MediaQuery.of(context).size.width;
     final cardSize = (screenWidth - 48) / 2;
 
@@ -450,8 +450,8 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
     bool isSelected,
     BasicAttractionResponse attraction,
     double screenWidth,
-    Day day,
-  ) {
+    Day day
+    ) {
     return Positioned(
       top: 8,
       right: 8,
@@ -461,7 +461,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
             final selectedTimes = await showDialog<Map<String, TimeOfDay>>(
               context: context,
               barrierDismissible: false,
-              builder: (_) => _buildTimeSlotDialog(context, attraction.name),
+              builder: (_) => _buildTimeSlotDialog(context, attraction.name, day),
             );
 
             if (selectedTimes != null) {
@@ -506,7 +506,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
   }
 
   Widget _buildTimeSlotDialog(
-      BuildContext dialogContext, String attractionName) {
+      BuildContext dialogContext, String attractionName, Day day ) {
     TimeOfDay? startTime;
     TimeOfDay? endTime;
 
@@ -530,12 +530,11 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                               foregroundColor: Colors.black,
                             ),
                           ),
-                          textTheme:
-                              Theme.of(context).primaryTextTheme.copyWith(
-                                    bodyLarge: const TextStyle(
-                                      color: Colors.black,
-                                    ),
-                                  ),
+                          textTheme: Theme.of(context).primaryTextTheme.copyWith(
+                            bodyLarge: const TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
                         ),
                         child: child!,
                       );
@@ -561,8 +560,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                               foregroundColor: Colors.black,
                             ),
                           ),
-                          textTheme:
-                          Theme.of(context).primaryTextTheme.copyWith(
+                          textTheme: Theme.of(context).primaryTextTheme.copyWith(
                             bodyLarge: const TextStyle(
                               color: Colors.black,
                             ),
@@ -593,12 +591,35 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
-                  onPressed: (startTime != null && endTime != null)
-                      ? () => Navigator.pop(dialogContext, {
-                            'start': startTime!,
-                            'end': endTime!,
-                          })
-                      : null,
+                  onPressed: () {
+                    if (startTime == null || endTime == null) return;
+
+                    if (!endTime!.isAfter(startTime!)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('End time must be after start time.'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    final startDateTime = timeOfDayToDateTime(startTime!);
+                    final endDateTime = timeOfDayToDateTime(endTime!);
+
+                    if (hasColision(day, startDateTime, endDateTime)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('This time slot overlaps with another activity.'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    Navigator.pop(dialogContext, {
+                      'start': startTime!,
+                      'end': endTime!,
+                    });
+                  },
                   child: const Text('Confirm'),
                 ),
               ],
@@ -607,6 +628,19 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
         );
       },
     );
+  }
+
+  bool hasColision(Day day, DateTime newStart, DateTime newEnd) {
+    for (final slot in day.timeslots ?? []) {
+      final existingStart = slot.startTime;
+      final existingEnd = slot.endTime;
+
+      final overlaps =
+          newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart);
+
+      if (overlaps) return true;
+    }
+    return false;
   }
 
   Widget _buildAlertDialog(BuildContext context) {
