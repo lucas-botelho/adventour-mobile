@@ -32,6 +32,7 @@ class TimeSlot {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name ?? '',
       'start_time': startTime.toIso8601String(),
       'end_time': endTime.toIso8601String(),

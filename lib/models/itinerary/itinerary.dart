@@ -26,6 +26,7 @@ class ItineraryModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'days': days?.map((day) => day.toJson()).toList(),
     };

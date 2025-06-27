@@ -48,7 +48,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
   //State variables
   List<int> selectedAttractions = [];
   int currentDayIndex = 0;
-  Set<int> expandedDayIndexes = {};
+  Set<int> expandedDayIndexes = {0};
 
   @override
   initState() {
@@ -426,7 +426,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
           runSpacing: 16,
           children: filteredAttractions.map((attraction) {
             final isSelected =
-                day.timeslots!.any((t) => t.attractionId == attraction.id);
+                day.timeslots!.any((t) => t.attraction!.id == attraction.id);
             return Stack(
               children: [
                 SizedBox(
@@ -504,11 +504,10 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
       ),
     );
   }
-
-  Widget _buildTimeSlotDialog(
-      BuildContext dialogContext, String attractionName) {
+  Widget _buildTimeSlotDialog(BuildContext dialogContext, String attractionName) {
     TimeOfDay? startTime;
     TimeOfDay? endTime;
+    String? errorText; // <-- Guarda a mensagem de erro
 
     return StatefulBuilder(
       builder: (context, setState) {
@@ -530,18 +529,20 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                               foregroundColor: Colors.black,
                             ),
                           ),
-                          textTheme:
-                              Theme.of(context).primaryTextTheme.copyWith(
-                                    bodyLarge: const TextStyle(
-                                      color: Colors.black,
-                                    ),
-                                  ),
+                          textTheme: Theme.of(context).primaryTextTheme.copyWith(
+                            bodyLarge: const TextStyle(color: Colors.black),
+                          ),
                         ),
                         child: child!,
                       );
                     },
                   );
-                  if (picked != null) setState(() => startTime = picked);
+                  if (picked != null) {
+                    setState(() {
+                      startTime = picked;
+                      errorText = null; // limpa o erro ao selecionar nova hora
+                    });
+                  }
                 },
                 child: Text(startTime != null
                     ? 'Start: ${startTime!.format(context)}'
@@ -561,23 +562,32 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                               foregroundColor: Colors.black,
                             ),
                           ),
-                          textTheme:
-                          Theme.of(context).primaryTextTheme.copyWith(
-                            bodyLarge: const TextStyle(
-                              color: Colors.black,
-                            ),
+                          textTheme: Theme.of(context).primaryTextTheme.copyWith(
+                            bodyLarge: const TextStyle(color: Colors.black),
                           ),
                         ),
                         child: child!,
                       );
                     },
                   );
-                  if (picked != null) setState(() => endTime = picked);
+                  if (picked != null) {
+                    setState(() {
+                      endTime = picked;
+                      errorText = null;
+                    });
+                  }
                 },
                 child: Text(endTime != null
                     ? 'End: ${endTime!.format(context)}'
                     : 'Ending time'),
               ),
+              if (errorText != null) ...[
+                const SizedBox(height: 10),
+                Text(
+                  errorText!,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ],
             ],
           ),
           actions: [
@@ -593,12 +603,22 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
-                  onPressed: (startTime != null && endTime != null)
-                      ? () => Navigator.pop(dialogContext, {
-                            'start': startTime!,
-                            'end': endTime!,
-                          })
-                      : null,
+                  onPressed: () {
+                    if (startTime == null || endTime == null) return;
+
+                    if (endTime!.hour > startTime!.hour ||
+                        (endTime!.hour == startTime!.hour &&
+                            endTime!.minute > startTime!.minute)) {
+                      Navigator.pop(dialogContext, {
+                        'start': startTime!,
+                        'end': endTime!,
+                      });
+                    } else {
+                      setState(() {
+                        errorText = 'End time must be after start time.';
+                      });
+                    }
+                  },
                   child: const Text('Confirm'),
                 ),
               ],
@@ -608,6 +628,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
       },
     );
   }
+
 
   Widget _buildAlertDialog(BuildContext context) {
     return AlertDialog(
@@ -780,39 +801,39 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
   }
 
   void _saveItinerary() async {
-    final TextEditingController nameController = TextEditingController();
+    final TextEditingController nameController = TextEditingController(
+      text: selectedItinerary.name, // já pré-preenche com o nome atual, se existir
+    );
 
-    // Mostra o modal para introduzir o nome
+    // Mostra o modal para introduzir ou editar o nome
     final bool confirmed = await showDialog<bool>(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Name your itinerary'),
-              content: TextField(
-                controller: nameController,
-                decoration:
-                    const InputDecoration(hintText: 'Enter itinerary name'),
-                style: TextStyle(color: Colors.black),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel',
-                      style: TextStyle(color: Colors.black)),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (nameController.text.trim().isNotEmpty) {
-                      Navigator.of(context).pop(true);
-                    }
-                  },
-                  child: const Text('Save'),
-                ),
-              ],
-            );
-          },
-        ) ??
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Name your itinerary'),
+          content: TextField(
+            controller: nameController,
+            decoration: const InputDecoration(hintText: 'Enter itinerary name'),
+            style: const TextStyle(color: Colors.black),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel', style: TextStyle(color: Colors.black)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (nameController.text.trim().isNotEmpty) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    ) ??
         false;
 
     if (!confirmed) return;
@@ -820,20 +841,29 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
     // Define o nome no objeto antes de guardar
     selectedItinerary.name = nameController.text.trim();
 
-    final response = await itineraryRepository.saveItinerary(selectedItinerary);
+    // Verifica se vai criar ou atualizar
+    final response = selectedItinerary.id == null
+        ? await itineraryRepository.saveItinerary(selectedItinerary)
+        : await itineraryRepository.updateItinerary(selectedItinerary);
 
     if (response != null && response.success && response.data != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Itinerary created successfully')),
+        SnackBar(content: Text(
+          selectedItinerary.id == null
+              ? 'Itinerary created successfully'
+              : 'Itinerary updated successfully',
+        )),
       );
       Navigator.of(context).pop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(response?.message ?? 'Failed to create itinerary')),
+          content: Text(response?.message ?? 'Failed to save itinerary'),
+        ),
       );
     }
   }
+
 
   void _fetchItineraries() async {
     final response =

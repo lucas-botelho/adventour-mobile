@@ -68,4 +68,27 @@ class ItineraryRepository {
     }
   }
 
+  Future<BaseApiResponse<String>?> updateItinerary(
+      ItineraryModel selectedItinerary,
+      ) async {
+    final token = await authService.getIdToken();
+
+    try {
+      final response = await apiService.put(
+        endpoint: '${Itinerary.itinerary}/${selectedItinerary.id}',
+        token: token,
+        headers: <String, String>{},
+        body: selectedItinerary.toJson(),
+        fromJsonT: (json) => json['data'] as String,
+      );
+
+
+      return response;
+    } catch (e) {
+      print('Error updating itinerary: $e');
+      return null;
+    }
+  }
+
+
 }

@@ -23,6 +23,7 @@ class Day {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'dayNumber': dayNumber,
       'timeslots': timeslots?.map((slot) => slot.toJson()).toList(),
     };

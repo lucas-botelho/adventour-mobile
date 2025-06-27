@@ -201,4 +201,30 @@ class ApiService {
     }
   }
 
+  Future<BaseApiResponse<T>> put<T>({
+    String? token,
+    required String endpoint,
+    required Map<String, String> headers,
+    required Object body,
+    required T Function(Map<String, dynamic>) fromJsonT,
+  }) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/$endpoint'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization':
+          token != null && token.isNotEmpty ? 'Bearer $token' : '',
+          ...headers,
+        },
+        body: jsonEncode(body),
+      );
+
+      return processResponse<T>(response, fromJsonT);
+    } catch (e) {
+      throw Exception('Failed to process PUT request: $e');
+    }
+  }
+
+
 }
