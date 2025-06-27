@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "427269429963-9o179ai8imtbl5fm87ulfib1fbm4kp6j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.adventour",
+            "certificate_hash": "445fadcd587ed27ff7f4a4f1c0d42942ad936a5c"
+          }
+        },
+        {
           "client_id": "427269429963-hnpn6qtbi8uopolbo45hf2g5ebpi6112.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
