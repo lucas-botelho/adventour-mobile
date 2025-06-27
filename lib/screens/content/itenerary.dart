@@ -406,11 +406,11 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
   }
 
   Widget _buildDrawerModal(
-    ScrollController scrollController,
-    StateSetter setModalState,
-    String searchQuery,
-    Day day,
-  ) {
+      ScrollController scrollController,
+      StateSetter setModalState,
+      String searchQuery,
+      Day day
+      ) {
     final screenWidth = MediaQuery.of(context).size.width;
     final cardSize = (screenWidth - 48) / 2;
 
@@ -450,8 +450,8 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
     bool isSelected,
     BasicAttractionResponse attraction,
     double screenWidth,
-    Day day,
-  ) {
+    Day day
+    ) {
     return Positioned(
       top: 8,
       right: 8,
@@ -461,7 +461,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
             final selectedTimes = await showDialog<Map<String, TimeOfDay>>(
               context: context,
               barrierDismissible: false,
-              builder: (_) => _buildTimeSlotDialog(context, attraction.name),
+              builder: (_) => _buildTimeSlotDialog(context, attraction.name, day),
             );
 
             if (selectedTimes != null) {
@@ -504,10 +504,12 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
       ),
     );
   }
-  Widget _buildTimeSlotDialog(BuildContext dialogContext, String attractionName) {
+
+  Widget _buildTimeSlotDialog(
+      BuildContext dialogContext, String attractionName, Day day) {
     TimeOfDay? startTime;
     TimeOfDay? endTime;
-    String? errorText; // <-- Guarda a mensagem de erro
+    String? errorMessage;
 
     return StatefulBuilder(
       builder: (context, setState) {
@@ -581,13 +583,13 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                     ? 'End: ${endTime!.format(context)}'
                     : 'Ending time'),
               ),
-              if (errorText != null) ...[
-                const SizedBox(height: 10),
+              const SizedBox(height: 10),
+              if (errorMessage != null)
                 Text(
-                  errorText!,
+                  errorMessage!,
                   style: const TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
                 ),
-              ],
             ],
           ),
           actions: [
@@ -604,20 +606,30 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    if (startTime == null || endTime == null) return;
-
-                    if (endTime!.hour > startTime!.hour ||
-                        (endTime!.hour == startTime!.hour &&
-                            endTime!.minute > startTime!.minute)) {
-                      Navigator.pop(dialogContext, {
-                        'start': startTime!,
-                        'end': endTime!,
-                      });
-                    } else {
-                      setState(() {
-                        errorText = 'End time must be after start time.';
-                      });
+                    if (startTime == null || endTime == null) {
+                      setState(() => errorMessage = 'Please select both times.');
+                      return;
                     }
+
+                    if (!endTime!.isAfter(startTime!)) {
+                      setState(() =>
+                      errorMessage = 'End time must be after start time.');
+                      return;
+                    }
+
+                    final startDateTime = timeOfDayToDateTime(startTime!);
+                    final endDateTime = timeOfDayToDateTime(endTime!);
+
+                    if (hasColision(day, startDateTime, endDateTime)) {
+                      setState(() => errorMessage =
+                      'This time slot overlaps with another activity.');
+                      return;
+                    }
+
+                    Navigator.pop(dialogContext, {
+                      'start': startTime!,
+                      'end': endTime!,
+                    });
                   },
                   child: const Text('Confirm'),
                 ),
@@ -629,6 +641,19 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
     );
   }
 
+
+  bool hasColision(Day day, DateTime newStart, DateTime newEnd) {
+    for (final slot in day.timeslots ?? []) {
+      final existingStart = slot.startTime;
+      final existingEnd = slot.endTime;
+
+      final overlaps =
+          newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart);
+
+      if (overlaps) return true;
+    }
+    return false;
+  }
 
   Widget _buildAlertDialog(BuildContext context) {
     return AlertDialog(
@@ -685,7 +710,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (item.id != null) //nao mostrar para o novo
+              if (item.id != null)
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red, size: 24),
                   onPressed: () {
@@ -838,7 +863,6 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
 
     if (!confirmed) return;
 
-    // Define o nome no objeto antes de guardar
     selectedItinerary.name = nameController.text.trim();
 
     // Verifica se vai criar ou atualizar
