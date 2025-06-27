@@ -64,7 +64,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                             children: [
                               _buildTitle(),
                               lineDivider(),
-                              iconOption(() {}, user?.name ?? '', userImage(user), ''),
+                              iconOption(null, user?.name ?? '', userImage(user), ''),
                               lineDivider(),
                               iconOption(
                                   _showChangeEmailModal,
@@ -74,7 +74,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                                   user?.email ?? ''),
                               lineDivider(),
                               iconOption(
-                                      () {},
+                                  null,
                                   "Phone Number",
                                   const Icon(Icons.phone,
                                       color: Colors.white, size: 50),
@@ -246,7 +246,16 @@ class _AccountSettingsState extends State<AccountSettings> {
   }
 
   Widget iconOption(
-      VoidCallback onClick, String text, Widget icon, String subText) {
+      VoidCallback? onClick, String text, Widget icon, String subText) {
+
+    if(onClick == null) {
+      return buildButtonsStyle(
+        icon: icon,
+        label: text,
+        subText: subText,
+      );
+    }
+
     return buildButtonsStyle(
       icon: icon,
       label: text,

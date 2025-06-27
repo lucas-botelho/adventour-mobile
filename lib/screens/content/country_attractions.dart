@@ -2,7 +2,6 @@ import 'package:adventour/components/layout/content_appbar.dart';
 import 'package:adventour/components/navigation/country_slider.dart';
 import 'package:adventour/components/navigation/navbar.dart';
 import 'package:adventour/components/media/media_slider.dart';
-import 'package:adventour/screens/world_map.dart';
 import 'package:flutter/material.dart';
 
 class CountryAttractions extends StatefulWidget {

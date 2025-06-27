@@ -1,4 +1,3 @@
-import 'package:adventour/components/layout/content_appbar.dart';
 import 'package:adventour/global_state.dart';
 import 'package:adventour/respositories/map_respository.dart';
 import 'package:adventour/screens/content/country_attractions.dart';

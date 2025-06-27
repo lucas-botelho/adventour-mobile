@@ -2,7 +2,7 @@ import 'package:adventour/models/itinerary/timeslot.dart';
 
 class Day {
   final int? id;
-  final int? dayNumber;
+  int? dayNumber;
   List<TimeSlot>? timeslots;
 
   Day({

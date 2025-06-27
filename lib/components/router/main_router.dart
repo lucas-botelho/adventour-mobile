@@ -1,5 +1,6 @@
 import 'package:adventour/respositories/user_repository.dart';
 import 'package:adventour/screens/auth/auth.dart';
+import 'package:adventour/screens/auth/registration_complete.dart';
 import 'package:adventour/screens/auth/registration_step_three.dart';
 import 'package:adventour/screens/auth/registration_step_two.dart';
 import 'package:adventour/screens/world_map.dart';

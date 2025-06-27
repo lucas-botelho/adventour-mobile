@@ -13,11 +13,11 @@ class FirebaseAuthService {
 
   FirebaseAuthService({required this.apiService}) {
     _firebaseAuth.authStateChanges().listen((User? user) {
-      if (user == null) {
-        print("User is signed out");
-      } else {
-        print("User is signed in: ${user.email}");
-      }
+      // if (user == null) {
+      //   print("User is signed out");
+      // } else {
+      //   print("User is signed in: ${user.email}");
+      // }
     });
   }
 

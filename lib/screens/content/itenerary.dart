@@ -28,7 +28,6 @@ class ItineraryPlanner extends StatefulWidget {
 class _ItineraryPlannerState extends State<ItineraryPlanner> {
   // Constants
   final _headerHeightFactor = 0.32;
-  final _edgeInsetsFactor = 0.03;
 
   //Placeholders
   String countryName = "Unknown Country";
@@ -49,6 +48,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
   //State variables
   List<int> selectedAttractions = [];
   int currentDayIndex = 0;
+  Set<int> expandedDayIndexes = {};
 
   @override
   initState() {
@@ -125,30 +125,30 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
     );
   }
 
-  Widget _buildCountryTitle() {
-    return Positioned(
-      top: MediaQuery.of(context).size.height * _headerHeightFactor / 2,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.height * _edgeInsetsFactor),
-        child: Text(
-          countryName,
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            shadows: [
-              Shadow(
-                offset: Offset(1.5, 1.5), // posição da sombra
-                blurRadius: 3.0,
-                color: Colors.black54, // cor da sombra
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildCountryTitle() {
+  //   return Positioned(
+  //     top: MediaQuery.of(context).size.height * _headerHeightFactor / 2,
+  //     child: Padding(
+  //       padding: EdgeInsets.symmetric(
+  //           horizontal: MediaQuery.of(context).size.height * _edgeInsetsFactor),
+  //       child: Text(
+  //         countryName,
+  //         style: const TextStyle(
+  //           fontSize: 28,
+  //           fontWeight: FontWeight.bold,
+  //           color: Colors.white,
+  //           shadows: [
+  //             Shadow(
+  //               offset: Offset(1.5, 1.5), // posição da sombra
+  //               blurRadius: 3.0,
+  //               color: Colors.black54, // cor da sombra
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildPlannerContainer() {
     return Positioned(
@@ -194,6 +194,8 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
               dayNumber: selectedItinerary.days!.length + 1,
               timeslots: [],
             ));
+            expandedDayIndexes.add(selectedItinerary.days!.length - 1);
+
           }),
         },
         icon: const Icon(Icons.add),
@@ -231,7 +233,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
 
   Widget _buildDayAccordion(Day day, int index) {
     return Dismissible(
-      key: ValueKey('day-${day.dayNumber}-${day.timeslots?.length ?? 0}'),
+      key: ValueKey(day.id ?? UniqueKey()), // <- chave única mesmo com títulos repetidos
       // <- chave única mesmo com títulos repetidos
       direction: DismissDirection.endToStart,
       dismissThresholds: const {
@@ -256,6 +258,14 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
       onDismissed: (direction) {
         setState(() {
           selectedItinerary.days!.removeAt(index);
+          expandedDayIndexes = expandedDayIndexes
+              .where((i) => i != index)
+              .map((i) => i > index ? i - 1 : i)
+              .toSet();
+          for (int i = 0; i < selectedItinerary.days!.length; i++) {
+            selectedItinerary.days![i].dayNumber = i + 1;
+          }
+
         });
       },
       child: Container(
@@ -265,7 +275,16 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
           borderRadius: BorderRadius.circular(12),
         ),
         child: ExpansionTile(
-          initiallyExpanded: index == currentDayIndex,
+          initiallyExpanded: expandedDayIndexes.contains(index),
+          onExpansionChanged: (bool expanded) {
+            setState(() {
+              if (expanded) {
+                expandedDayIndexes.add(index);
+              } else {
+                expandedDayIndexes.remove(index);
+              }
+            });
+          },
           title: Text("Day ${day.dayNumber.toString()}",
               style: const TextStyle(fontWeight: FontWeight.w400)),
           children: [
@@ -297,8 +316,8 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  icon: const Icon(Icons.add),
-                  label: const Text("Add activity"),
+                  icon: const Icon(Icons.settings),
+                  label: const Text("Manage activities"),
                   onPressed: () {
                     _showAttractionDrawer(day);
                   },
