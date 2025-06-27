@@ -206,7 +206,7 @@ class ApiService {
     required String endpoint,
     required Map<String, String> headers,
     required Object body,
-    required T Function(Map<String, dynamic>) fromJsonT,
+    required T Function(dynamic) fromJsonT,
   }) async {
     try {
       final response = await http.put(

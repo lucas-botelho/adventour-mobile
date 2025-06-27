@@ -426,7 +426,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
           runSpacing: 16,
           children: filteredAttractions.map((attraction) {
             final isSelected =
-                day.timeslots!.any((t) => t.attraction!.id == attraction.id);
+                day.timeslots!.any((t) => t.attraction?.id == attraction.id);
             return Stack(
               children: [
                 SizedBox(
@@ -854,7 +854,20 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
               : 'Itinerary updated successfully',
         )),
       );
-      Navigator.of(context).pop();
+
+      _fetchItineraries();
+
+      final newItinerary = response?.data;
+      if (newItinerary != null) {
+        setState(() {
+          selectedItinerary = itineraries.firstWhere(
+                (it) => it.name == newItinerary || it.id.toString() == newItinerary,
+            orElse: () => itineraries.last,
+          );
+        });
+      }
+
+
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -863,7 +876,6 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
       );
     }
   }
-
 
   void _fetchItineraries() async {
     final response =

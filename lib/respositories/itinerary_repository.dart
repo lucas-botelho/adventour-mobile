@@ -79,7 +79,7 @@ class ItineraryRepository {
         token: token,
         headers: <String, String>{},
         body: selectedItinerary.toJson(),
-        fromJsonT: (json) => json['data'] as String,
+        fromJsonT: (json) => json.toString(),
       );
 
 

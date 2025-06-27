@@ -36,7 +36,7 @@ class TimeSlot {
       'name': name ?? '',
       'start_time': startTime.toIso8601String(),
       'end_time': endTime.toIso8601String(),
-      'attraction_id': attractionId,
+      'attraction_id': attraction?.id ?? '',
     };
   }
 
