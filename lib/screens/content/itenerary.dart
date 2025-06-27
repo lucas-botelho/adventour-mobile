@@ -506,9 +506,10 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
   }
 
   Widget _buildTimeSlotDialog(
-      BuildContext dialogContext, String attractionName, Day day ) {
+      BuildContext dialogContext, String attractionName, Day day) {
     TimeOfDay? startTime;
     TimeOfDay? endTime;
+    String? errorMessage;
 
     return StatefulBuilder(
       builder: (context, setState) {
@@ -531,9 +532,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                             ),
                           ),
                           textTheme: Theme.of(context).primaryTextTheme.copyWith(
-                            bodyLarge: const TextStyle(
-                              color: Colors.black,
-                            ),
+                            bodyLarge: const TextStyle(color: Colors.black),
                           ),
                         ),
                         child: child!,
@@ -561,9 +560,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                             ),
                           ),
                           textTheme: Theme.of(context).primaryTextTheme.copyWith(
-                            bodyLarge: const TextStyle(
-                              color: Colors.black,
-                            ),
+                            bodyLarge: const TextStyle(color: Colors.black),
                           ),
                         ),
                         child: child!,
@@ -576,6 +573,13 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                     ? 'End: ${endTime!.format(context)}'
                     : 'Ending time'),
               ),
+              const SizedBox(height: 10),
+              if (errorMessage != null)
+                Text(
+                  errorMessage!,
+                  style: const TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
             ],
           ),
           actions: [
@@ -592,14 +596,14 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    if (startTime == null || endTime == null) return;
+                    if (startTime == null || endTime == null) {
+                      setState(() => errorMessage = 'Please select both times.');
+                      return;
+                    }
 
                     if (!endTime!.isAfter(startTime!)) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('End time must be after start time.'),
-                        ),
-                      );
+                      setState(() =>
+                      errorMessage = 'End time must be after start time.');
                       return;
                     }
 
@@ -607,11 +611,8 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                     final endDateTime = timeOfDayToDateTime(endTime!);
 
                     if (hasColision(day, startDateTime, endDateTime)) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('This time slot overlaps with another activity.'),
-                        ),
-                      );
+                      setState(() => errorMessage =
+                      'This time slot overlaps with another activity.');
                       return;
                     }
 
@@ -629,6 +630,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
       },
     );
   }
+
 
   bool hasColision(Day day, DateTime newStart, DateTime newEnd) {
     for (final slot in day.timeslots ?? []) {
@@ -698,7 +700,7 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (item.id != null) //nao mostrar para o novo
+              if (item.id != null)
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red, size: 24),
                   onPressed: () {
@@ -816,7 +818,6 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
   void _saveItinerary() async {
     final TextEditingController nameController = TextEditingController();
 
-    // Mostra o modal para introduzir o nome
     final bool confirmed = await showDialog<bool>(
           context: context,
           barrierDismissible: false,
@@ -851,7 +852,6 @@ class _ItineraryPlannerState extends State<ItineraryPlanner> {
 
     if (!confirmed) return;
 
-    // Define o nome no objeto antes de guardar
     selectedItinerary.name = nameController.text.trim();
 
     final response = await itineraryRepository.saveItinerary(selectedItinerary);
